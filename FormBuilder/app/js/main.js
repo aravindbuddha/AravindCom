@@ -11,7 +11,10 @@ requirejs.config({
 });
 //require(['Common', 'Data', 'Config']);
 
-require(['js/controller/FormBuilder.js'], function (FormBuilder) {
+require(['js/controller/FormBuilder.js'], function(FormBuilder) {
+
+
+  
   var appPath = "../../FormBuilder2/app";
   FormBuilder.init({
     uid: (new Date).getTime(),

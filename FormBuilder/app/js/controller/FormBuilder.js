@@ -5,6 +5,8 @@ define([
   'model/MainGrid',
   'controller/MainWindow'
 ], function(Common, Data, MainToolBar, MainGrid, MainWindow) {
+
+
   var
     $layout = {},
     $menu = {},
@@ -13,6 +15,8 @@ define([
     $toolbar = {},
     $statusbar = {},
     $config = {};
+
+
   return {
     init: function(conf) {
       Config = conf;

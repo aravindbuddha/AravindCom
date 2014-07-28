@@ -1,38 +1,38 @@
-define(function () {
+define(function() {
   var
-  $icons_path,
+    $icons_path,
     $mainWindow = "";
   return {
-    init: function (conf) {
+    init: function(conf) {
       $icons_path = conf.icons_path;
     },
-    setMainWindow: function (mainwindow) {
+    setMainWindow: function(mainwindow) {
       $mainWindow = mainwindow;
     },
-    progressOn: function () {
+    progressOn: function() {
       $mainWindow.progressOn();
     },
-    progressOff: function () {
+    progressOff: function() {
       $mainWindow.progressOff();
     },
 
-    _setStatus: function (m) {
+    _setStatus: function(m) {
       self = this;
       document.getElementById("status_info").innerHTML = m;
     },
-    _setStatusForm: function (uid, m) {
+    _setStatusForm: function(uid, m) {
       self = this;
       document.getElementById("formbuilder_status_info_" + uid).innerHTML = m;
     },
-    _setStatusError: function (m) {
+    _setStatusError: function(m) {
       self = this;
       document.getElementById("errors_info").innerHTML = m;
     },
-    _setStatusErrorForm: function (uid, m) {
+    _setStatusErrorForm: function(uid, m) {
       self = this;
       document.getElementById("formbuilder_errors_info_" + uid).innerHTML = m;
     },
-    _setStatusDataTransfer: function (m, isActive) {
+    _setStatusDataTransfer: function(m, isActive) {
       self = this;
       dhtmlx.message({
         text: m
@@ -45,7 +45,7 @@ define(function () {
         document.getElementById("data_transfer_info").style.backgroundImage = "url(" + $icons_path + "network-accept.png)";
       }
     },
-    _setStatusSocket: function (m, isOffline) {
+    _setStatusSocket: function(m, isOffline) {
       self = this;
       dhtmlx.message({
         text: m
@@ -55,7 +55,7 @@ define(function () {
       if (isOffline)
         document.getElementById("socket_info").style.backgroundImage = "url(" + $icons_path + "socket_disconnected.png)";
     },
-    _setStatusDataTransferForm: function (uid, m, isActive) {
+    _setStatusDataTransferForm: function(uid, m, isActive) {
       self = this;
       dhtmlx.message({
         text: m
@@ -68,7 +68,7 @@ define(function () {
         document.getElementById("formbuilder_data_transfer_info_" + uid).style.backgroundImage = "url(" + $icons_path + "network-accept.png)";
       }
     },
-    _setStatusUser: function (m, ok) {
+    _setStatusUser: function(m, ok) {
       self = this;
       if (typeof ok === 'undefined') {
         ok = true;
@@ -87,7 +87,7 @@ define(function () {
         });
       }
     },
-    _setStatusUserForm: function (uid, m, ok) {
+    _setStatusUserForm: function(uid, m, ok) {
       self = this;
       if (typeof ok === 'undefined') {
         ok = true;
@@ -106,7 +106,7 @@ define(function () {
         });
       }
     },
-    handleFormName: function (uid, name, form_id) {
+    handleFormName: function(uid, name, form_id) {
       var self = this,
         form_id = form_id || "";
       try {
