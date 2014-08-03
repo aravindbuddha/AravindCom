@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <title>MAP</title>  
+		
+<script type="text/javascript" src="../CAIRS_Framework/CAIRS_fw.js"></script>		    
+<link rel="stylesheet" type="text/css" href="../../auxiliary/dhtmlxfull3.5/dhtmlx.css" />
+<link rel="stylesheet" type="text/css" href="../../userhome/style.css" />
+<script type="text/javascript" src="../../auxiliary/dhtmlxfull3.5/dhtmlx.js" charset="ISO-8859-1"></script>
+<script type="text/javascript" src="../../auxiliary/dhtmlxfull3.5/ext/connector.js"></script>
+
+        <script type="text/javascript" >
+		function button1(){
+		var url = window.location.href;
+            var arr = url.split("/");
+            var WWWUrlPath =  arr[0] + "//" + arr[2]+'/';            
+            var agencyID = 25;            
+			var application_path = WWWUrlPath+'modules/mapbackground/';
+			var filesToLoad = [
+				application_path + "model/mapbackground_Model.js" /* Safe Form Model - international */
+				,application_path + "controller/mapbackground.js" /* Safe Form Controller */
+			];
+           CAIRS.onDemand.load(filesToLoad , function()
+            {
+                    mapbackground.start( { 
+                        uid : (new Date()).getTime() 
+                        ,application_path : application_path 
+                        ,dhtmlx_codebase_path : WWWUrlPath+"/auxiliary/dhtmlxfull3.5/" 
+						,agencyid : 25
+						,windowsobject : ''
+						,contact_id : 21644
+						,useWindow : true
+						,parent_object : ''
+                    } );
+             });
+		}
+			 
+			 
+         </script>
+     </head>
+    <body >
+		<div id="load_background"></div>
+          <button id="button_1" value="example 1" onClick="button1();">Open example 1</button>
+    </body>
+</html>

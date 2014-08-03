@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <title></title>
+        
+        <script type="text/javascript" src="../../auxiliary/js/jquery-1.4.2.min.js"></script>
+
+        <script type="text/javascript" src="../../auxiliary/js/jquery.bgiframe.min.js"></script>
+        <script type="text/javascript" src="../../auxiliary/js/jquery.maskedinput-1.2.2.min.js"></script>
+        <script type='text/javascript' src='../../auxiliary/js/lib/jquery.bgiframe.min.js'></script>
+        <script type='text/javascript' src='../../auxiliary/js/lib/jquery.ajaxQueue.js'></script>
+        <script type='text/javascript' src='../../auxiliary/js/jquery.autocomplete.js'></script>
+        <script type='text/javascript' src='../../auxiliary/js/regex-mask-plugin.js'></script>
+        <script type='text/javascript' src='../../auxiliary/js/jquery-simulate.js'></script>
+        <link rel="stylesheet" type="text/css" href="../../auxiliary/js/jquery.autocomplete.css" />
+
+        <script type="text/javascript" src="../../auxiliary/js/jquery-ui-1.8.2.custom.min.js"></script>
+
+        <script type="text/javascript" src="../../admin/signature_functions.js"></script>
+	    <!-- DHTMLX -->
+        <link rel="stylesheet" type="text/css" href="../../auxiliary/dhtmlxfull3.5/dhtmlx.css" />
+        <script type="text/javascript" src="../../auxiliary/dhtmlxfull3.5/dhtmlx.js" ></script>
+        
+        <script type="text/javascript" src="js/controller.js"></script>
+        
+
+        <!-- CAIRS Framework -->
+	<script type="text/javascript" src="../CAIRS_Framework/CAIRS_fw.js"></script>
+
+        <script type="text/javascript" >
+	    function checkPermission()
+	    { 
+                var WWWUrlPath = 'https://cdmap01.myadoptionportal.com/';
+                
+                /* load files to open MAPPermissions*/
+                
+                var application_path = WWWUrlPath+'modules/MAPPermissions/';
+               MAPPermissions.loadSettings(WWWUrlPath);
+               
+               
+                alert(MAPPermissions.checkAccessPermission('Edit'));
+              
+	    }
+         </script>
+     </head>
+    <body>
+	<a href="javascript:void(0);" onClick="checkPermission();">Check permission</a>
+    </body>
+</html>
