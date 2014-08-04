@@ -10,7 +10,6 @@ if($country_id == "USA"){
     $rslt = mssql_query("select CountryID from lkpcountry where countryText ='USA'");
     $rowaddresstype1 = mssql_fetch_array($rslt);
     $country_id = $rowaddresstype1['CountryID'];   
-    
 }
 
  if(!isset($_SESSION['agencyId']))

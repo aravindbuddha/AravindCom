@@ -1,54 +1,43 @@
 <html>
     <head>
         <title>Address Component</title>
-         <style type="text/css">
-                html,body{
-                    width:100%;
-                    height: 100%;
-                }
-                #mydiv{
-                    width: 700px;
-                    height: 600px;
-                }
-         </style>
+         
         <!-- DHTMLX Framework -->
-        <link rel="stylesheet" type="text/css" href="../codebase3.6/dhtmlx.css" />
-        <script type="text/javascript" src="../codebase3.6/dhtmlx.js" charset="ISO-8859-1"></script>
-        <script type="text/javascript" src="../CAIRS_Framework/CAIRS_fw.js"></script>
-
+        <!--
+        <link rel="stylesheet" type="text/css" href="../../auxiliary/dhtmlxfull3.5/dhtmlx.css" />
+        <script type="text/javascript" src="../../auxiliary/dhtmlxfull3.5/dhtmlx.js" charset="ISO-8859-1"></script>
+        
         <script type="text/javascript" src="../MAPPermissions/js/controller.js"></script>
-	    <script type="text/javascript" src="js/json2.js"></script>  
-
-        <script type="text/javascript" src="controller/addresscomponent.js"></script>
+	<script type="text/javascript" src="js/json2.js"></script>  
+        <script type="text/javascript" src="model/addresscomponent_Model.js"></script>
+         -->
+         <script type="text/javascript" src="../../../../modules/CAIRS_Framework/CAIRS_fw.js"></script>
+        <script type="text/javascript" src="controller/Address.js"></script>
          
         <script type="text/javascript" >
             window.onload = function()
-            {
-                 var WWWUrlPath = window.location.protocol + '//' + window.location.host+'/';
-                 var cdn_application_path = WWWUrlPath +'modules/MAPaddresscomponent/';
-                 var dhx_codebase_path = WWWUrlPath + 'modules/codebase3.6/';
-
-
-                   MAPPermissions.loadSettings(WWWUrlPath);                    
+            {   
                    
-                   addresscomponent.start({ 
-                        uid : (new Date).getTime(),
-                        application_path :cdn_application_path,
-                        dhtmlx_codebase_path : dhx_codebase_path,
-						contactid : "86081",
-						agencyid: 65,
-						useWindow : true,
-     					parentDIVId : 'mydiv',
-                        window_managerObj:null,
-                        contactcomponent_obj:null
-                    });
+                   var WWWUrlPath =  window.location.protocol + '//' + window.location.host + '/';
+                   //MAPPermissions.loadSettings(WWWUrlPath);                    
 
+                    var cdn_application_path =WWWUrlPath+'modules/FormBuilder/js/MAPaddresscomponent/';
 
+                    var dhx_codebase_path = WWWUrlPath+ 'modules/codebase4.0/';
+                   
+                   Address.start( { 
+                        uid : (new Date()).getTime()
+                        ,application_path : cdn_application_path
+                        ,dhtmlx_codebase_path :dhx_codebase_path
+						,contactid : "1394"
+						,agencyid: 65
+						,useWindow : true
+     					,parentDIVId : '',
+                         window_managerObj:null,
+                    } );
              }
          </script>
      </head>
     <body>
-
-        <div id="mydiv"></div>
     </body>
 </html>

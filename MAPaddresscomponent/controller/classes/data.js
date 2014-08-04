@@ -1,49 +1,23 @@
-addresscomponent.data = addresscomponent.data || (function() {
-  var that = addresscomponent;
+Address.Data = Address.Data || (function() {
+  var
+    _data_store = {},
+    _app_path = "";
   return {
-    _data_store: {},
-    init: function(contactid, agencyid) {
-      this.create_data_store("list", that.application_path + "processors/get_data.php?contactID=" + contactid + "&agencyid=" + agencyid);
-      this.create_data_store("address_type", that.application_path + "processors/get_data.php?type=address_type");
+    init: function(app_path) {
+      _app_path = app_path;
+      this.create_data_store("address_type", app_path + "processors/get_data.php?get=address_type");
+    },
+    store: function(name, url) {
+      if (_data_store[name] == null) {
+        this.create_data_store(name, url)
+      }
+      return _data_store[name];
     },
     create_data_store: function(name, url) {
-      this._data_store[name] = new dhtmlXDataStore({
+      _data_store[name] = new dhtmlXDataStore({
         url: url,
         datatype: "json"
       });
     },
-    get_data: function() {
-      var self = this,
-        postStr,
-        json;
-
-      postStr = "contactID=" + _configuration.contactid + "&agencyid=" + _configuration.agencyid;
-      dhtmlxAjax.post(_configuration.application_path + "processors/get_data.php", postStr, function(loader) {
-        try {
-          json = JSON.parse(loader.xmlDoc.responseText);
-
-          if (json.status == "success") {
-            self.data_store[uid] = json;
-
-            dhtmlx.message({
-              text: "Data store 100% loaded"
-            });
-
-            self._grid(uid);
-            self.progressOff(uid);
-          } else {
-            dhtmlx.message({
-              type: "error",
-              text: json.response
-            });
-          }
-        } catch (e) {
-          dhtmlx.message({
-            type: "error",
-            text: "Fatal error on server side: " + loader.xmlDoc.responseText
-          });
-        }
-      });
-    }
   }
 }());

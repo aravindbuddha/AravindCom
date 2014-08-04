@@ -7,9 +7,9 @@ else
     $agencyid       =   $_SESSION['agencyId'];
 	
 $c_account_key = get_c_acc_key($agencyid);
-$contactID     = $_POST['contactID'];
+$contactID     = $_GET['contactID'];
 
-$sp_airsAddress = "EXEC SP_AddEditAddressInfo '$c_account_key', $contactID, default,'Get'";
+echo $sp_airsAddress = "EXEC SP_AddEditAddressInfo '$c_account_key', $contactID, default,'Get'";
 $getAirsAddress = mssql_query($sp_airsAddress);
 
 $arrValues = array();

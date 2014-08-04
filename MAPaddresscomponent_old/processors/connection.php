@@ -16,9 +16,9 @@ if (!$connection) {
 
 require_once("../../../userhome/\$ettings.php");
 require_once($path["serloc"]."header.php");
-
+require_once($path["serloc"]."modules/codebase4.0/connectors/data_connector.php");
+require_once($path["serloc"]."modules/codebase4.0/connectors/db_mssql.php");
 $connection = $Data->db;
-
-
+$json_con = new JSONDataConnector($connection,"MsSQL");
 
 ?>
