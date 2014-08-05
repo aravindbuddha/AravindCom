@@ -1,11 +1,10 @@
 Address.Data = Address.Data || (function() {
   var
-    _data_store = {},
-    _app_path = "";
+    _data_store = {};
   return {
     init: function(app_path) {
-      _app_path = app_path;
-      this.create_data_store("address_type", app_path + "processors/get_data.php?get=address_type");
+      console.log(">>>>>>> init Data Store...");
+      //  this.create_data_store("address_type", app_path + "processors/get_data.php?get=address_type");
     },
     store: function(name, url) {
       if (_data_store[name] == null) {

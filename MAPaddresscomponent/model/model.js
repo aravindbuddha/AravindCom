@@ -46,49 +46,51 @@ Address.Model = Address.Model || (function() {
       "title": "New"
     },
     "conf_grid": {
-      "headers": "Type,Address 1,Address 2,City,State,Zip,County,Country,Province,Mailing Address,Start Date,Leave Date",
-      "ids": "type,add1,add2,city,state,zip,county,country,province,mailing,start_date,end_date",
-      "widths": "70,100,100,80,85,65,80,90,90,60,60,60",
-      "widths_layout": "70,100,100,80,85,65,80,90,90,*,60,60",
+      "headers": "AddressTypeID,Type,Address1,Address2,City,StateId,Sate,zip,CountyId,County,CountryId,Country,AddressProvinceID,Provence,MailingAddress,Start Date,End Date",
+      "ids": "AddressTypeID,AddressType,Address1,Address2,City,StateId,SateName,zip,CountyId,CountyText,CountryId,CountryText,AddressProvinceID,AddressProvenceText,MailingAddress,addstartdate,addleavedate",
+      "widths": "0,70,200,150,80,0,80,70,0,90,60,0,0,70,100,60,60",
+      "widths_layout": "70,100,100,80,85,65,80,90,90,*,60,60,60,60,60,60",
       "colaligns": "left,left,left,left,left,left,left,left,left,left,left,left",
-      "coltypes": "ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed",
-      "colsorting": "str,str,str,str,str,str,str,str,str,str,date,date",
+      "coltypes": "ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed",
+      "colsorting": "str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,date,date",
       "bind_library_field": "false,false,false,false,false,false,false,false,false,false,false,false",
-      'visibility': 'false,false,true,false,false,false,true,false,true,false,true,true'
+      'visibility': 'true,false,false,true,false,true,false,false,true,false,true,false,true,true,false,true,true'
     },
     "conf_toolbar": {
       "icon_path": _icon_path,
       "items": [{
-        "type": "button",
-        "id": "add_address",
-        "text": "Add Address",
-        "img": "address-book-add.png",
-        "img_disabled": "address-book-add.png"
-      }, {
-        "type": "button",
-        "id": "edit_address",
-        "text": "Edit Address",
-        "img": "edit.png",
-        "img_disabled": "edit.png"
-      }, {
-        "type": "button",
-        "id": "delete_address",
-        "text": "Delete Address",
-        "img": "recycle_full-16.png",
-        "img_disabled": "recycle_full-16.png"
-      }, {
-        "type": "button",
-        "id": "help_address",
-        "text": "Help",
-        "img": "Help.png",
-        "img_disabled": "Help.png"
-      }, {
-        "type": "button",
-        "id": "close_address",
-        "text": "Close",
-        "img": "cancel.png",
-        "img_disabled": "cancel.png"
-      }]
+          "type": "button",
+          "id": "add_address",
+          "text": "Add Address",
+          "img": "address-book-add.png",
+          "img_disabled": "address-book-add.png"
+        }, {
+          "type": "button",
+          "id": "edit_address",
+          "text": "Edit Address",
+          "img": "edit.png",
+          "img_disabled": "edit.png"
+        }, {
+          "type": "button",
+          "id": "delete_address",
+          "text": "Delete Address",
+          "img": "recycle_full-16.png",
+          "img_disabled": "recycle_full-16.png"
+        }
+        // , {
+        //   "type": "button",
+        //   "id": "help_address",
+        //   "text": "Help",
+        //   "img": "Help.png",
+        //   "img_disabled": "Help.png"
+        // }, {
+        //   "type": "button",
+        //   "id": "close_address",
+        //   "text": "Close",
+        //   "img": "cancel.png",
+        //   "img_disabled": "cancel.png"
+        // }
+      ]
     },
     "edit_toolbar": {
       "icon_path": "",
@@ -181,7 +183,6 @@ Address.Model = Address.Model || (function() {
           labelTop: "15",
           inputLeft: "440",
           inputTop: "15",
-
           position: "absolute",
           options: [{
             text: "Yes",
@@ -189,7 +190,6 @@ Address.Model = Address.Model || (function() {
           }, {
             text: "No",
             value: 0
-
           }],
           validate: "NotEmpty"
         }, {
@@ -309,7 +309,7 @@ Address.Model = Address.Model || (function() {
           position: "absolute",
           readonly: true,
           options: [{
-            text: "USA",
+            text: "Pick a Country",
             value: ""
           }]
         }, {

@@ -130,13 +130,13 @@ var Address = (function() {
       c_name = c_name + "_" + _uid;
       _grid[c_name] = _layout[c_name].cells("a").attachGrid(self.Model.conf_grid);
       _grid[c_name].setHeader(self.Model.conf_grid.headers);
-
+      _grid[c_name].setColumnIds(self.Model.conf_grid.ids);
       if (_conf.useWindow === true) {
         _grid[c_name].setInitWidths(self.Model.conf_grid.widths);
       } else {
         _grid[c_name].setInitWidths(self.Model.conf_grid.widths_layout);
       }
-      _grid[c_name].setColAlign(self.Model.conf_grid.colaligns);
+      // _grid[c_name].setColAlign(self.Model.conf_grid.colaligns);
       _grid[c_name].setColTypes(self.Model.conf_grid.coltypes);
       _grid[c_name].setColSorting(self.Model.conf_grid.colsorting);
       _grid[c_name].selMultiRows = false;
@@ -146,15 +146,28 @@ var Address = (function() {
       _grid[c_name].setColumnsVisibility(self.Model.conf_grid.visibility);
       _grid[c_name].init();
       _layout[c_name].progressOff();
-      //_grid[c_name].parse(self.data_store[uid].address, "json");
-      // _toolbar[c_name].disableItem("delete_address");
-      // _toolbar[c_name].disableItem("edit_address");
-      // _grid[c_name].attachEvent("onRowDblClicked", function(rowId, cellInd) {
-      //   self._editwindow(uid, 'Edit');
-      //   self._editlayout(uid);
-      //   //self._edittoolbar(uid, 'Edit');
-      //   self._form(uid, 'Edit');
-      // });
+
+      // Addrss country
+      self.Data.create_data_store("grid_address", _conf.application_path + "processors/address.php?get=grid_address&contactID=" + _conf.contactid);
+      var grid_address_ds = self.Data.store("grid_address");
+      grid_address_ds.data.scheme({
+        $init: function(obj) {
+          obj.MailingAddress = obj.MailingAddress ? "Yes" : "No";
+        }
+      });
+      _grid[c_name].sync(grid_address_ds);
+      _toolbar[c_name].disableItem("delete_address");
+      _toolbar[c_name].disableItem("edit_address");
+      _grid[c_name].attachEvent("onRowDblClicked", function(rowId, cellInd) {
+        // self._editwindow(uid, 'Edit');
+        // self._editlayout(uid);
+        // //self._edittoolbar(uid, 'Edit');
+        // self._form(uid, 'Edit');
+        self.build_window("Edit", self.Model.edit_window);
+        self.build_layout("Edit");
+        self.build_add_edit_form("Edit", false, _grid[c_name]);
+
+      });
       // _grid[c_name].attachEvent("onEnter", function(rowId, cellInd) {
       //   self._editwindow(uid, 'Edit');
       //   self._editlayout(uid);
@@ -166,7 +179,7 @@ var Address = (function() {
       //   _toolbar[c_name].enableItem("edit_address");
       // });
     },
-    build_add_edit_form: function(c_name, isEdit) {
+    build_add_edit_form: function(c_name, isEdit, data) {
       var self = this;
       c_name = c_name || _name;
       c_name = c_name + "_" + _uid;
@@ -177,42 +190,180 @@ var Address = (function() {
         _form[c_name] = _layout[c_name].cells("a").attachForm(self.Model.conf_form.template);
         _layout[c_name].progressOff();
       }
-      // data = new DataStore({
-      //     url: self.application_path + "processors/get-data.php",
-      //     type: "json"
-      // });
 
-      // var myDataStore = new dhtmlXDataStore();
-      // myDataStore.load(self.application_path + "processors/get-data.php");
-      // console.log(myDataStore);
+      //  _form[c_name].bind(data);
+
       var address_type = _form[c_name].getCombo("address_type");
       var address_province = _form[c_name].getCombo("address_province");
       var address_country = _form[c_name].getCombo("address_country");
-      var address_County = _form[c_name].getCombo("address_County");
+      var address_county = _form[c_name].getCombo("address_County");
       var address_state = _form[c_name].getCombo("address_state");
-      console.log(self.Data.store("address_state"));
 
-      self.Data.store("address_type").data.scheme({
+      // Address Type
+      self.Data.create_data_store("address_type", _conf.application_path + "processors/get_data.php?get=address_type");
+      var address_type_ds = self.Data.store("address_type");
+      address_type_ds.data.scheme({
         $init: function(obj) {
-          obj.value = obj.text = obj.AddressType;
+          obj.value = obj.AddressSequence;
+          obj.text = obj.AddressType;
+        }
+      });
+      address_type.sync(address_type_ds);
+
+      // Addrss country
+      self.Data.create_data_store("address_country", _conf.application_path + "processors/get_data.php?get=address_country");
+      var address_country_ds = self.Data.store("address_country");
+      address_country_ds.data.scheme({
+        $init: function(obj) {
+          obj.value = obj.id;
+          obj.text = obj.CountryText;
+          // if (obj.CountryText == "USA") {
+          //   obj.select = select;
+          //   selected:true
+          // }
+
+        }
+      });
+      address_country.sync(address_country_ds);
+
+      // Address Province
+      self.Data.create_data_store("address_province", _conf.application_path + "processors/get_data.php?get=address_province");
+      var address_province_ds = self.Data.store("address_province");
+      address_province_ds.data.scheme({
+        $init: function(obj) {
+          obj.value = obj.AddressProvinceId;
+          obj.text = obj.AddressProvinceText;
+        }
+      });
+      address_province.sync(address_province_ds);
+
+      // Address state
+      self.Data.create_data_store("address_state", _conf.application_path + "processors/get_data.php?get=address_state");
+      var address_state_ds = self.Data.store("address_state");
+      address_state_ds.data.scheme({
+        $init: function(obj) {
+          obj.value = obj.StateID;
+          obj.text = obj.StateName;
+        }
+      });
+      address_state.sync(address_state_ds);
+
+      // Address county
+      self.Data.create_data_store("address_county", _conf.application_path + "processors/get_data.php?get=address_county");
+      var address_county_ds = self.Data.store("address_county");
+      address_county_ds.data.scheme({
+        $init: function(obj) {
+          obj.value = obj.CountyID;
+          obj.text = obj.CountyText;
+
+        }
+      });
+      address_county.sync(address_county_ds);
+      address_province.disable(true);
+      address_state.disable(true);
+      address_county.disable(true);
+      // // Events on cobo boxes
+      // // --When contries loaded
+      // address_country.attachEvent("onXLS", function() {
+      //   alert("hi");
+      // });
+      // --- On country change
+      address_country.attachEvent("onChange", function() {
+        var countryid = address_country.getSelectedValue();
+        console.log(countryid);
+        address_province_ds.data.filter("CountryID", countryid);
+        if (address_province_ds.data.dataCount() < 1) {
+          address_province.addOption([
+            ["0", "Pick a Province"]
+          ]);
+          address_province.disable(true);
+        } else {
+          address_province.enable(true);
+          address_province.addOption([
+            ["0", "Pick a Province"]
+          ]);
+        }
+
+        address_state_ds.data.filter("CountryID", countryid);
+        if (address_state_ds.data.dataCount() < 1) {
+          address_state.addOption([
+            ["0", "Pick a State"]
+          ]);
+          address_state.disable(true);
+          address_county.disable(true);
+        } else {
+          address_state.enable(true);
+          address_county.enable(true);
+          address_state.addOption([
+            ["0", "Pick a State"]
+          ]);
         }
       });
 
-      address_type.sync(self.Data.store("address_type"));
+      address_state.attachEvent("onChange", function() {
+        var stateid = address_state.getSelectedValue();
+        address_county_ds.data.filter("StateId", stateid);
+        if (address_county_ds.data.dataCount() < 1) {
+          address_county.addOption([
+            ["0", "Select State"]
+          ]);
+          address_county.disable(true);
+        } else {
+          address_county.enable(true);
+          address_county.addOption([
+            ["0", "Select State"]
+          ]);
+        }
+      });
 
-      // myDataStore.data.scheme({
-      //   $init: function(obj) {
-      //     obj.value = obj.Code;
-      //     obj.text = obj.Name;
-      //   }
-      // });
-      // com.sync(myDataStore);
-      // myDataStore.bind(com, function(data, filter) {
-      //     com.addOption([
-      //         [data.label, data.name]
-      //     ]);
-      // });
-      //com.bind(myDataStore);
+      // Events for imputs
+      // 
+      _form[c_name].attachEvent("onInputChange", function(name) {
+        var len = _form[c_name].getItemValue("address_zip").length;
+        if (name === 'address_zip') {
+          if (len === 5) {
+            var zipcode = _form[c_name].getItemValue("address_zip");
+            var filter = /^\d{5}(?:-\d{4})?$/;
+            var zipcodeVal = filter.test(zipcode);
+            if (zipcode !== '' && zipcode !== null) {
+              if (zipcodeVal !== true) {
+                dhtmlx.alert({
+                  title: "Alert",
+                  type: "alert-error",
+                  text: "Please enter a valid zipcode",
+                  callback: function() {
+                    _form[c_name].setItemValue('address_zip', '');
+                    _form[c_name].setItemFocus('address_zip');
+                  }
+                });
+              } else {
+                dhtmlxAjax.get(_conf.application_path + "processors/get_data.php?get=address_by_zip&zip=" + zipcode, function(loader) {
+                  json = JSON.parse(loader.xmlDoc.responseText);
+                  if (json.length > 0) {
+                    json = json[0];
+                    _form[c_name].getCombo("address_state").setComboValue(json.StateID);
+                    _form[c_name].getCombo("address_state").setComboText(json.StateName);
+                    _form[c_name].getCombo("address_country").setComboValue(json.CountryID);
+                    _form[c_name].getCombo("address_country").setComboText(json.CountryName);
+                  }
+
+                });
+              }
+            }
+          } else if (len > 5) {
+            dhtmlx.alert({
+              title: "Alert",
+              type: "alert-error",
+              text: "Please enter a 5-digit zipcode",
+              callback: function() {
+                _form[c_name].setItemValue('address_zip', '');
+                _form[c_name].setItemFocus('address_zip');
+              }
+            });
+          }
+
+        }
+      });
     },
     start: function(conf) {
       var self = this;
