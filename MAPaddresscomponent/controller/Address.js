@@ -36,6 +36,7 @@ var Address = (function() {
           _window_manager = new dhtmlXWindows();
         }
       }
+      // _window_manager.setImagePath(self.Model.conf_window.image_path);
       if (_window_manager.isWindow(c_name)) {
         //console.log(_window_manager)
         _window[c_name].show();
@@ -49,6 +50,7 @@ var Address = (function() {
       //_window[_uid].setIcon(self.Model.conf_window.icon, self.Model.conf_window.icon_dis);
       _window[c_name].center();
       _window[c_name].denyPark();
+      _window[c_name].denyResize();
 
       // Events on Windows
       _window[c_name].attachEvent("onClose", function(win) {
@@ -83,7 +85,6 @@ var Address = (function() {
       var self = this;
       c_name = c_name || _name;
       c_name = c_name + "_" + _uid;
-      var selectedRowsId;
       _toolbar[c_name] = _layout[c_name].cells("a").attachToolbar(self.Model.conf_toolbar);
       _toolbar[c_name].setSkin(self.Model.globalSkin);
       if (_conf.useWindow !== true) {
@@ -101,6 +102,8 @@ var Address = (function() {
           self.build_window("New", self.Model.edit_window);
           self.build_layout("New");
           self.build_add_edit_form("New", false);
+          self.build_add_edit_toolbar("New");
+
         }
         // if (id == "delete_address") {
         //   selectedRowsId = _grid[c_name].getSelectedRowId();
@@ -174,10 +177,116 @@ var Address = (function() {
       //   // self._edittoolbar(uid, 'Edit');
       //   self._form(uid, 'Edit');
       // });
-      // _grid[c_name].attachEvent("onRowSelect", function(rowId, cellInd) {
-      //   _toolbar[c_name].enableItem("delete_address");
-      //   _toolbar[c_name].enableItem("edit_address");
-      // });
+      _grid[c_name].attachEvent("onRowSelect", function(rowId, cellInd) {
+        _toolbar[c_name].enableItem("delete_address");
+        _toolbar[c_name].enableItem("edit_address");
+      });
+    },
+    build_add_edit_toolbar: function(c_name) {
+      var self = this;
+      c_name = c_name || _name;
+      c_name = c_name + "_" + _uid;
+      _toolbar[c_name] = _layout[c_name].cells("a").attachToolbar(self.Model.edit_toolbar);
+      _toolbar[c_name].setSkin(self.Model.globalSkin);
+      this.toolbar_add_edit_events(c_name);
+    },
+    toolbar_add_edit_events: function(c_name) {
+      var self = this;
+      var data = {};
+
+      _toolbar[c_name].attachEvent("onClick", function(id) {
+        if (id == "save_address") {
+          data = {
+            contact_id: _conf.contactid,
+            type_id: _form[c_name].getCombo("address_type").getSelectedValue(),
+            is_mailing: _form[c_name].getItemValue("mailing_address"),
+            address_1: _form[c_name].getItemValue("address_address1"),
+            address_2: _form[c_name].getItemValue("address_address2"),
+            city: _form[c_name].getItemValue("address_city"),
+            zip: _form[c_name].getItemValue("address_zip"),
+            country_id: _form[c_name].getCombo("address_country").getSelectedValue(),
+            province_id: _form[c_name].getCombo("address_province").getSelectedValue(),
+            state_id: _form[c_name].getCombo("address_state").getSelectedValue(),
+            county_id: _form[c_name].getCombo("address_county").getSelectedValue(),
+            start_date: _form[c_name].getCalendar("address_start").getDate(true),
+            leave_date: _form[c_name].getCalendar("address_leave").getDate(true)
+          };
+          console.log(data);
+          console.log("Data to save >>>>" + JSON.stringify(data));
+          if (self.form_add_edit_validate(c_name, data)) {
+            dhtmlxAjax.post(_conf.application_path + "processors/address.php?act=save", "data=" + JSON.stringify(data), function() {
+
+            });
+          }
+        }
+      });
+    },
+    form_add_edit_validate: function(c_name, data) {
+      var zip_filter = /^\d{5}(?:-\d{4})?$/;
+      var zipcodeVal = zip_filter.test(data.zip);
+      if (data.type_id === '' || data.type_id === null || data.type_id === '0') {
+        dhtmlx.alert({
+          title: "Alert",
+          type: "alert-error",
+          text: "Address type is mandatory",
+          callback: function() {
+            _form[c_name].setItemFocus('address_type');
+          }
+        });
+        return false;
+      }
+      // else if (data.start_date === '' || data.start_date === null || data.start_date === '0') {
+      //   dhtmlx.alert({
+      //     title: "Alert",
+      //     type: "alert-error",
+      //     text: 'Start Date must not be blank',
+      //     callback: function() {
+      //       _form[c_name].setItemValue('address_start', '');
+      //       _form[c_name].setItemFocus('address_start');
+      //     }
+      //   });
+      //   return false;
+      // }
+      // else if (data.leave_date === '' || data.leave_date === null || data.leave_date === '0') {
+      //   dhtmlx.alert({
+      //     title: "Alert",
+      //     type: "alert-error",
+      //     text: 'End Date must not be blank',
+      //     callback: function() {
+      //       _form[c_name].setItemValue('address_leave', '');
+      //       _form[c_name].setItemFocus('address_leave');
+      //     }
+      //   });
+      //   return false;
+      // } 
+      // 
+      else if (data.leave_date < data.start_date) {
+        dhtmlx.alert({
+          title: "Alert",
+          type: "alert-error",
+          text: ' End date should be greater or equal to Start date',
+          callback: function() {
+            _form[c_name].setItemValue('address_leave', '');
+            _form[c_name].setItemFocus('address_leave');
+          }
+        });
+        return false;
+      } else if (data.zip !== '' && data.zip !== null) {
+        if (zipcodeVal !== true) {
+          dhtmlx.alert({
+            title: "Alert",
+            type: "alert-error",
+            text: "Please enter a valid zipcode",
+            callback: function() {
+              _form[c_name].setItemValue('address_zip', '');
+              _form[c_name].setItemFocus('address_zip');
+            }
+          });
+          return false;
+        }
+      }
+
+      return true;
     },
     build_add_edit_form: function(c_name, isEdit, data) {
       var self = this;
@@ -191,12 +300,11 @@ var Address = (function() {
         _layout[c_name].progressOff();
       }
 
-      //  _form[c_name].bind(data);
-
+      // Storing all combo boxs
       var address_type = _form[c_name].getCombo("address_type");
       var address_province = _form[c_name].getCombo("address_province");
       var address_country = _form[c_name].getCombo("address_country");
-      var address_county = _form[c_name].getCombo("address_County");
+      var address_county = _form[c_name].getCombo("address_county");
       var address_state = _form[c_name].getCombo("address_state");
 
       // Address Type
@@ -211,17 +319,20 @@ var Address = (function() {
       address_type.sync(address_type_ds);
 
       // Addrss country
-      self.Data.create_data_store("address_country", _conf.application_path + "processors/get_data.php?get=address_country");
+      self.Data.create_data_store(
+        "address_country",
+        _conf.application_path + "processors/get_data.php?get=address_country",
+        function(data) {
+          var usa_opt = address_country.getOptionByLabel("USA");
+          address_country.setComboText(usa_opt.text);
+          address_country.setComboValue(usa_opt.value);
+          data.setCursor(usa_opt.value);
+        });
       var address_country_ds = self.Data.store("address_country");
       address_country_ds.data.scheme({
         $init: function(obj) {
           obj.value = obj.id;
           obj.text = obj.CountryText;
-          // if (obj.CountryText == "USA") {
-          //   obj.select = select;
-          //   selected:true
-          // }
-
         }
       });
       address_country.sync(address_country_ds);
@@ -255,18 +366,13 @@ var Address = (function() {
         $init: function(obj) {
           obj.value = obj.CountyID;
           obj.text = obj.CountyText;
-
         }
       });
       address_county.sync(address_county_ds);
       address_province.disable(true);
-      address_state.disable(true);
-      address_county.disable(true);
+
       // // Events on cobo boxes
       // // --When contries loaded
-      // address_country.attachEvent("onXLS", function() {
-      //   alert("hi");
-      // });
       // --- On country change
       address_country.attachEvent("onChange", function() {
         var countryid = address_country.getSelectedValue();
@@ -278,6 +384,7 @@ var Address = (function() {
           ]);
           address_province.disable(true);
         } else {
+          address_province_ds.setCursor(address_province_ds.first());
           address_province.enable(true);
           address_province.addOption([
             ["0", "Pick a Province"]
@@ -302,6 +409,7 @@ var Address = (function() {
 
       address_state.attachEvent("onChange", function() {
         var stateid = address_state.getSelectedValue();
+        console.log(stateid);
         address_county_ds.data.filter("StateId", stateid);
         if (address_county_ds.data.dataCount() < 1) {
           address_county.addOption([
@@ -316,8 +424,7 @@ var Address = (function() {
         }
       });
 
-      // Events for imputs
-      // 
+      // Events for inputs
       _form[c_name].attachEvent("onInputChange", function(name) {
         var len = _form[c_name].getItemValue("address_zip").length;
         if (name === 'address_zip') {

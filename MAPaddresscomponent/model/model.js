@@ -9,6 +9,7 @@ Address.Model = Address.Model || (function() {
       _img_path = img_path;
       this.conf_window.image_path = _img_path;
       this.conf_toolbar.icon_path = _icon_path;
+      this.edit_toolbar.icon_path = _icon_path;
       return this;
     },
     "text_labels": {
@@ -95,30 +96,35 @@ Address.Model = Address.Model || (function() {
     "edit_toolbar": {
       "icon_path": "",
       "items": [{
-        "type": "button",
-        "id": "save_address",
-        "text": "Save",
-        "img": "save.gif",
-        "img_disabled": "save.gif"
-      }, {
-        "type": "button",
-        "id": "import_address",
-        "text": "Import address",
-        "img": "import-icon.png",
-        "img_disabled": "import-icon.png"
-      }, {
-        "type": "button",
-        "id": "help_address",
-        "text": "Help",
-        "img": "Help.png",
-        "img_disabled": "Help.png"
-      }, {
-        "type": "button",
-        "id": "close_editaddress",
-        "text": "Close",
-        "img": "cancel.png",
-        "img_disabled": "cancel.png"
-      }]
+          "type": "button",
+          "id": "save_address",
+          "text": "Save",
+          "img": "save.gif",
+          "img_disabled": "save.gif"
+        }, {
+          "type": "button",
+          "id": "import_address",
+          "text": "Import address",
+          "img": "import-icon.png",
+          "img_disabled": "import-icon.png"
+        }
+        // , 
+        // 
+        // {
+        //   "type": "button",
+        //   "id": "help_address",
+        //   "text": "Help",
+        //   "img": "Help.png",
+        //   "img_disabled": "Help.png"
+        // }, {
+        //   "type": "button",
+        //   "id": "close_editaddress",
+        //   "text": "Close",
+        //   "img": "cancel.png",
+        //   "img_disabled": "cancel.png"
+        // }
+
+      ]
     },
     "conf_layout": {
       "pattern": "1C"
@@ -162,6 +168,7 @@ Address.Model = Address.Model || (function() {
           labelTop: "15",
           inputLeft: "95",
           inputTop: "15",
+          readonly: true,
           position: "absolute",
           options: [{
               text: "Pick Address Type",
@@ -172,7 +179,7 @@ Address.Model = Address.Model || (function() {
           ]
         }, {
           type: "combo",
-          name: "MailingAddress",
+          name: "mailing_address",
           label: "Mailing Address",
           width: 210,
           labelWidth: "150",
@@ -183,6 +190,7 @@ Address.Model = Address.Model || (function() {
           labelTop: "15",
           inputLeft: "440",
           inputTop: "15",
+          readonly: true,
           position: "absolute",
           options: [{
             text: "Yes",
@@ -190,6 +198,7 @@ Address.Model = Address.Model || (function() {
           }, {
             text: "No",
             value: 0
+
           }],
           validate: "NotEmpty"
         }, {
@@ -241,7 +250,7 @@ Address.Model = Address.Model || (function() {
           type: "combo",
           name: "address_state",
           label: "State/Zip",
-          required: true,
+          //    required: true,
           validate: "NotEmpty",
           className: "myTest",
           width: 150,
@@ -253,13 +262,12 @@ Address.Model = Address.Model || (function() {
           labelTop: "135",
           inputLeft: "95",
           inputTop: "135",
+          readonly: true,
           position: "absolute",
           options: [{
-              text: "Pick a State",
-              value: ""
-            }
-
-          ]
+            text: "Pick a State",
+            value: ""
+          }]
         }, {
           type: "input",
           name: "address_zip",
@@ -277,7 +285,7 @@ Address.Model = Address.Model || (function() {
           position: "absolute"
         }, {
           type: "combo",
-          name: "address_County",
+          name: "address_county",
           label: "County",
           width: 210,
           labelWidth: "80",
@@ -288,6 +296,7 @@ Address.Model = Address.Model || (function() {
           labelTop: "165",
           inputLeft: "95",
           inputTop: "165",
+          readonly: true,
           position: "absolute",
           options: [{
             text: "Pick a County",
