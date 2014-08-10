@@ -14,10 +14,20 @@ if (!$connection) {
 }
 // ===== PLACE YOUR DATABASE HANDLER HERE */
 
-require_once("../../../userhome/\$ettings.php");
-require_once($path["serloc"]."header.php");
+// require_once("../../../userhome/\$ettings.php");
+// require_once($path["serloc"]."header.php");
 
-$connection = $Data->db;
+// $connection = $Data->db;
+
+
+include '../../../codebase3.6/connector-php/codebase/data_connector.php';
+include '../../../codebase3.6/connector-php/codebase/db_mssql.php';
+include '../../../codebase3.6/connector-php/codebase/mixed_connector.php';
+
+ 
+$res=mssql_connect('.\DIMPU',"sa","abc123",false);
+mssql_select_db("MAPTEST");
+$json = new JSONDataConnector($res,"MsSQL");
 
 
 

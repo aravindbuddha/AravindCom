@@ -1,23 +1,22 @@
 <?php
 
-include 'connector-php/codebase/data_connector.php';
-include 'connector-php/codebase/db_mssql.php';
-include 'connector-php/codebase/mixed_connector.php';
 
- 
-$res=mssql_connect('.\ARAVIND',"sa","Passw0rd",false);
-mssql_select_db("MAPTEST");
-$json = new JSONDataConnector($res,"MsSQL");
+include "connection.php";
 
-if($_GET['get']=="grid_address"){
-	$contactID=$_GET['contactID'];
+
+//print_r($_REQUEST);
+if($_GET['act']=="get"){
+	$contactID=$_GET['contact_id'];
 	$sp_airsAddress = "EXEC USP_AddEditAddressInfo $contactID";
-  $json->render_complex_sql($sp_airsAddress,"AddressID","AddressTypeID,AddressType,Address1,Address2,City,StateId,SateName,zip,CountyId,CountyText,CountryId,CountryText,AddressProvinceID,AddressProvenceText,MailingAddress,addstartdate,addleavedate");
+  	$json->render_complex_sql($sp_airsAddress,"AddressID","AddressTypeID,AddressType,Address1,Address2,City,StateId,SateName,zip,CountyId,CountyText,CountryId,CountryText,AddressProvinceID,AddressProvenceText,MailingAddress,addstartdate,addleavedate");
+	
+
 }
 
 if($_REQUEST['act']=="save"){
  $data=json_decode($_REQUEST['data'],true);
  $contact_id=$data['contact_id'];
+ $address_id=isset($data['address_id'])?$data['address_id']:0;
  $address_type_id=$data['type_id'];
  $address_1=$data['address_1'];
  $address_2=$data['address_2'];
@@ -30,10 +29,18 @@ if($_REQUEST['act']=="save"){
  $leave_date=$data['leave_date'];
  $is_mailing=$data['is_mailing'];
  $province_id=intval($data['province_id']);
- $sp_airsAddress = "EXEC SP_AddEditAddressInfo  $contact_id, '$AddressId','Save',$address_type_id, '$address_1', '$address_2', '$city', $state_id, '$zip', $country_id, $county_id, '$start_date', '$leave_date' , $is_mailing, $province_id";
-//$json->render_complex_sql($sp_airsAddress,"AddressID","AddressTypeID,AddressType,Address1,Address2,City,StateId,SateName,zip,CountyId,CountyText,CountryId,CountryText,AddressProvinceID,AddressProvenceText,MailingAddress,addstartdate,addleavedate");
-
- print_r($sp_airsAddress);
-
+ $sp_airsAddress = "EXEC USP_AddEditAddressInfo  $contact_id,$address_id,'Save',$address_type_id, '$address_1', '$address_2', '$city', $state_id, '$zip', $country_id, $county_id, '$start_date', '$leave_date' , $is_mailing, $province_id";
+ $json->render_complex_sql($sp_airsAddress);
 }
+
+if($_REQUEST['act']=="del"){
+ $data=json_decode($_REQUEST['data'],true);
+ $contact_id=$data['contact_id'];
+ $address_id=$data['address_id'];
+
+ $sp_airsAddress = "EXEC USP_AddEditAddressInfo  $contact_id,$address_id,'Delete'";
+ //echo $sp_airsAddress;
+ $json->render_complex_sql($sp_airsAddress);
+}
+
 

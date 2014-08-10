@@ -11,17 +11,17 @@
 	<script type="text/javascript" src="js/json2.js"></script>  
         <script type="text/javascript" src="model/addresscomponent_Model.js"></script>
          -->
-         <script type="text/javascript" src="../../../../modules/CAIRS_Framework/CAIRS_fw.js"></script>
+        <script type="text/javascript" src="../../CAIRS_Framework/CAIRS_fw.js"></script>
         <script type="text/javascript" src="controller/Address.js"></script>
          
         <script type="text/javascript" >
             window.onload = function()
             {   
-                   
+                CAIRS.environment = "dev";
                    var WWWUrlPath =  window.location.protocol + '//' + window.location.host + '/';
                    //MAPPermissions.loadSettings(WWWUrlPath);                    
 
-                    var cdn_application_path =WWWUrlPath+'modules/FormBuilder/js/MAPaddresscomponent/';
+                    var cdn_application_path =WWWUrlPath+'modules/AravindCom/MAPaddresscomponent/';
 
                     var dhx_codebase_path = WWWUrlPath+ 'modules/codebase4.0/';
                    
@@ -29,11 +29,11 @@
                         uid : (new Date()).getTime()
                         ,application_path : cdn_application_path
                         ,dhtmlx_codebase_path :dhx_codebase_path
-						,contactid : 1394
-						,agencyid: 65
-						,useWindow : true
-     					,parentDIVId : '',
-                         window_managerObj:null
+						,contact_id : 1394
+						,agency_id: 65
+						,use_window : true
+     					,parent_div_Id : ''
+                        ,window_manager_obj:null
                     });
              }
          </script>

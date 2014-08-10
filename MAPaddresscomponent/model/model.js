@@ -7,9 +7,10 @@ Address.Model = Address.Model || (function() {
     init: function(img_path, icon_path) {
       _icon_path = icon_path;
       _img_path = img_path;
-      this.conf_window.image_path = _img_path;
+      this.conf_window.image_path = _icon_path;
       this.conf_toolbar.icon_path = _icon_path;
       this.edit_toolbar.icon_path = _icon_path;
+      this.import_toolbar.icon_path = _icon_path;
       return this;
     },
     "text_labels": {
@@ -21,7 +22,10 @@ Address.Model = Address.Model || (function() {
         "left": 190,
         "width": 1000,
         "height": 550,
-        "title": "Address"
+        "title": "Address",
+        "layout_pattern": "1C",
+        "icon": "address_book-16.png",
+        "icon_dis": "address_book-16.png",
       },
       "layout": {
         "pattern": "1C"
@@ -29,7 +33,7 @@ Address.Model = Address.Model || (function() {
     },
     "globalSkin": "dhx_skyblue",
     "conf_window": {
-      "image_path": _img_path,
+      "image_path": _icon_path,
       "viewport": "body",
       "left": 400,
       "top": 190,
@@ -44,11 +48,16 @@ Address.Model = Address.Model || (function() {
     "edit_window": {
       "width": 730,
       "height": 340,
-      "title": "New"
+      "title": "New Address"
+    },
+    "import_window": {
+      "width": 730,
+      "height": 340,
+      "title": "Import Address"
     },
     "conf_grid": {
       "headers": "AddressTypeID,Type,Address1,Address2,City,StateId,Sate,zip,CountyId,County,CountryId,Country,AddressProvinceID,Provence,MailingAddress,Start Date,End Date",
-      "ids": "AddressTypeID,AddressType,Address1,Address2,City,StateId,SateName,zip,CountyId,CountyText,CountryId,CountryText,AddressProvinceID,AddressProvenceText,MailingAddress,addstartdate,addleavedate",
+      "ids": "address_type_id,address_type,address_1,address_2,city,state_id,sate_text,zip,county_id,county_text,country_id,country_text,province_id,provence_text,is_mailing_address,start_date,leave_date",
       "widths": "0,70,200,150,80,0,80,70,0,90,60,0,0,70,100,60,60",
       "widths_layout": "70,100,100,80,85,65,80,90,90,*,60,60,60,60,60,60",
       "colaligns": "left,left,left,left,left,left,left,left,left,left,left,left",
@@ -126,6 +135,39 @@ Address.Model = Address.Model || (function() {
 
       ]
     },
+    "import_toolbar": {
+      "icon_path": "",
+      "items": [{
+          "type": "button",
+          "id": "save_address",
+          "text": "Save",
+          "img": "save.gif",
+          "img_disabled": "save.gif"
+        }, {
+          "type": "button",
+          "id": "import_address",
+          "text": "Import address",
+          "img": "import-icon.png",
+          "img_disabled": "import-icon.png"
+        }
+        // , 
+        // 
+        // {
+        //   "type": "button",
+        //   "id": "help_address",
+        //   "text": "Help",
+        //   "img": "Help.png",
+        //   "img_disabled": "Help.png"
+        // }, {
+        //   "type": "button",
+        //   "id": "close_editaddress",
+        //   "text": "Close",
+        //   "img": "cancel.png",
+        //   "img_disabled": "cancel.png"
+        // }
+
+      ]
+    },
     "conf_layout": {
       "pattern": "1C"
     },
@@ -145,12 +187,12 @@ Address.Model = Address.Model || (function() {
         label: "Phone detail",
         list: [{
           type: "hidden",
-          name: "address_ID",
+          name: "address_type_id",
           value: 0
 
         }, {
           type: "hidden",
-          name: "contact_ID",
+          name: "contact_id",
           value: ""
 
         }, {
@@ -179,7 +221,7 @@ Address.Model = Address.Model || (function() {
           ]
         }, {
           type: "combo",
-          name: "mailing_address",
+          name: "is_mailing_address",
           label: "Mailing Address",
           width: 210,
           labelWidth: "150",
@@ -203,7 +245,7 @@ Address.Model = Address.Model || (function() {
           validate: "NotEmpty"
         }, {
           type: "input",
-          name: "address_address1",
+          name: "address_1",
           label: "Address 1",
           value: "",
           width: 555,
@@ -218,7 +260,7 @@ Address.Model = Address.Model || (function() {
           position: "absolute"
         }, {
           type: "input",
-          name: "address_address2",
+          name: "address_2",
           label: "Address 2",
           value: "",
           width: 555,
@@ -233,7 +275,7 @@ Address.Model = Address.Model || (function() {
           position: "absolute"
         }, {
           type: "input",
-          name: "address_city",
+          name: "city",
           label: "City",
           value: "",
           width: 210,
@@ -248,7 +290,7 @@ Address.Model = Address.Model || (function() {
           position: "absolute"
         }, {
           type: "combo",
-          name: "address_state",
+          name: "state_text",
           label: "State/Zip",
           //    required: true,
           validate: "NotEmpty",
@@ -270,7 +312,7 @@ Address.Model = Address.Model || (function() {
           }]
         }, {
           type: "input",
-          name: "address_zip",
+          name: "zip",
           value: "",
           validate: "ValidInteger",
           width: 50,
@@ -285,7 +327,7 @@ Address.Model = Address.Model || (function() {
           position: "absolute"
         }, {
           type: "combo",
-          name: "address_county",
+          name: "county_text",
           label: "County",
           width: 210,
           labelWidth: "80",
@@ -304,7 +346,7 @@ Address.Model = Address.Model || (function() {
           }]
         }, {
           type: "combo",
-          name: "address_country",
+          name: "country_text",
           label: "Country",
           width: 210,
           labelWidth: "80",
@@ -323,7 +365,7 @@ Address.Model = Address.Model || (function() {
           }]
         }, {
           type: "combo",
-          name: "address_province",
+          name: "province_text",
           label: "Province",
           width: 210,
           labelWidth: "80",
@@ -342,7 +384,7 @@ Address.Model = Address.Model || (function() {
           }]
         }, {
           type: "calendar",
-          name: "address_start",
+          name: "start_data",
           label: "Start Date",
           dateFormat: "%m-%d-%Y",
           enableTime: false,
@@ -360,7 +402,7 @@ Address.Model = Address.Model || (function() {
           position: "absolute"
         }, {
           type: "calendar",
-          name: "address_leave",
+          name: "leave_date",
           label: "End Date",
           dateFormat: "%m-%d-%Y",
           enableTime: false,

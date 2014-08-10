@@ -83,8 +83,10 @@ if ($_POST['isimport'] == 'import') {
             else
                 $hascouple = 'no';
         }
-        else
-            $hascouple = 'no';
+        else{
+              $hascouple = 'no';
+        }
+          
 
     }
 
