@@ -8,7 +8,8 @@ Address.Data = Address.Data || (function() {
       "address_del": "processors/address.php?act=del",
       "address_save": "processors/address.php?act=save",
       "get_spouse_contact_id": "processors/get_data.php?act=spouse_contact",
-      "address_type": "processors/get_data.php?get=address_type"
+      "address_type": "processors/get_data.php?get=address_type",
+      "address_country": "processors/get_data.php?get=address_country",
     },
     init: function(_config) {
       var self = this;
@@ -72,6 +73,22 @@ Address.Data = Address.Data || (function() {
           obj.is_mailing_address = obj.MailingAddress ? "Yes" : "No";
         }
       });
-    }
+    },
+    _address_type_data_store: function(_name, _path) {
+
+    },
+    _address_state_data_store: function(_name, _path) {
+
+    },
+    _address_county_data_store: function(_name, _path) {
+
+    },
+    _address_country_data_store: function(_name, _path) {
+
+    },
+    _address_province_data_store: function(_name, _path) {
+
+    },
+
   }
 }());

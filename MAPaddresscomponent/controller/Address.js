@@ -117,13 +117,13 @@ var Address = (function() {
           if (selectedRowsId !== null) {
             // self.deleteRow(uid, selectedRowsId);
             self.Data.store("address_get").remove(selectedRowsId);
-            // var data = {
-            //   contact_id: config.contact_id,
-            //   address_id: selectedRowsId
-            // }
-            // dhtmlxAjax.post(config.application_path + "processors/address.php?act=del", "data=" + JSON.stringify(data), function() {
+            var data = {
+              contact_id: config.contact_id,
+              address_id: selectedRowsId
+            }
+            dhtmlxAjax.post(config.application_path + "processors/address.php?act=del", "data=" + JSON.stringify(data), function() {
 
-            // });
+            });
           }
         }
         // if (id == "help_address") {
@@ -431,9 +431,7 @@ var Address = (function() {
       //             ["0", "Select State"]
       //         ]);
       //     }
-      // });
-
-
+      // });s
     },
     _form_data_storage_fill: function(_name) {
       var self = this;
