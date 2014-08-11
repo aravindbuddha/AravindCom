@@ -56,15 +56,25 @@ Address.Model = Address.Model || (function() {
       "title": "Import Address"
     },
     "conf_grid": {
-      "headers": "AddressTypeID,Type,Address1,Address2,City,StateId,Sate,zip,CountyId,County,CountryId,Country,AddressProvinceID,Provence,MailingAddress,Start Date,End Date",
-      "ids": "address_type_id,address_type,address_1,address_2,city,state_id,sate_text,zip,county_id,county_text,country_id,country_text,province_id,provence_text,is_mailing_address,start_date,leave_date",
-      "widths": "0,70,200,150,80,0,80,70,0,90,60,0,0,70,100,60,60",
+      "headers": "address_id,AddressTypeID,Type,Address1,Address2,City,StateId,Sate,zip,CountyId,County,CountryId,Country,AddressProvinceID,Provence,MailingAddress,Start Date,End Date",
+      "ids": "address_id,address_type_id,address_type,address_1,address_2,city,state_id,sate_text,zip,county_id,county_text,country_id,country_text,province_id,provence_text,is_mailing_address,start_date,leave_date",
+      "widths": "0,0,70,200,150,80,0,80,70,0,90,60,0,0,70,100,60,60",
       "widths_layout": "70,100,100,80,85,65,80,90,90,*,60,60,60,60,60,60",
       "colaligns": "left,left,left,left,left,left,left,left,left,left,left,left",
       "coltypes": "ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed",
       "colsorting": "str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,date,date",
       "bind_library_field": "false,false,false,false,false,false,false,false,false,false,false,false",
-      'visibility': 'true,false,false,true,false,true,false,false,true,false,true,false,true,true,false,true,true'
+      'visibility': 'true,true,false,false,true,false,true,false,false,true,false,true,false,true,true,false,true,true'
+    },
+
+    "import_grid": {
+      "headers": "Select,id,AddressTypeID,Type,Address1,Address2,City,StateId,Sate,zip,CountyId,County,CountryId,Country,AddressProvinceID,Provence,MailingAddress,Start Date,End Date",
+      "ids": "select,id,address_type_id,address_type,address_1,address_2,city,state_id,sate_text,zip,county_id,county_text,country_id,country_text,province_id,provence_text,is_mailing_address,start_date,leave_date",
+      "widths": "10,0,0,70,200,150,80,0,80,70,0,90,60,0,0,70,100,60,60",
+      "colaligns": "left,left,left,left,left,left,left,left,left,left,left,left",
+      "coltypes": "ch,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed",
+      "colsorting": "str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,date,date",
+      'visibility': 'false,true,true,false,false,true,false,true,false,false,true,false,true,false,true,true,false,true,true'
     },
     "conf_toolbar": {
       "icon_path": _icon_path,
@@ -143,13 +153,14 @@ Address.Model = Address.Model || (function() {
           "text": "Save",
           "img": "save.gif",
           "img_disabled": "save.gif"
-        }, {
-          "type": "button",
-          "id": "import_address",
-          "text": "Import address",
-          "img": "import-icon.png",
-          "img_disabled": "import-icon.png"
         }
+        // , {
+        //   "type": "button",
+        //   "id": "import_address",
+        //   "text": "Import address",
+        //   "img": "import-icon.png",
+        //   "img_disabled": "import-icon.png"
+        // }
         // , 
         // 
         // {
@@ -193,6 +204,12 @@ Address.Model = Address.Model || (function() {
         }, {
           type: "hidden",
           name: "contact_id",
+          value: ""
+
+        },
+        {
+          type: "hidden",
+          name: "address_id",
           value: ""
 
         }, {

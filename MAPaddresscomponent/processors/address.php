@@ -8,7 +8,7 @@ include "connection.php";
 if($_GET['act']=="get"){
 	$contactID=$_GET['contact_id'];
 	$sp_airsAddress = "EXEC USP_AddEditAddressInfo $contactID";
-  	$json->render_complex_sql($sp_airsAddress,"AddressID","AddressTypeID,AddressType,Address1,Address2,City,StateId,SateName,zip,CountyId,CountyText,CountryId,CountryText,AddressProvinceID,AddressProvenceText,MailingAddress,addstartdate,addleavedate");
+  	$json->render_complex_sql($sp_airsAddress,"AddressID","AddressTypeID,AddressType,Address1,Address2,city,stateId,StateName,zip,countyId,countyText,countryId,CountryText,AddressProvinceID,AddressProvenceText,MailingAddress,addstartdate,addleavedate");
 	
 
 }
@@ -30,7 +30,7 @@ if($_REQUEST['act']=="save"){
  $is_mailing=$data['is_mailing'];
  $province_id=intval($data['province_id']);
  $sp_airsAddress = "EXEC USP_AddEditAddressInfo  $contact_id,$address_id,'Save',$address_type_id, '$address_1', '$address_2', '$city', $state_id, '$zip', $country_id, $county_id, '$start_date', '$leave_date' , $is_mailing, $province_id";
- $json->render_complex_sql($sp_airsAddress);
+  $json->render_complex_sql($sp_airsAddress);
 }
 
 if($_REQUEST['act']=="del"){
