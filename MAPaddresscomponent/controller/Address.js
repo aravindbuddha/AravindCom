@@ -150,12 +150,6 @@ var Address = (function() {
       var self = this;
       _name = _name || com_name;
       self._build_grid(_name, self.Model.conf_grid);
-      // Addrss country
-      // self.Data.store("address_get", config.application_path + self.Data.end_point.address_get + "&contact_id=" + config.contact_id, function() {
-      //   layout[_name].progressOff();
-      // });
-     
-      // self.Data._address_data_store();
       var grid_address_ds = self.Data.store("address_get");
       grid[_name].sync(grid_address_ds,{
         select:true
@@ -661,7 +655,7 @@ var Address = (function() {
         self._grid_main();
       });
     },
-    set_status:function(_name,msg){
+    set_status:function(_name,msg,type){
         status_bar[_name].setText('<span style="color:#FF0000;"><strong>* '+msg+'</strong></span>');
     },
     validate_start: function(config) {

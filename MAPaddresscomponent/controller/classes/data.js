@@ -86,6 +86,8 @@ Address.Data = Address.Data || (function() {
           obj.is_mailing_address = obj.MailingAddress ? "Yes" : "No";
         }
       });
+
+     
     },
     _address_type_data_store:function(_name,_path){
       this.create_data_store(_name, _path);
