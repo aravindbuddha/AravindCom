@@ -89,8 +89,9 @@ var Address = (function() {
       grid[_name].setColSorting(opt.colsorting);
       grid[_name].selMultiRows = false;
       grid[_name].enableAutoWidth(true);
+       grid[_name].enableMultiselect(true);
       grid[_name].enableMultiline(true);
-       grid[_name].enableAlterCss("even","uneven");
+      grid[_name].enableAlterCss("even","uneven");
       grid[_name].setDateFormat("%m-%d-%Y");
       grid[_name].setColumnsVisibility(opt.visibility);
       grid[_name].init();
@@ -144,7 +145,10 @@ var Address = (function() {
           self._form_add_edit("Add_Edit", true);
         }
         if (id == "delete_address") {
-          selectedRowsId = grid[_name].getSelectedRowId();
+          var selected_row_ids = grid[_name].getSelectedRowId();
+          selected_row_ids=selected_row_ids.split(',')
+          
+          console.log(selectedRowsId);
           if (selectedRowsId !== null) {
             self.Data.store("address_get").remove(selectedRowsId);
             var data = {
