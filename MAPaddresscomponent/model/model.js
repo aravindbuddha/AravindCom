@@ -45,10 +45,15 @@ Address.Model = Address.Model || (function() {
       "icon": "address_book-16.png",
       "icon_dis": "address_book-16.png",
     },
-    "edit_window": {
+    "new_window": {
       "width": 730,
       "height": 340,
       "title": "New Address"
+    },
+    "edit_window": {
+      "width": 730,
+      "height": 340,
+      "title": "Edit Address"
     },
     "import_window": {
       "width": 730,
@@ -58,22 +63,22 @@ Address.Model = Address.Model || (function() {
     "conf_grid": {
       "headers": "address_id,AddressTypeID,Type,Address1,Address2,City,StateId,Sate,zip,CountyId,County,CountryId,Country,AddressProvinceID,Provence,MailingAddress,Start Date,End Date",
       "ids": "address_id,address_type_id,address_type,address_1,address_2,city,state_id,sate_text,zip,county_id,county_text,country_id,country_text,province_id,provence_text,is_mailing_address,start_date,leave_date",
-      "widths": "0,0,70,200,150,80,0,80,70,0,90,60,0,0,70,100,60,60",
-      "widths_layout": "70,100,100,80,85,65,80,90,90,*,60,60,60,60,60,60",
-      "colaligns": "left,left,left,left,left,left,left,left,left,left,left,left",
-      "coltypes": "ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed",
-      "colsorting": "str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,date,date",
-      "bind_library_field": "false,false,false,false,false,false,false,false,false,false,false,false",
+      "widths": "0,0,195,290,0,140,0,80,78,0,90,60,0,0,70,90,60,60",
+      "widths_layout": "0,0,70,200,150,80,0,80,70,0,90,60,0,0,70,100,60,60",
+      "colaligns": "left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,center,left,left",
+      "coltypes": "ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro",
+      "colsorting": "str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,date,date",
       'visibility': 'true,true,false,false,true,false,true,false,false,true,false,true,false,true,true,false,true,true'
     },
 
-    "import_grid": {
-      "headers": "Select,id,AddressTypeID,Type,Address1,Address2,City,StateId,Sate,zip,CountyId,County,CountryId,Country,AddressProvinceID,Provence,MailingAddress,Start Date,End Date",
-      "ids": "select,id,address_type_id,address_type,address_1,address_2,city,state_id,sate_text,zip,county_id,county_text,country_id,country_text,province_id,provence_text,is_mailing_address,start_date,leave_date",
-      "widths": "10,0,0,70,200,150,80,0,80,70,0,90,60,0,0,70,100,60,60",
-      "colaligns": "left,left,left,left,left,left,left,left,left,left,left,left",
+     "import_grid": {
+      "headers": "#master_checkbox,address_id,AddressTypeID,Type,Address1,Address2,City,StateId,Sate,zip,CountyId,County,CountryId,Country,AddressProvinceID,Provence,MailingAddress,Start Date,End Date",
+      "ids": "select,address_id,address_type_id,address_type,address_1,address_2,city,state_id,sate_text,zip,county_id,county_text,country_id,country_text,province_id,provence_text,is_mailing_address,start_date,leave_date",
+      "widths": "43,0,0,70,188,150,80,0,80,70,0,90,60,0,0,70,90,60,60",
+      "colaligns": "center,left,left,left,left,left,left,left,left,left,center,left,left",
       "coltypes": "ch,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed",
-      "colsorting": "str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,date,date",
+      "colsorting": "str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,date,date",
+      "bind_library_field": "false,false,false,false,false,false,false,false,false,false,false,false",
       'visibility': 'false,true,true,false,false,true,false,true,false,false,true,false,true,false,true,true,false,true,true'
     },
     "conf_toolbar": {
@@ -149,8 +154,8 @@ Address.Model = Address.Model || (function() {
       "icon_path": "",
       "items": [{
           "type": "button",
-          "id": "save_address",
-          "text": "Save",
+          "id": "import_address",
+          "text": "Import",
           "img": "save.gif",
           "img_disabled": "save.gif"
         }
@@ -206,8 +211,7 @@ Address.Model = Address.Model || (function() {
           name: "contact_id",
           value: ""
 
-        },
-        {
+        }, {
           type: "hidden",
           name: "address_id",
           value: ""
@@ -356,6 +360,7 @@ Address.Model = Address.Model || (function() {
           inputLeft: "95",
           inputTop: "165",
           readonly: true,
+           disabled:true,
           position: "absolute",
           options: [{
             text: "Pick a County",
@@ -393,6 +398,7 @@ Address.Model = Address.Model || (function() {
           labelTop: "135",
           inputLeft: "440",
           inputTop: "135",
+           disabled:true,
           position: "absolute",
           readonly: true,
           options: [{
@@ -401,7 +407,7 @@ Address.Model = Address.Model || (function() {
           }]
         }, {
           type: "calendar",
-          name: "start_data",
+          name: "start_date",
           label: "Start Date",
           dateFormat: "%m-%d-%Y",
           enableTime: false,

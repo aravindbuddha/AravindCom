@@ -15,25 +15,32 @@
         <script type="text/javascript" src="controller/Address.js"></script>
          
         <script type="text/javascript" >
-            window.onload = function()
-            {   
-                CAIRS.environment = "dev";
+            window.onload = function() {
+                window.com_dhx_version="3.6";
+                console.log(location.search);
+                if(location.search == "?v=4.0"){
+                    com_dhx_version="4.0"
+                }   
+
+                console.log(com_dhx_version);
+                 CAIRS.environment = "dev";
                    var WWWUrlPath =  window.location.protocol + '//' + window.location.host + '/';
                    //MAPPermissions.loadSettings(WWWUrlPath);                    
 
                     var cdn_application_path =WWWUrlPath+'modules/AravindCom/MAPaddresscomponent/';
 
-                    var dhx_codebase_path = WWWUrlPath+ 'modules/codebase3.6/';
+                    var dhx_codebase_path = WWWUrlPath+ 'modules/codebase'+com_dhx_version+'/';
                    
                    Address.start({ 
                         uid : (new Date()).getTime()
                         ,application_path : cdn_application_path
                         ,dhtmlx_codebase_path :dhx_codebase_path
-						,contact_id : 1394
+						,contact_id : 1395
 						,agency_id: 65
 						,use_window : true
      					,parent_div_Id : ''
                         ,window_manager_obj:null
+                        ,data_base:"MAPTEST"
                     });
              }
          </script>
