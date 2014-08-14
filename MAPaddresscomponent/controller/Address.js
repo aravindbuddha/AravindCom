@@ -89,7 +89,7 @@ var Address = (function() {
       grid[_name].setColSorting(opt.colsorting);
       grid[_name].selMultiRows = false;
       grid[_name].enableAutoWidth(true);
-       grid[_name].enableMultiselect(true);
+      grid[_name].enableMultiselect(true);
       grid[_name].enableMultiline(true);
       grid[_name].enableAlterCss("even","uneven");
       grid[_name].setDateFormat("%m-%d-%Y");
@@ -131,8 +131,10 @@ var Address = (function() {
      * @return {[type]}       [description]
      */
     _toolbar_events: function(_name) {
-      var self = this;
+      var self = this,
+     address_get_ds = self.Data.store("address_get");
       _name = _name || com_name;
+
       toolbar[_name].attachEvent("onClick", function(id) {
         if (id == "add_address") {
           self.build_window("Add_Edit", self.Model.new_window);
@@ -145,21 +147,25 @@ var Address = (function() {
           self._form_add_edit("Add_Edit", true);
         }
         if (id == "delete_address") {
-          var selected_row_ids = grid[_name].getSelectedRowId();
-          selected_row_ids=selected_row_ids.split(',')
-          
-          console.log(selectedRowsId);
-          if (selectedRowsId !== null) {
-            self.Data.store("address_get").remove(selectedRowsId);
+          var 
+          count=0,
+          selected_row_ids = grid[_name].getSelectedRowId();
+          selected_row_ids=selected_row_ids.split(',');
+          count=selected_row_ids.length;
+          selected_row_ids.forEach(function(row_id){
             var data = {
               contact_id: config.contact_id,
-              address_id: selectedRowsId
-            }
+              address_id: row_id
+            };
+            address_get_ds.remove(row_id);
             win[com_name].progressOn();
             dhtmlxAjax.post(self.Data.end_point.address_del, "data=" + JSON.stringify(data), function() {
-              win[com_name].progressOff();
+              count--;
+              if(!count){
+                win[com_name].progressOff();
+              }
             });
-          }
+          });
         }
       });
     },
@@ -172,12 +178,10 @@ var Address = (function() {
       var self = this;
       _name = _name || com_name;
       self.build_grid(_name, self.Model.conf_grid);
-
       var grid_address_ds = self.Data.store("address_get");
       grid[_name].sync(grid_address_ds, {
         select: true
       });
-
       //Check if data is loaded for displaying
       if (!grid_address_ds.isVisible()) {
         grid_address_ds.attachEvent("onXLE", function() {
@@ -394,13 +398,13 @@ var Address = (function() {
 
       self.build_grid(_name, self.Model.import_grid);
       var spouse_address_ds=self.Data.store('spouse_contacts'); 
+      dhx.log(spouse_address_ds);
 
         //Check if data is loaded for displaying
       if (!spouse_address_ds.isVisible()) {
         spouse_address_ds.attachEvent("onXLE", function() {
           layout[_name].progressOff();
           self.set_status(_name, "Ready to use");
-
         });
       } else {
         layout[_name].progressOff();
@@ -433,19 +437,20 @@ var Address = (function() {
         self.set_status(_name, " Fields required");
         return false;
       }
-      else if (data.leave_date < data.start_date) {
-        dhtmlx.alert({
-          title: "Alert",
-          type: "alert-error",
-          text: ' End date should be greater or equal to Start date',
-          callback: function() {
-            form[_name].setItemValue('address_leave', '');
-            form[_name].setItemFocus('address_leave');
-          }
-
-        });
-        self.set_status(_name, "End date should be greater or equal to Start date");
-        return false;
+      else if (data.leave_date !="" && data.start_date !="") {
+        if(data.leave_date < data.start_date){
+          dhtmlx.alert({
+            title: "Alert",
+            type: "alert-error",
+            text: ' End date should be greater or equal to Start date',
+            callback: function() {
+              form[_name].setItemValue('address_leave', '');
+              form[_name].setItemFocus('address_leave');
+            }
+          });
+          self.set_status(_name, "End date should be greater or equal to Start date");
+           return false;
+        }     
       } else if (data.zip !== '' && data.zip !== null) {
         if (zipcodeVal !== true) {
           dhtmlx.alert({
@@ -721,7 +726,8 @@ var Address = (function() {
      * @param {[type]} msg   [description]
      * @param {[enum]} type  [should be any of {info,err,success}]
      */
-    set_status: function(_name, msg,type) {
+    set_status: function(_name, msg,type) { 
+
       var color="#000000";
       color = (type == "info")?"#000000":color;
       color = (type == "err")?"#FF0000":color;
