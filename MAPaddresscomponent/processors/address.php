@@ -32,7 +32,7 @@ if($_REQUEST['act']=="save"){
  $leave_date=$data['leave_date'];
  $is_mailing=$data['is_mailing'];
  $province_id=intval($data['province_id']);
- echo $sp_airsAddress = "EXEC USP_AddEditAddressInfo  $contact_id,$address_id,'Save',$address_type_id, '$address_1', '$address_2', '$city', $state_id, '$zip', $country_id, $county_id, '$start_date', '$leave_date' , $is_mailing, $province_id";
+ $sp_airsAddress = "EXEC USP_AddEditAddressInfo  $contact_id,$address_id,'Save',$address_type_id, '$address_1', '$address_2', '$city', $state_id, '$zip', $country_id, $county_id, '$start_date', '$leave_date' , $is_mailing, $province_id";
  $json->render_complex_sql($sp_airsAddress);
 }
 

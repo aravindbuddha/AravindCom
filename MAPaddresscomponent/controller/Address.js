@@ -11,11 +11,11 @@ var Address = (function() {
     grid = {},
     form = {},
     toolbar = {};
-
   //internal usage
   var
     is_add_edit_form_edited = false,
-    is_edit_mode = false;
+    is_edit_mode = false,
+    is_edited=false,
     spouse_contact_id=null; 
 
   // Public functions
@@ -134,15 +134,25 @@ var Address = (function() {
       var self = this,
      address_get_ds = self.Data.store("address_get");
       _name = _name || com_name;
-
       toolbar[_name].attachEvent("onClick", function(id) {
         if (id == "add_address") {
           self.build_window("Add_Edit", self.Model.new_window);
+          self._window_add_edit_extend("Add_Edit");
           self._toolbar_add_edit("Add_Edit");
           self._form_add_edit("Add_Edit", false);
         }
         if (id == "edit_address") {
+          var
+          grid_id = grid[com_name].getSelectedRowId();
+          grid_id=grid_id.split(',');
+          if(grid_id.length > 1){
+           dhtmlx.alert({
+             text:"Please select one row only"
+           });
+           return ;
+          }
           self.build_window("Add_Edit", self.Model.edit_window);
+          self._window_add_edit_extend("Add_Edit");
           self._toolbar_add_edit("Add_Edit");
           self._form_add_edit("Add_Edit", true);
         }
@@ -169,6 +179,32 @@ var Address = (function() {
         }
       });
     },
+    _window_add_edit_extend:function(_name){
+
+      win[_name].button("close").attachEvent("onClick", function(win) {
+
+         console.log(is_edited);
+        if(is_edited == true){
+           dhtmlx.confirm({
+              //title: "Alert",
+              type: "confirm",
+              text: "Are you sure? you have unsaved changes",
+              ok:"Yes",
+              cancel:"No",
+              callback: function(val) {
+                if(val){
+                  win.close();
+                  return true;
+                }
+                 return false;          
+               }
+            });
+        }else{
+           win.close();
+        }
+       
+      });
+    },
     /**
      * [_grid_main ]
      * @param  {[type]} _name [description]
@@ -179,6 +215,7 @@ var Address = (function() {
       _name = _name || com_name;
       self.build_grid(_name, self.Model.conf_grid);
       var grid_address_ds = self.Data.store("address_get");
+  
       grid[_name].sync(grid_address_ds, {
         select: true
       });
@@ -246,15 +283,13 @@ var Address = (function() {
       }else{
         dhtmlxAjax.post(self.Data.end_point.spouse_contact_id,"data=" +JSON.stringify(data), function(loader) {
           var json = JSON.parse(loader.xmlDoc.responseText);
-           console.log(json);
           if (json.spouse_contact_id) {
             spouse_contact_id = json.spouse_contact_id;
-            self.Data._spouse_address_data_store('spouse_contacts',spouse_contact_id);
+            self.Data._spouse_address_data_store(spouse_contact_id);
             toolbar[_name].enableItem("import_address");
           }
         });
       }
-
     },
     /**
      * [_toolbar_add_edit_events description]
@@ -290,14 +325,15 @@ var Address = (function() {
             leave_date: form[_name].getCalendar("leave_date").getDate()
           };
           is_edit_mode ? data.address_id = form[_name].getItemValue("address_id") : "";
-          console.log(data);
           var address_get_ds = self.Data.store("address_get");
           if (self._form_add_edit_validate(_name, data)) {
             layout[_name].progressOn();
             dhtmlxAjax.post(self.Data.end_point.address_save, "data=" + JSON.stringify(data), function() {
               layout[_name].progressOff();
+              address_get_ds.loadNext();
               //migration with dhx3.6 ds.ob only in dhx 3.6 ds.loadNext new in dhx 4.0
-              (address_get_ds.ob == undefined)?address_get_ds.loadNext():address_get_ds.ob();
+              // address_get_ds.loadNext();
+            //  address_get_ds.update(data.address_id,data);
                dhtmlx.alert({
                   //type:"alert",
                   text:"Saved Successfully!",
@@ -314,8 +350,9 @@ var Address = (function() {
           win["Add_Edit"].close();
           self.build_window("Import", self.Model.import_window);
           self._toolbar_import("Import");
-          self._grid_import("Import");
           self.set_status("Import", "Loading.....");
+          self._grid_import("Import");
+          
         }
       });
     },
@@ -366,14 +403,14 @@ var Address = (function() {
             data.contact_id=config.contact_id;
             data.is_mailing=data.MailingAddress;
             delete data.address_id;
-            console.log(data);
+          
            
             dhtmlxAjax.post(self.Data.end_point.address_save, "data=" + JSON.stringify(data), function() {
               count--;
               if(!count){
                   layout[_name].progressOff();
                  //migration with dhx3.6 ds.ob only in dhx 3.6 ds.loadNext new in dhx 4.0
-                 (address_get_ds.ob == undefined)?address_get_ds.loadNext():address_get_ds.ob();
+                  address_get_ds.loadNext();
                   dhtmlx.alert({
                     text:"Imported Successfully!",
                     callback:function(){
@@ -398,21 +435,18 @@ var Address = (function() {
 
       self.build_grid(_name, self.Model.import_grid);
       var spouse_address_ds=self.Data.store('spouse_contacts'); 
-      dhx.log(spouse_address_ds);
-
-        //Check if data is loaded for displaying
-      if (!spouse_address_ds.isVisible()) {
-        spouse_address_ds.attachEvent("onXLE", function() {
+      console.log(spouse_address_ds);
+      grid[_name].sync(spouse_address_ds);
+      if(spouse_address_ds.data.dataCount() == 0 || spouse_address_ds.isVisible() ){
+         layout[_name].progressOff();
+         self.set_status(_name, "Ready to use");
+      }else{
+         spouse_address_ds.attachEvent("onXLE", function() {
           layout[_name].progressOff();
           self.set_status(_name, "Ready to use");
         });
-      } else {
-        layout[_name].progressOff();
-        self.set_status(_name, "Ready to use");
-
       }
-
-      grid[_name].sync(spouse_address_ds);
+        
     },
     /**
      * [_form_add_edit_validate description]
@@ -421,6 +455,9 @@ var Address = (function() {
      * @return {[type]}       [description]
      */
     _form_add_edit_validate: function(_name, data) {
+      console.log(data);
+      console.log(data.address_leave);
+
       var
         self = this,
         zip_filter = /^\d{5}(?:-\d{4})?$/,
@@ -437,7 +474,7 @@ var Address = (function() {
         self.set_status(_name, " Fields required");
         return false;
       }
-      else if (data.leave_date !="" && data.start_date !="") {
+      else if (data.leave_date !=null && data.start_date !=null) {
         if(data.leave_date < data.start_date){
           dhtmlx.alert({
             title: "Alert",
@@ -458,8 +495,8 @@ var Address = (function() {
             type: "alert-error",
             text: "Please enter a valid zipcode",
             callback: function() {
-              form[_name].setItemValue('address_zip', '');
-              form[_name].setItemFocus('address_zip');
+              form[_name].setItemValue('zip', '');
+              form[_name].setItemFocus('zip');
             }
           });
           self.set_status(_name, "Please enter a valid zipcode");
@@ -478,6 +515,10 @@ var Address = (function() {
     _form_add_edit: function(_name, isEdit) {
       var self = this;
       _name = _name || com_name;
+
+     
+
+
       form[_name] = layout[_name].cells("a").attachForm(self.Model.conf_form.template);
       layout[_name].progressOn();
       self.set_status(_name, "Loading....");
@@ -489,6 +530,7 @@ var Address = (function() {
         address_country = form[_name].getCombo("country_text"),
         address_county = form[_name].getCombo("county_text"),
         address_state = form[_name].getCombo("state_text"),
+        is_mailing_address = form[_name].getCombo("is_mailing_address"), 
         address_start_date = form[_name].getCalendar("start_date"),
         address_leave_date = form[_name].getCalendar("leave_date");
 
@@ -541,9 +583,11 @@ var Address = (function() {
         var
         country_id = address_country.getSelectedValue();
         address_state_ds.data.filter("CountryID", country_id);
+       
+        is_edited=false;
       };
 
-   
+    
       // When Editing mode on
       if (isEdit) {
         is_edit_mode = true;
@@ -554,14 +598,14 @@ var Address = (function() {
         var
           grid_id = grid[com_name].getSelectedRowId(),
           data = address_get_ds.item(grid_id);
-        console.log(data);
+       
 
         address_type.setComboValue(data.address_type_id);
         address_province.setComboValue(data.province_id);
         address_country.setComboValue(data.country_id);
         address_county.setComboValue(data.county_id);
         address_state.setComboValue(data.state_id);
-
+          
         (data.province_text == "") ? address_province.setComboText("Pick Province") : form[_name].enableItem("province_text");
         (data.country_text == "") ? address_country.setComboText("Pick Country") : "";
         (data.county_text == "") ? address_county.setComboText("Pick County") : form[_name].enableItem("county_text");
@@ -570,9 +614,15 @@ var Address = (function() {
         is_edit_mode = false;
       }
 
-
+      is_mailing_address.attachEvent("onChange", function(){
+         is_edited=true;
+      });
+      address_type.attachEvent("onChange",function(){
+        is_edited=true;
+      });
       // --- On country change
       address_country.attachEvent("onChange", function() {
+        is_edited=true;
           //current selected Country Id
           var country_id = address_country.getSelectedValue();
           address_province_ds.data.filter("CountryID", country_id);
@@ -594,10 +644,8 @@ var Address = (function() {
                   ["0", "Pick a State"]
               ]);
                form[_name].disableItem("state_text");
-               form[_name].disableItem("county_text");
           } else {
               form[_name].enableItem("state_text");
-              form[_name].enableItem("county_text");
               address_state.addOption([
                   ["0", "Pick a State"]
               ]);
@@ -605,6 +653,7 @@ var Address = (function() {
       });
 
       address_state.attachEvent("onChange", function() {
+         is_edited=true;
           var stateid = address_state.getSelectedValue();
           address_county_ds.data.filter("StateId", stateid);
           if (address_county_ds.data.dataCount() < 1) {
@@ -628,10 +677,11 @@ var Address = (function() {
      */
     _form_add_edit_events: function(_name) { // Events for inputs
       form[_name].attachEvent("onInputChange", function(name) {
-        var len = form[_name].getItemValue("address_zip").length;
-        if (name === 'address_zip') {
+         is_edited=true;
+        var len = form[_name].getItemValue('zip').length;
+        if (name === 'zip') {
           if (len === 5) {
-            var zipcode = form[_name].getItemValue("address_zip");
+            var zipcode = form[_name].getItemValue('zip');
             var filter = /^\d{5}(?:-\d{4})?$/;
             var zipcodeVal = filter.test(zipcode);
             if (zipcode !== '' && zipcode !== null) {
@@ -641,19 +691,19 @@ var Address = (function() {
                   type: "alert-error",
                   text: "Please enter a valid zipcode",
                   callback: function() {
-                    form[_name].setItemValue('address_zip', '');
-                    form[_name].setItemFocus('address_zip');
+                    form[_name].setItemValue('zip', '');
+                    form[_name].setItemFocus('zip');
                   }
                 });
               } else {
-                dhtmlxAjax.get(config.application_path + "processors/get_data.php?get=address_by_zip&zip=" + zipcode, function(loader) {
+                dhtmlxAjax.get(self.Data.end_point.address_by_zip+"&zip=" + zipcode, function(loader) {
                   json = JSON.parse(loader.xmlDoc.responseText);
                   if (json.length > 0) {
                     json = json[0];
-                    form[_name].getCombo("address_state").setComboValue(json.StateID);
-                    form[_name].getCombo("address_state").setComboText(json.StateName);
-                    form[_name].getCombo("address_country").setComboValue(json.CountryID);
-                    form[_name].getCombo("address_country").setComboText(json.CountryName);
+                    form[_name].getCombo("state_text").setComboValue(json.StateID);
+                    form[_name].getCombo("state_text").setComboText(json.StateName);
+                    form[_name].getCombo("country_text").setComboValue(json.CountryID);
+                    form[_name].getCombo("country_text").setComboText(json.CountryName);
                   }
 
                 });
@@ -665,8 +715,8 @@ var Address = (function() {
               type: "alert-error",
               text: "Please enter a 5-digit zipcode",
               callback: function() {
-                form[_name].setItemValue('address_zip', '');
-                form[_name].setItemFocus('address_zip');
+                form[_name].setItemValue('zip', '');
+                form[_name].setItemFocus('zip');
               }
             });
           }
@@ -687,7 +737,7 @@ var Address = (function() {
       config = _conf;
       self.application_path = config.application_path;
       dhx_globalImgPath = config.dhtmlx_codebase_path + "imgs/";
-      console.log(dhx_globalImgPath);
+    
       config["icons_path"] = "asserts/icons/";
       config["img_path"] = "asserts/imgs/"
 
@@ -701,7 +751,7 @@ var Address = (function() {
         self.application_path + "model/model.js",
         self.application_path + "controller/classes/data.js"
       ];
-      console.log(com_dhx_version);
+
       if(com_dhx_version === "4.0"){
         internal_dependencies.push( config.dhtmlx_codebase_path + "dhtmlx_deprecated.js");
       }
@@ -726,14 +776,13 @@ var Address = (function() {
      * @param {[type]} msg   [description]
      * @param {[enum]} type  [should be any of {info,err,success}]
      */
-    set_status: function(_name, msg,type) { 
-
+    set_status: function(_name, _msg,_type) { 
+      //alert(_name);
       var color="#000000";
-      color = (type == "info")?"#000000":color;
-      color = (type == "err")?"#FF0000":color;
-      color = (type == "success")?"#03B202":color;
-
-      status_bar[_name].setText('<span style="color:'+color+';"><strong>* ' + msg + '</strong></span>');
+      color = (_type == "info")?"#000000":color;
+      color = (_type == "err")?"#FF0000":color;
+      color = (_type == "success")?"#03B202":color;
+      status_bar[_name].setText('<span style="color:'+color+';"><strong>* ' + _msg + '</strong></span>');
     },
     /**
      * [Validate values when call the component]

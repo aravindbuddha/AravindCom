@@ -360,7 +360,7 @@ Address.Model = Address.Model || (function() {
           inputLeft: "95",
           inputTop: "165",
           readonly: true,
-           disabled:true,
+          disabled:true,
           position: "absolute",
           options: [{
             text: "Pick a County",
