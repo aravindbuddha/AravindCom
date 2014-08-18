@@ -1,7 +1,7 @@
-var Address = (function() {
+var Relation = (function() {
   var
     uid = "",
-    com_name = "Address",
+    com_name = "Relation",
     config = {},
     window_manager = null,
     //dhtmlx widgets
@@ -403,7 +403,7 @@ var Address = (function() {
           row_ids.forEach(function(id){
             data=spouse_address_ds.data.item(id);
             data.contact_id=config.contact_id;
-            data.is_mailing=data.MailingAddress;
+            data.is_mailing=data.MailingRelation;
             delete data.address_id;
           
            
@@ -465,7 +465,7 @@ var Address = (function() {
         dhtmlx.alert({
           title: "Alert",
           type: "alert-error",
-          text: "Address type is mandatory",
+          text: "Relation type is mandatory",
           callback: function() {
             form[_name].setItemFocus('address_type');
           }
@@ -766,8 +766,8 @@ var Address = (function() {
         } else {
           self._layout();
         }
-        self._toolbar();
-        self._grid_main();
+         self._toolbar();
+        // self._grid_main();
       });
     },
     /**
@@ -780,7 +780,7 @@ var Address = (function() {
       //alert(_name);
       var color="#000000";
       color = (_type == "info")?"#000000":color;
-      color = (_type == "err")?"#FF0000":color;
+      color = (_type == "err")?"#FF000A0":color;
       color = (_type == "success")?"#03B202":color;
       status_bar[_name].setText('<span style="color:'+color+';"><strong>* ' + _msg + '</strong></span>');
     },
@@ -815,6 +815,13 @@ var Address = (function() {
         dhtmlx.message({
           type: "error",
           text: "Agency Id is missing"
+        });
+        return;
+      }
+       if ((typeof config.conn_id === 'undefined') || (config.conn_id.length === 0)) {
+        dhtmlx.message({
+          type: "error",
+          text: "Conn Id is missing"
         });
         return;
       }

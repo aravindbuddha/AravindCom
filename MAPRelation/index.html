@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <title>Relation Component</title>
+         
+        <!-- DHTMLX Framework -->
+        <!--
+        <link rel="stylesheet" type="text/css" href="../../auxiliary/dhtmlxfull3.5/dhtmlx.css" />
+        <script type="text/javascript" src="../../auxiliary/dhtmlxfull3.5/dhtmlx.js" charset="ISO-8859-1"></script>
+        
+        <script type="text/javascript" src="../MAPPermissions/js/controller.js"></script>
+	<script type="text/javascript" src="js/json2.js"></script>  
+        <script type="text/javascript" src="model/addresscomponent_Model.js"></script>
+         -->
+        <script type="text/javascript" src="../../CAIRS_Framework/CAIRS_fw.js"></script>
+        <script type="text/javascript" src="controller/Relation.js"></script>
+         
+        <script type="text/javascript" >
+            window.onload = function() {
+                window.com_dhx_version="3.6";
+                console.log(location.search);
+                if(location.search == "?v=4.0"){
+                    com_dhx_version="4.0"
+                }   
+
+                console.log(com_dhx_version);
+                 CAIRS.environment = "dev";
+                   var WWWUrlPath =  window.location.protocol + '//' + window.location.host + '/';
+                   //MAPPermissions.loadSettings(WWWUrlPath);                    
+
+                    var cdn_application_path =WWWUrlPath+'modules/AravindCom/MAPRelation/';
+
+                    var dhx_codebase_path = WWWUrlPath+ 'modules/codebase'+com_dhx_version+'/';
+                   
+                   Relation.start({ 
+                        uid : (new Date()).getTime()
+                        ,conn_id:123
+                        ,application_path : cdn_application_path
+                        ,dhtmlx_codebase_path :dhx_codebase_path
+                        ,use_window : true
+                        ,parent_div_Id : ''
+                        ,window_manager_obj:null
+                        ,data_base:"MAPTEST"
+                        //optionals
+						,connection_id : ""
+                        ,rel_subtype_id:""
+                        ,rel_type_id:""
+                        ,sub_form_id:""
+                        ,component_id:""
+						,agency_id: 65
+						
+                    });
+             }
+         </script>
+     </head>
+    <body>
+    </body>
+</html>

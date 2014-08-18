@@ -1,4 +1,4 @@
-Address.Data = Address.Data || (function() {
+Relation.Data = Relation.Data || (function() {
   var
     data_store = {},
     config = {},
@@ -71,10 +71,10 @@ Address.Data = Address.Data || (function() {
         $init: function(obj) {
           obj.select=0;
           obj.address_id = obj.id;
-          obj.address_type_id = obj.AddressTypeID;
-          obj.address_type = obj.AddressType;
-          obj.address_1 = obj.Address1;
-          obj.address_2 = obj.Address2;
+          obj.address_type_id = obj.RelationTypeID;
+          obj.address_type = obj.RelationType;
+          obj.address_1 = obj.Relation1;
+          obj.address_2 = obj.Relation2;
           obj.city = obj.city;
           obj.state_id = obj.stateId;
           obj.sate_text = obj.StateName;
@@ -83,8 +83,8 @@ Address.Data = Address.Data || (function() {
           obj.county_text = obj.countyText;
           obj.country_id = obj.countryId;
           obj.country_text = obj.CountryText;
-          obj.province_id = obj.AddressProvinceID;
-          obj.province_text = obj.AddressProvenceText;
+          obj.province_id = obj.RelationProvinceID;
+          obj.province_text = obj.RelationProvenceText;
           obj.start_date=(function(){
             if(obj.addstartdate == null || obj.addstartdate=="Jan 1 1900 12:00AM" || obj.addstartdate == "Jan  1 1900 12:00:00:000AM"){
               return "";
@@ -101,7 +101,7 @@ Address.Data = Address.Data || (function() {
             }
 
           }());
-          obj.is_mailing_address = obj.MailingAddress ? "Yes" : "No";
+          obj.is_mailing_address = obj.MailingRelation ? "Yes" : "No";
           
         },
         $update:function(obj){
@@ -116,7 +116,7 @@ Address.Data = Address.Data || (function() {
       data_store[_name].data.scheme({
         $init: function(obj) {
           obj.value = obj.id;
-          obj.text = obj.AddressType;
+          obj.text = obj.RelationType;
         }
       });
     },
@@ -125,7 +125,7 @@ Address.Data = Address.Data || (function() {
       data_store[_name].data.scheme({
         $init: function(obj) {
           obj.value = obj.id;
-          obj.text = obj.AddressProvinceText;
+          obj.text = obj.RelationProvinceText;
         }
       });
     },
