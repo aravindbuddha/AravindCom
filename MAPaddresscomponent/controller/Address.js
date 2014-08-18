@@ -391,7 +391,7 @@ var Address = (function() {
           row_ids=grid[_name].getCheckedRows(0);
           row_ids=row_ids.split(',');
           count=row_ids.length;
-          if(count < 2){
+          if(count < 1){
             dhtmlx.message({ 
                 type:"alert-error", 
                 text:"Please select atleast one address?"

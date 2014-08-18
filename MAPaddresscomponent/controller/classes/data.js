@@ -66,6 +66,7 @@ Address.Data = Address.Data || (function() {
       var
         self = this,
         cols = [];
+        is_mailing_flag=false;
       this.create_data_store(_name, _path);
       data_store[_name].data.scheme({
         $init: function(obj) {
@@ -102,12 +103,15 @@ Address.Data = Address.Data || (function() {
 
           }());
           obj.is_mailing_address = obj.MailingAddress ? "Yes" : "No";
+
+          
           
         },
         $update:function(obj){
           obj.state_text=(obj.state_text == "Pick a State")?"":obj.state_text;
           obj.county_text=(obj.county_text== "Pick a County")?"":obj.county_text;
           obj.province_text=(obj.province_text == "Pick a Province")?"":obj.province_text;
+          console.log(obj);
         }
       });
     },
