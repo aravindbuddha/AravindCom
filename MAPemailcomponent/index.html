@@ -1,0 +1,36 @@
+<html>
+<head>
+<title>Email Component</title>
+<!-- DHTMLX Framework -->
+<link rel="stylesheet" type="text/css" href="../codebase3.6/dhtmlx.css" />
+<link rel="stylesheet" type="text/css" href="../codebase3.6/dhtmlxForm/codebase/skins/dhtmlxform_dhx_skyblue.css">
+<script type="text/javascript" src="../codebase3.6/dhtmlx.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
+<script type="text/javascript" src="model/emailcomponent_Model.js"></script>
+<script type="text/javascript" src="controller/emailcomponent.js"></script>
+<script type="text/javascript" src="../MAPPermissions/js/controller.js"></script>
+<script type="text/javascript" >
+            window.onload = function()
+            { var WWWUrlPath = window.location.protocol + '//' + window.location.host+'/';
+                 var cdn_application_path = WWWUrlPath +'modules/nivyaCom/MAPemailcomponent/';
+                 var dhx_codebase_path = WWWUrlPath + 'modules/nivyaCom/codebase3.6/';
+
+
+                   MAPPermissions.loadSettings(WWWUrlPath);
+                    emailcomponent.start( { 
+                        uid : "21873" 
+                        ,application_path : cdn_application_path  
+                        ,dhtmlx_codebase_path : dhx_codebase_path 
+						,contactid : "21873"
+						,agencyid: 25
+						,useWindow : true
+     					,parentDIVId : ''
+                        ,window_managerObj :null
+                                        
+                    } );
+             }
+         </script>
+</head>
+<body>
+</body>
+</html>

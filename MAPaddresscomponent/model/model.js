@@ -71,7 +71,7 @@ Address.Model = Address.Model || (function() {
       'visibility': 'true,true,false,false,true,false,true,false,false,true,false,true,false,true,true,false,true,true'
     },
 
-     "import_grid": {
+    "import_grid": {
       "headers": "#master_checkbox,address_id,AddressTypeID,Type,Address1,Address2,City,StateId,Sate,zip,CountyId,County,CountryId,Country,AddressProvinceID,Provence,MailingAddress,Start Date,End Date",
       "ids": "select,address_id,address_type_id,address_type,address_1,address_2,city,state_id,sate_text,zip,county_id,county_text,country_id,country_text,province_id,provence_text,is_mailing_address,start_date,leave_date",
       "widths": "43,0,0,70,188,150,80,0,80,70,0,90,60,0,0,70,90,60,60",
@@ -128,7 +128,7 @@ Address.Model = Address.Model || (function() {
         }, {
           "type": "button",
           "id": "import_address",
-          "text": "Import address",
+          "text": "Import spouse address",
           "img": "import-icon.png",
           "img_disabled": "import-icon.png"
         }
@@ -360,7 +360,7 @@ Address.Model = Address.Model || (function() {
           inputLeft: "95",
           inputTop: "165",
           readonly: true,
-          disabled:true,
+          disabled: true,
           position: "absolute",
           options: [{
             text: "Pick a County",
@@ -398,7 +398,7 @@ Address.Model = Address.Model || (function() {
           labelTop: "135",
           inputLeft: "440",
           inputTop: "135",
-           disabled:true,
+          disabled: true,
           position: "absolute",
           readonly: true,
           options: [{

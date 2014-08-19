@@ -23,7 +23,10 @@
                 }   
 
                 console.log(com_dhx_version);
+                 
                  CAIRS.environment = "dev";
+
+
                    var WWWUrlPath =  window.location.protocol + '//' + window.location.host + '/';
                    //MAPPermissions.loadSettings(WWWUrlPath);                    
 
@@ -33,14 +36,15 @@
                    
                    Address.start({ 
                         uid : (new Date()).getTime()
+                        ,contact_id : 1396
                         ,application_path : cdn_application_path
                         ,dhtmlx_codebase_path :dhx_codebase_path
-						,contact_id : 1396
-						,agency_id: 65
 						,use_window : true
      					,parent_div_Id : ''
                         ,window_manager_obj:null
                         ,data_base:"MAPTEST"
+                        //optional    
+                        ,agency_id: 65
                     });
              }
          </script>

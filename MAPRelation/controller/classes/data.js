@@ -5,16 +5,16 @@ Relation.Data = Relation.Data || (function() {
     spouse_contact_id=null;
   return {
     "end_point": {
-      "address_get": "processors/address.php?act=get",
-      "address_del": "processors/address.php?act=del",
-      "address_save": "processors/address.php?act=save",
-      "address_by_zip":"processors/get_data.php?get=address_by_zip",
+      "relation_get": "processors/relation.php?act=get",
+      "relation_del": "processors/relation.php?act=del",
+      "relation_save": "processors/relation.php?act=save",
+      "relation_by_zip":"processors/get_data.php?get=relation_by_zip",
       "spouse_contact_id": "processors/get_data.php?act=spouse_contact",
-      "address_type": "processors/get_data.php?get=address_type",
-      "address_province": "processors/get_data.php?get=address_province",
-      "address_state": "processors/get_data.php?get=address_state",
-      "address_county": "processors/get_data.php?get=address_county",
-      "address_country": "processors/get_data.php?get=address_country"
+      "relation_type": "processors/get_data.php?get=relation_type",
+      "relation_province": "processors/get_data.php?get=relation_province",
+      "relation_state": "processors/get_data.php?get=relation_state",
+      "relation_county": "processors/get_data.php?get=relation_county",
+      "relation_country": "processors/get_data.php?get=relation_country"
 
     },
     init: function(_config) {
@@ -25,12 +25,12 @@ Relation.Data = Relation.Data || (function() {
         self.end_point[path] = config.application_path + self.end_point[path]+"&data_base="+config.data_base;
       }
       
-      self._address_data_store("address_get", self.end_point.address_get + "&contact_id=" + config.contact_id);
-      self._address_type_data_store("address_type", self.end_point.address_type);
-      self._address_province_data_store("address_province", self.end_point.address_province);
-      self._address_state_data_store("address_state", self.end_point.address_state);
-      self._address_county_data_store("address_county", self.end_point.address_county);
-      self._address_country_data_store("address_country", self.end_point.address_country);
+      self._relation_data_store("relation_get", self.end_point.relation_get + "&contact_id=" + config.contact_id);
+      // self._relation_type_data_store("relation_type", self.end_point.relation_type);
+      // self._relation_province_data_store("relation_province", self.end_point.relation_province);
+      // self._relation_state_data_store("relation_state", self.end_point.relation_state);
+      // self._relation_county_data_store("relation_county", self.end_point.relation_county);
+      // self._relation_country_data_store("relation_country", self.end_point.relation_country);
       //self._get_spouse_contact_id(config.contact_id);
     },
     store: function(name, url, callback) {
@@ -62,7 +62,7 @@ Relation.Data = Relation.Data || (function() {
         }
       });
     },
-    _address_data_store: function(_name, _path) {
+    _relation_data_store: function(_name, _path) {
       var
         self = this,
         cols = [];
@@ -70,11 +70,11 @@ Relation.Data = Relation.Data || (function() {
       data_store[_name].data.scheme({
         $init: function(obj) {
           obj.select=0;
-          obj.address_id = obj.id;
-          obj.address_type_id = obj.RelationTypeID;
-          obj.address_type = obj.RelationType;
-          obj.address_1 = obj.Relation1;
-          obj.address_2 = obj.Relation2;
+          obj.relation_id = obj.id;
+          obj.relation_type_id = obj.RelationTypeID;
+          obj.relation_type = obj.RelationType;
+          obj.relation_1 = obj.Relation1;
+          obj.relation_2 = obj.Relation2;
           obj.city = obj.city;
           obj.state_id = obj.stateId;
           obj.sate_text = obj.StateName;
@@ -101,7 +101,7 @@ Relation.Data = Relation.Data || (function() {
             }
 
           }());
-          obj.is_mailing_address = obj.MailingRelation ? "Yes" : "No";
+          obj.is_mailing_relation = obj.MailingRelation ? "Yes" : "No";
           
         },
         $update:function(obj){
@@ -111,7 +111,7 @@ Relation.Data = Relation.Data || (function() {
         }
       });
     },
-    _address_type_data_store: function(_name, _path) {
+    _relation_type_data_store: function(_name, _path) {
       this.create_data_store(_name, _path);
       data_store[_name].data.scheme({
         $init: function(obj) {
@@ -120,7 +120,7 @@ Relation.Data = Relation.Data || (function() {
         }
       });
     },
-    _address_province_data_store: function(_name, _path) {
+    _relation_province_data_store: function(_name, _path) {
       this.create_data_store(_name, _path);
       data_store[_name].data.scheme({
         $init: function(obj) {
@@ -129,7 +129,7 @@ Relation.Data = Relation.Data || (function() {
         }
       });
     },
-    _address_state_data_store: function(_name, _path) {
+    _relation_state_data_store: function(_name, _path) {
       this.create_data_store(_name, _path);
       data_store[_name].data.scheme({
         $init: function(obj) {
@@ -138,7 +138,7 @@ Relation.Data = Relation.Data || (function() {
         }
       });
     },
-    _address_county_data_store: function(_name, _path) {
+    _relation_county_data_store: function(_name, _path) {
       this.create_data_store(_name, _path);
       data_store[_name].data.scheme({
         $init: function(obj) {
@@ -147,7 +147,7 @@ Relation.Data = Relation.Data || (function() {
         }
       });
     },
-    _address_country_data_store: function(_name, _path) {
+    _relation_country_data_store: function(_name, _path) {
       var
         us_id = 0,
         junk_ids = [];
@@ -176,9 +176,9 @@ Relation.Data = Relation.Data || (function() {
         }
       });
     },
-    _spouse_address_data_store:function(_contact_id){
+    _spouse_relation_data_store:function(_contact_id){
       var self=this;
-      this._address_data_store("spouse_contacts", self.end_point.address_get + "&contact_id=" + _contact_id);
+      this._relation_data_store("spouse_contacts", self.end_point.relation_get + "&contact_id=" + _contact_id);
     },
     _get_spouse_contact_id:function(_contact_id,_callback){
       var 
@@ -191,7 +191,7 @@ Relation.Data = Relation.Data || (function() {
           var json = JSON.parse(loader.xmlDoc.responseText);
           if (json.spouse_contact_id) {
             spouse_contact_id=json.spouse_contact_id;
-            self.Data._address_data_store('spouse_contacts',json.spouse_contact_id);
+            self.Data._relation_data_store('spouse_contacts',json.spouse_contact_id);
             if(_callback) _callback(spouse_contact_id);
           }
         });

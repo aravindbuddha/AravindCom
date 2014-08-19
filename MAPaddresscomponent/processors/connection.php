@@ -20,6 +20,8 @@ if (!$connection) {
 // $connection = $Data->db;
 
 include '../../../../userhome/$ettings.php';
+
+
 include '../../../codebase3.6/connector-php/codebase/data_connector.php';
 include '../../../codebase3.6/connector-php/codebase/db_mssql.php';
 include '../../../codebase3.6/connector-php/codebase/mixed_connector.php';
@@ -31,6 +33,8 @@ include '../../../codebase3.6/connector-php/codebase/mixed_connector.php';
 //$res=mssql_connect('.\ARAVIND',"sa","Passw0rd",false);
 //print_r($db);
 $res=mssql_connect($db["hostname"],$db["username"],$db["password"],false);
+
+
 // mssql_select_db("MAPTEST");
 $json = new JSONDataConnector($res,"MsSQL");
 

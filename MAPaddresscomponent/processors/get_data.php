@@ -14,6 +14,8 @@ mssql_select_db($data_base);
 
 if ($_REQUEST['get']=="address_type") {
 	$json->sort("AddressType", "ASC");
+
+
 	$json->render_table("lkpAddressType", "AddressTypeID", "AddressType");
 }
 
@@ -40,7 +42,8 @@ if ($_REQUEST['get']=="address_county") {
 
 if ($_REQUEST['get']=="address_by_zip") {
 	$zip = $_REQUEST['zip'];
-	$json->render_sql("SELECT lkpState.StateID as StateID,lkpState.StateName as StateName,lkpCountyZip.CountyID as CountryID,lkpCountry.CountryText as CountryName FROM lkpState,lkpCountyZip WHERE lkpState.StateAbbreviation = lkpCountyZip.State AND lkpCountyZip.CountryID=lkpCountry.CountryID AND lkpCountyZip.Zip =".$zip, "StateID", "StateID,CountryID");
+  //$json->render_sql("SELECT lkpState.StateID as StateID,lkpState.StateName as StateName,lkpCountyZip.CountyID as CountryID,lkpCountry.CountryText as CountryName FROM lkpState,lkpCountyZip WHERE lkpState.StateAbbreviation = lkpCountyZip.State AND lkpCountyZip.CountryID=lkpCountry.CountryID AND lkpCountyZip.Zip =".$zip, "StateID", "StateID,CountryID");
+	$json->render_sql("SELECT s.StateID as StateID, s.StateName as StateName, c.CountyID as CountyID, c.CountyText as CountyText FROM lkpState s join lkpCounty c on s.StateId = c.StateId join lkpCountyZip cz on c.CountyID = cz.CountyID WHERE cz.Zip =".$zip, "StateID","StateID,StateName,CountyID,CountyText");
 }
 
 

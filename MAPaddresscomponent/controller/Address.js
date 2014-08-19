@@ -15,8 +15,8 @@ var Address = (function() {
   var
     is_add_edit_form_edited = false,
     is_edit_mode = false,
-    is_edited=false,
-    spouse_contact_id=null; 
+    is_edited = false,
+    spouse_contact_id = null;
 
   // Public functions
   return {
@@ -49,11 +49,12 @@ var Address = (function() {
       }
 
       window_manager.setImagePath(self.Model.conf_window.image_path);
-      
+
       if (window_manager.isWindow(_name)) {
         win[_name].show();
         win[_name].bringToTop();
         win[_name].center();
+
         return;
       }
       win[_name] = window_manager.createWindow(_name, opt.left + 10, opt.top + 10, opt.width, opt.height);
@@ -65,6 +66,7 @@ var Address = (function() {
 
       win[_name].button('park').hide();
       win[_name].button('minmax1').hide();
+
       // Events on Windows
       win[_name].attachEvent("onClose", function(win) {
         return true;
@@ -93,7 +95,7 @@ var Address = (function() {
       grid[_name].enableAutoWidth(true);
       grid[_name].enableMultiselect(true);
       grid[_name].enableMultiline(true);
-      grid[_name].enableAlterCss("even","uneven");
+      grid[_name].enableAlterCss("even", "uneven");
       grid[_name].setDateFormat("%m-%d-%Y");
       grid[_name].setColumnsVisibility(opt.visibility);
       grid[_name].init();
@@ -134,24 +136,25 @@ var Address = (function() {
      */
     _toolbar_events: function(_name) {
       var self = this,
-     address_get_ds = self.Data.store("address_get");
+        address_get_ds = self.Data.store("address_get");
       _name = _name || com_name;
       toolbar[_name].attachEvent("onClick", function(id) {
         if (id == "add_address") {
           self.build_window("Add_Edit", self.Model.new_window);
           self._window_add_edit_extend("Add_Edit");
+          win["Add_Edit"].setModal(true);
           self._toolbar_add_edit("Add_Edit");
           self._form_add_edit("Add_Edit", false);
         }
         if (id == "edit_address") {
           var
-          grid_id = grid[com_name].getSelectedRowId();
-          grid_id=grid_id.split(',');
-          if(grid_id.length > 1){
-           dhtmlx.alert({
-             text:"Please select one row only"
-           });
-           return ;
+            grid_id = grid[com_name].getSelectedRowId();
+          grid_id = grid_id.split(',');
+          if (grid_id.length > 1) {
+            dhtmlx.alert({
+              text: "Please select one row only"
+            });
+            return;
           }
           self.build_window("Add_Edit", self.Model.edit_window);
           self._window_add_edit_extend("Add_Edit");
@@ -159,12 +162,12 @@ var Address = (function() {
           self._form_add_edit("Add_Edit", true);
         }
         if (id == "delete_address") {
-          var 
-          count=0,
-          selected_row_ids = grid[_name].getSelectedRowId();
-          selected_row_ids=selected_row_ids.split(',');
-          count=selected_row_ids.length;
-          selected_row_ids.forEach(function(row_id){
+          var
+            count = 0,
+            selected_row_ids = grid[_name].getSelectedRowId();
+          selected_row_ids = selected_row_ids.split(',');
+          count = selected_row_ids.length;
+          selected_row_ids.forEach(function(row_id) {
             var data = {
               contact_id: config.contact_id,
               address_id: row_id
@@ -173,7 +176,7 @@ var Address = (function() {
             win[com_name].progressOn();
             dhtmlxAjax.post(self.Data.end_point.address_del, "data=" + JSON.stringify(data), function() {
               count--;
-              if(!count){
+              if (!count) {
                 win[com_name].progressOff();
               }
             });
@@ -181,29 +184,29 @@ var Address = (function() {
         }
       });
     },
-    _window_add_edit_extend:function(_name){
+    _window_add_edit_extend: function(_name) {
 
       win[_name].button("close").attachEvent("onClick", function(win) {
 
-        if(is_edited == true){
-           dhtmlx.confirm({
-              //title: "Alert",
-              type: "confirm",
-              text: "Are you sure? you have unsaved changes",
-              ok:"Yes",
-              cancel:"No",
-              callback: function(val) {
-                if(val){
-                  win.close();
-                  return true;
-                }
-                 return false;          
-               }
-            });
-        }else{
-           win.close();
+        if (is_edited == true) {
+          dhtmlx.confirm({
+            //title: "Alert",
+            type: "confirm",
+            text: "Are you sure? you have unsaved changes",
+            ok: "Yes",
+            cancel: "No",
+            callback: function(val) {
+              if (val) {
+                win.close();
+                return true;
+              }
+              return false;
+            }
+          });
+        } else {
+          win.close();
         }
-       
+
       });
     },
     /**
@@ -215,11 +218,14 @@ var Address = (function() {
       var self = this;
       _name = _name || com_name;
       self.build_grid(_name, self.Model.conf_grid);
+
       var grid_address_ds = self.Data.store("address_get");
-  
+
       grid[_name].sync(grid_address_ds, {
         select: true
       });
+
+
       //Check if data is loaded for displaying
       if (!grid_address_ds.isVisible()) {
         grid_address_ds.attachEvent("onXLE", function() {
@@ -229,8 +235,8 @@ var Address = (function() {
       } else {
         layout[_name].progressOff();
         self.set_status(_name, "Ready to use");
-
       }
+
       self._grid_main_events(_name);
     },
     /**
@@ -265,7 +271,7 @@ var Address = (function() {
       _name = _name || com_name;
       toolbar[_name] = layout[_name].cells("a").attachToolbar(self.Model.edit_toolbar);
       toolbar[_name].setSkin(self.Model.globalSkin);
-       toolbar[_name].disableItem("import_address");
+      toolbar[_name].disableItem("import_address");
       self._toolbar_add_edit_couple_check(_name);
       this._toolbar_add_edit_events(_name);
     },
@@ -279,10 +285,10 @@ var Address = (function() {
       var data = {
         contact_id: config.contact_id
       };
-      if(spouse_contact_id != null){
+      if (spouse_contact_id != null) {
         toolbar[_name].enableItem("import_address");
-      }else{
-        dhtmlxAjax.post(self.Data.end_point.spouse_contact_id,"data=" +JSON.stringify(data), function(loader) {
+      } else {
+        dhtmlxAjax.post(self.Data.end_point.spouse_contact_id, "data=" + JSON.stringify(data), function(loader) {
           var json = JSON.parse(loader.xmlDoc.responseText);
           if (json.spouse_contact_id) {
             spouse_contact_id = json.spouse_contact_id;
@@ -298,9 +304,9 @@ var Address = (function() {
      * @return {[type]}       [description]
      */
     _toolbar_add_edit_events: function(_name) {
-      var 
-      self = this,
-      data = {};
+      var
+        self = this,
+        data = {};
 
       toolbar[_name].attachEvent("onClick", function(id) {
         if (id == "save_address") {
@@ -333,19 +339,19 @@ var Address = (function() {
             dhtmlxAjax.post(self.Data.end_point.address_save, "data=" + JSON.stringify(data), function() {
               layout[_name].progressOff();
               address_get_ds.loadNext();
-              if(is_edit_mode){
-                var 
-                  data_1=dhtmlx.extend(address_get_ds.data.item(data.address_id),data);
-                  address_get_ds.update(data_1.id,data_1);
+              if (is_edit_mode) {
+                var
+                  data_1 = dhtmlx.extend(address_get_ds.data.item(data.address_id), data);
+                address_get_ds.update(data_1.id, data_1);
               }
-               dhtmlx.alert({
-                  //type:"alert",
-                  text:"Saved Successfully!",
-                  //ok:"Yes",
-                  callback:function(){
-                    win[_name].close();
-                  }
-                });
+              dhtmlx.alert({
+                //type:"alert",
+                text: "Saved Successfully!",
+                //ok:"Yes",
+                callback: function() {
+                  win[_name].close();
+                }
+              });
             });
 
           }
@@ -353,6 +359,7 @@ var Address = (function() {
         if (id == "import_address") {
           win["Add_Edit"].close();
           self.build_window("Import", self.Model.import_window);
+          win["Import"].setModal(true);
           self._toolbar_import("Import");
           self.set_status("Import", "Loading.....");
           self._grid_import("Import");
@@ -376,53 +383,53 @@ var Address = (function() {
      * @param  {[type]} _name [description]
      * @return {[type]}       [description]
      */
-    _toolbar_import_events:function(_name){
-      var 
-        self=this,
+    _toolbar_import_events: function(_name) {
+      var
+        self = this,
         data,
         row_ids,
-        count=0,
-        spouse_address_ds=self.Data.store('spouse_contacts'),
+        count = 0,
+        spouse_address_ds = self.Data.store('spouse_contacts'),
         address_get_ds = self.Data.store("address_get");
 
 
-      toolbar[_name].attachEvent('onClick',function(id){
-        if(id =="import_address"){
-          row_ids=grid[_name].getCheckedRows(0);
-          row_ids=row_ids.split(',');
-          count=row_ids.length;
-          if(count < 1){
-            dhtmlx.message({ 
-                type:"alert-error", 
-                text:"Please select atleast one address?"
+      toolbar[_name].attachEvent('onClick', function(id) {
+        if (id == "import_address") {
+          row_ids = grid[_name].getCheckedRows(0);
+          row_ids = row_ids.split(',');
+          count = row_ids.length;
+          if (count < 1) {
+            dhtmlx.message({
+              type: "alert-error",
+              text: "Please select atleast one address?"
             });
             return;
           }
           layout[_name].progressOn();
           //loop through all row ids
-          row_ids.forEach(function(id){
-            data=spouse_address_ds.data.item(id);
-            data.contact_id=config.contact_id;
-            data.is_mailing=data.MailingAddress;
+          row_ids.forEach(function(id) {
+            data = spouse_address_ds.data.item(id);
+            data.contact_id = config.contact_id;
+            data.is_mailing = data.MailingAddress;
             delete data.address_id;
-          
-           
+
+
             dhtmlxAjax.post(self.Data.end_point.address_save, "data=" + JSON.stringify(data), function() {
               count--;
-              if(!count){
-                  layout[_name].progressOff();
-                 //migration with dhx3.6 ds.ob only in dhx 3.6 ds.loadNext new in dhx 4.0
-                  address_get_ds.loadNext();
-                  dhtmlx.alert({
-                    text:"Imported Successfully!",
-                    callback:function(){
-                      win[_name].close();
-                    }
-                  });
+              if (!count) {
+                layout[_name].progressOff();
+                //migration with dhx3.6 ds.ob only in dhx 3.6 ds.loadNext new in dhx 4.0
+                address_get_ds.loadNext();
+                dhtmlx.alert({
+                  text: "Imported Successfully!",
+                  callback: function() {
+                    win[_name].close();
+                  }
+                });
               }
             });
 
-         });
+          });
         }
       });
     },
@@ -436,18 +443,18 @@ var Address = (function() {
       _name = _name || com_name;
 
       self.build_grid(_name, self.Model.import_grid);
-      var spouse_address_ds=self.Data.store('spouse_contacts'); 
+      var spouse_address_ds = self.Data.store('spouse_contacts');
       grid[_name].sync(spouse_address_ds);
-      if(spouse_address_ds.data.dataCount() == 0 || spouse_address_ds.isVisible() ){
-         layout[_name].progressOff();
-         self.set_status(_name, "Ready to use");
-      }else{
-         spouse_address_ds.attachEvent("onXLE", function() {
+      if (spouse_address_ds.data.dataCount() == 0 || spouse_address_ds.isVisible()) {
+        layout[_name].progressOff();
+        self.set_status(_name, "Ready to use");
+      } else {
+        spouse_address_ds.attachEvent("onXLE", function() {
           layout[_name].progressOff();
           self.set_status(_name, "Ready to use");
         });
       }
-        
+
     },
     /**
      * [_form_add_edit_validate description]
@@ -472,9 +479,8 @@ var Address = (function() {
         });
         self.set_status(_name, " Fields required");
         return false;
-      }
-      else if (data.leave_date !=null && data.start_date !=null) {
-        if(data.leave_date < data.start_date){
+      } else if (data.leave_date != null && data.start_date != null) {
+        if (data.leave_date < data.start_date) {
           dhtmlx.alert({
             title: "Alert",
             type: "alert-error",
@@ -485,8 +491,8 @@ var Address = (function() {
             }
           });
           self.set_status(_name, "End date should be greater or equal to Start date");
-           return false;
-        }     
+          return false;
+        }
       } else if (data.zip !== '' && data.zip !== null) {
         if (zipcodeVal !== true) {
           dhtmlx.alert({
@@ -515,7 +521,7 @@ var Address = (function() {
       var self = this;
       _name = _name || com_name;
 
-     
+
 
 
       form[_name] = layout[_name].cells("a").attachForm(self.Model.conf_form.template);
@@ -529,7 +535,7 @@ var Address = (function() {
         address_country = form[_name].getCombo("country_text"),
         address_county = form[_name].getCombo("county_text"),
         address_state = form[_name].getCombo("state_text"),
-        is_mailing_address = form[_name].getCombo("is_mailing_address"), 
+        is_mailing_address = form[_name].getCombo("is_mailing_address"),
         address_start_date = form[_name].getCalendar("start_date"),
         address_leave_date = form[_name].getCalendar("leave_date");
 
@@ -547,21 +553,22 @@ var Address = (function() {
       address_state.sync(address_state_ds);
       address_county.sync(address_county_ds);
 
-       //Check if all datastorage lkp tables loaded or not
-      var lkp_ds=[
+      //Check if all datastorage lkp tables loaded or not
+      var lkp_ds = [
         address_type_ds,
         address_province_ds,
         address_state_ds,
         address_country_ds,
         address_county_ds
       ];
-      var check_lkp_ds=setInterval(function(){
-        if(lkp_ds.length > 0){
-          var _ds=lkp_ds.shift();        
-          if(!_ds.isVisible()){
+
+      var check_lkp_ds = setInterval(function() {
+        if (lkp_ds.length > 0) {
+          var _ds = lkp_ds.shift();
+          if (!_ds.isVisible()) {
             lkp_ds.push(_ds);
           }
-        }else{
+        } else {
           clearInterval(check_lkp_ds);
           layout[_name].progressOff();
           on_lkp_load();
@@ -569,21 +576,21 @@ var Address = (function() {
       }, 100);
 
       // Execute this code when storage data load is done
-      var on_lkp_load=function(){
+      var on_lkp_load = function() {
         self.set_status(_name, "Ready to use");
-      
+
         //initial county should be USA
         var
-        usa_opt = address_country.getOptionByLabel("USA");
+          usa_opt = address_country.getOptionByLabel("USA");
         address_country.setComboText(usa_opt.text);
         address_country.setComboValue(usa_opt.value);
 
         //set default states to USA states
         var
-        country_id = address_country.getSelectedValue();
+          country_id = address_country.getSelectedValue();
         address_state_ds.data.filter("CountryID", country_id);
-       
-        is_edited=false;
+
+        is_edited = false;
       };
 
       // When Editing mode on
@@ -596,7 +603,7 @@ var Address = (function() {
         var
           grid_id = grid[com_name].getSelectedRowId(),
           data = address_get_ds.item(grid_id);
-       
+
 
         address_type.setComboValue(data.address_type_id);
         address_province.setComboValue(data.province_id);
@@ -604,8 +611,8 @@ var Address = (function() {
         address_county.setComboValue(data.county_id);
         address_state.setComboValue(data.state_id);
         console.log(data);
-        address_start_date.setDate(data.start_date?data.start_date:new Date());
-        address_leave_date.setDate(data.leave_date?data.leave_date:new Date());  
+        address_start_date.setDate(data.start_date ? data.start_date : new Date());
+        address_leave_date.setDate(data.leave_date ? data.leave_date : new Date());
         (data.province_text == "") ? address_province.setComboText("Pick Province") : form[_name].enableItem("province_text");
         (data.country_text == "") ? address_country.setComboText("Pick Country") : "";
         (data.county_text == "") ? address_county.setComboText("Pick County") : form[_name].enableItem("county_text");
@@ -614,75 +621,79 @@ var Address = (function() {
         is_edit_mode = false;
       }
 
-      is_mailing_address.attachEvent("onChange", function(){
-         is_edited=true;
+      is_mailing_address.attachEvent("onChange", function() {
+        is_edited = true;
       });
-      address_type.attachEvent("onChange",function(){
-        is_edited=true;
+      address_type.attachEvent("onChange", function() {
+        is_edited = true;
       });
       // --- On country change
       address_country.attachEvent("onChange", function() {
-        is_edited=true;
-          //current selected Country Id
-          var country_id = address_country.getSelectedValue();
-          address_province_ds.data.filter("CountryID", country_id);
-          if (address_province_ds.data.dataCount() < 1) {
-              address_province.addOption([
-                  ["0", "Pick a Province"]
-              ]);
-              form[_name].disableItem("province_text");
-          } else {
-              form[_name].enableItem("province_text");
-              address_province.addOption([
-                  ["0", "Pick a Province"]
-              ]);
-          }
+        is_edited = true;
+        //current selected Country Id
+        var country_id = address_country.getSelectedValue();
+        address_province_ds.data.filter("CountryID", country_id);
+        if (address_province_ds.data.dataCount() < 1) {
+          address_province.addOption([
+            ["0", "Pick a Province"]
+          ]);
+          form[_name].disableItem("province_text");
+        } else {
+          form[_name].enableItem("province_text");
+          address_province.addOption([
+            ["0", "Pick a Province"]
+          ]);
+        }
 
-          address_state_ds.data.filter("CountryID", country_id);
-          if (address_state_ds.data.dataCount() < 1) {
-              address_state.addOption([
-                  ["0", "Pick a State"]
-              ]);
-               form[_name].disableItem("state_text");
-          } else {
-              form[_name].enableItem("state_text");
-              address_state.addOption([
-                  ["0", "Pick a State"]
-              ]);
-          }
+        address_state_ds.data.filter("CountryID", country_id);
+        if (address_state_ds.data.dataCount() < 1) {
+          address_state.addOption([
+            ["0", "Pick a State"]
+          ]);
+          form[_name].disableItem("state_text");
+        } else {
+          form[_name].enableItem("state_text");
+          address_state.addOption([
+            ["0", "Pick a State"]
+          ]);
+        }
       });
 
       address_state.attachEvent("onChange", function() {
-         is_edited=true;
-          var stateid = address_state.getSelectedValue();
-          address_county_ds.data.filter("StateId", stateid);
-          if (address_county_ds.data.dataCount() < 1) {
-              address_county.addOption([
-                  ["0", "Select State"]
-              ]);
-               form[_name].disableItem("county_text");
-          } else {
-              form[_name].enableItem("county_text");
-              address_county.addOption([
-                  ["0", "Select State"]
-              ]);
-          }
-          self._form_add_edit_events(_name);
+        is_edited = true;
+        var stateid = address_state.getSelectedValue();
+        address_county_ds.data.filter("StateId", stateid);
+        if (address_county_ds.data.dataCount() < 1) {
+          address_county.addOption([
+            ["0", "Select County"]
+          ]);
+          form[_name].disableItem("county_text");
+        } else {
+          form[_name].enableItem("county_text");
+          address_county.addOption([
+            ["0", "Select County"]
+          ]);
+        }
+
       });
+      self._form_add_edit_events(_name);
     },
     /**
      * [_form_add_edit_events description]
      * @param  {[type]} _name [description]
      * @return {[type]}       [description]
      */
-    _form_add_edit_events: function(_name) { // Events for inputs
+    _form_add_edit_events: function(_name) {
+      var self = this;
+      // Events for inputs
       form[_name].attachEvent("onInputChange", function(name) {
-         is_edited=true;
+        is_edited = true;
         var len = form[_name].getItemValue('zip').length;
         if (name === 'zip') {
           if (len === 5) {
             var zipcode = form[_name].getItemValue('zip');
             var filter = /^\d{5}(?:-\d{4})?$/;
+
             var zipcodeVal = filter.test(zipcode);
             if (zipcode !== '' && zipcode !== null) {
               if (zipcodeVal !== true) {
@@ -696,14 +707,20 @@ var Address = (function() {
                   }
                 });
               } else {
-                dhtmlxAjax.get(self.Data.end_point.address_by_zip+"&zip=" + zipcode, function(loader) {
+                dhtmlxAjax.get(self.Data.end_point.address_by_zip + "&zip=" + zipcode, function(loader) {
                   json = JSON.parse(loader.xmlDoc.responseText);
                   if (json.length > 0) {
+                    var address_country = form[_name].getCombo("country_text"),
+                      usa_opt = address_country.getOptionByLabel("USA");
+
+                    address_country.setComboText(usa_opt.text);
+                    address_country.setComboValue(usa_opt.value);
+
                     json = json[0];
                     form[_name].getCombo("state_text").setComboValue(json.StateID);
                     form[_name].getCombo("state_text").setComboText(json.StateName);
-                    form[_name].getCombo("country_text").setComboValue(json.CountryID);
-                    form[_name].getCombo("country_text").setComboText(json.CountryName);
+                    form[_name].getCombo("county_text").setComboValue(json.CountyID);
+                    form[_name].getCombo("county_text").setComboText(json.CountyText);
                   }
 
                 });
@@ -735,9 +752,10 @@ var Address = (function() {
 
       uid = _conf.uid;
       config = _conf;
+
       self.application_path = config.application_path;
       dhx_globalImgPath = config.dhtmlx_codebase_path + "imgs/";
-    
+
       config["icons_path"] = "asserts/icons/";
       config["img_path"] = "asserts/imgs/"
 
@@ -747,14 +765,18 @@ var Address = (function() {
         config.dhtmlx_codebase_path + "dhtmlx.css",
         config.dhtmlx_codebase_path + "dhtmlx.js",
         config.application_path + "js/json2.js",
-         // config.dhtmlx_codebase_path + "dhtmlx_deprecated.js",
+        // config.dhtmlx_codebase_path + "dhtmlx_deprecated.js",
         self.application_path + "model/model.js",
         self.application_path + "controller/classes/data.js"
       ];
 
-      if(com_dhx_version === "4.0"){
-        internal_dependencies.push( config.dhtmlx_codebase_path + "dhtmlx_deprecated.js");
+
+
+      if (com_dhx_version === "4.0") {
+        internal_dependencies.push(config.dhtmlx_codebase_path + "dhtmlx_deprecated.js");
       }
+
+
       CAIRS.onDemand.load(internal_dependencies, function() {
         self.Model.init(config.application_path + config.img_path, config.application_path + config.icons_path);
         self.Data.init(config);
@@ -776,13 +798,13 @@ var Address = (function() {
      * @param {[type]} msg   [description]
      * @param {[enum]} type  [should be any of {info,err,success}]
      */
-    set_status: function(_name, _msg,_type) { 
+    set_status: function(_name, _msg, _type) {
       //alert(_name);
-      var color="#000000";
-      color = (_type == "info")?"#000000":color;
-      color = (_type == "err")?"#FF0000":color;
-      color = (_type == "success")?"#03B202":color;
-      status_bar[_name].setText('<span style="color:'+color+';"><strong>* ' + _msg + '</strong></span>');
+      var color = "#000000";
+      color = (_type == "info") ? "#000000" : color;
+      color = (_type == "err") ? "#FF0000" : color;
+      color = (_type == "success") ? "#03B202" : color;
+      status_bar[_name].setText('<span style="color:' + color + ';"><strong>* ' + _msg + '</strong></span>');
     },
     /**
      * [Validate values when call the component]
@@ -821,5 +843,3 @@ var Address = (function() {
     }
   }
 }());
-
-

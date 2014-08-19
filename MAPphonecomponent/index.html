@@ -3,28 +3,29 @@
 <title>Phone Component</title>
 <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
 <!-- DHTMLX Framework -->
-    <script type="text/javascript" src="js/json2.js"></script>  
-    <link rel="stylesheet" type="text/css" href="http://cdmap01.myadoptionportal.com/modules/codebase3.5/dhtmlx.css" />
-    <script type="text/javascript" src="http://cdmap01.myadoptionportal.com/modules/codebase3.5/dhtmlx_min.js" charset="ISO-8859-1"></script>
-    <script type="text/javascript" src="http://cdmap01.myadoptionportal.com/modules/CAIRS_Framework/CAIRS_fw.js"></script>   
-	 <script type="text/javascript" src="../MAPPermissions/js/controller.js"></script> 
-	 
+<link  rel="stylesheet" type="text/css" href="../codebase3.6/dhtmlx.css" />
+<link rel="stylesheet" type="text/css" href="../codebase3.6/dhtmlxForm/codebase/skins/dhtmlxform_dhx_skyblue.css">
+<script type="text/javascript" src="../codebase3.6/dhtmlx.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
 <script type="text/javascript" src="model/phonecomponent_Model.js"></script>
 <script type="text/javascript" src="controller/phonecomponent.js"></script>
+<script type="text/javascript" src="../MAPPermissions/js/controller.js"></script>
 <script type="text/javascript" >
-            window.onload = function()
-            {
-                    phonecomponent.start( { 
-                        uid : "21635" ,
-						application_path : "http://cdmap01.myadoptionportal.com/modules/MAPphonecomponent/" ,
-						dhtmlx_codebase_path : "http://cdmap01.myadoptionportal.com/modules/codebase3.5/",
-						contactid : "21635",
-						useWindow: true,
-						window_managerObj: null,
-						contactcomponent_obj : '',
-						parentDIVId: '',
-			            agencyid: 25
-                    } );
+            window.onload = function(){
+                var WWWUrlPath = window.location.protocol + '//' + window.location.host+'/';
+                var cdn_application_path = WWWUrlPath +'modules/nivyaCom/MAPphonecomponent/';
+                var dhx_codebase_path = WWWUrlPath + 'modules/nivyaCom/codebase3.6/';
+                MAPPermissions.loadSettings(WWWUrlPath);
+                phonecomponent.start({ 
+                    uid : "21873" 
+                    ,application_path : cdn_application_path
+                    ,dhtmlx_codebase_path : dhx_codebase_path
+					,contactid : "21873"
+					,agencyid: 25
+					,useWindow : true
+ 					,parentDIVId : ''
+                    ,window_managerObj:null
+                });
              }
          </script>
 </head>

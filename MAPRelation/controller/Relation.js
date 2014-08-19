@@ -119,12 +119,8 @@ var Relation = (function() {
       _name = _name || com_name;
       toolbar[_name] = layout[_name].cells("a").attachToolbar(self.Model.conf_toolbar);
       toolbar[_name].setSkin(self.Model.globalSkin);
-      if (config.use_window !== true) {
-        toolbar[_name].removeItem("help_address");
-        toolbar[_name].removeItem("close_address");
-      }
-      toolbar[_name].disableItem("delete_address");
-      toolbar[_name].disableItem("edit_address");
+      toolbar[_name].disableItem("delete_relation");
+      toolbar[_name].disableItem("edit_relation");
       this._toolbar_events();
     },
     /**
@@ -134,16 +130,16 @@ var Relation = (function() {
      */
     _toolbar_events: function(_name) {
       var self = this,
-     address_get_ds = self.Data.store("address_get");
+     relation_get_ds = self.Data.store("relation_get");
       _name = _name || com_name;
       toolbar[_name].attachEvent("onClick", function(id) {
-        if (id == "add_address") {
+        if (id == "add_relation") {
           self.build_window("Add_Edit", self.Model.new_window);
           self._window_add_edit_extend("Add_Edit");
           self._toolbar_add_edit("Add_Edit");
           self._form_add_edit("Add_Edit", false);
         }
-        if (id == "edit_address") {
+        if (id == "edit_relation") {
           var
           grid_id = grid[com_name].getSelectedRowId();
           grid_id=grid_id.split(',');
@@ -158,7 +154,7 @@ var Relation = (function() {
           self._toolbar_add_edit("Add_Edit");
           self._form_add_edit("Add_Edit", true);
         }
-        if (id == "delete_address") {
+        if (id == "delete_relation") {
           var 
           count=0,
           selected_row_ids = grid[_name].getSelectedRowId();
@@ -167,11 +163,11 @@ var Relation = (function() {
           selected_row_ids.forEach(function(row_id){
             var data = {
               contact_id: config.contact_id,
-              address_id: row_id
+              relation_id: row_id
             };
-            address_get_ds.remove(row_id);
+            relation_get_ds.remove(row_id);
             win[com_name].progressOn();
-            dhtmlxAjax.post(self.Data.end_point.address_del, "data=" + JSON.stringify(data), function() {
+            dhtmlxAjax.post(self.Data.end_point.relation_del, "data=" + JSON.stringify(data), function() {
               count--;
               if(!count){
                 win[com_name].progressOff();
@@ -215,14 +211,14 @@ var Relation = (function() {
       var self = this;
       _name = _name || com_name;
       self.build_grid(_name, self.Model.conf_grid);
-      var grid_address_ds = self.Data.store("address_get");
+      var grid_relation_ds = self.Data.store("relation_get");
   
-      grid[_name].sync(grid_address_ds, {
+      grid[_name].sync(grid_relation_ds, {
         select: true
       });
       //Check if data is loaded for displaying
-      if (!grid_address_ds.isVisible()) {
-        grid_address_ds.attachEvent("onXLE", function() {
+      if (!grid_relation_ds.isVisible()) {
+        grid_relation_ds.attachEvent("onXLE", function() {
           layout[_name].progressOff();
           self.set_status(_name, "Ready to use");
         });
@@ -251,8 +247,8 @@ var Relation = (function() {
         self._form_add_edit("Add_Edit", true);
       });
       grid[_name].attachEvent("onRowSelect", function(rowId, cellInd) {
-        toolbar[_name].enableItem("delete_address");
-        toolbar[_name].enableItem("edit_address");
+        toolbar[_name].enableItem("delete_relation");
+        toolbar[_name].enableItem("edit_relation");
       });
     },
     /**
@@ -265,7 +261,7 @@ var Relation = (function() {
       _name = _name || com_name;
       toolbar[_name] = layout[_name].cells("a").attachToolbar(self.Model.edit_toolbar);
       toolbar[_name].setSkin(self.Model.globalSkin);
-       toolbar[_name].disableItem("import_address");
+       toolbar[_name].disableItem("import_relation");
       self._toolbar_add_edit_couple_check(_name);
       this._toolbar_add_edit_events(_name);
     },
@@ -280,14 +276,14 @@ var Relation = (function() {
         contact_id: config.contact_id
       };
       if(spouse_contact_id != null){
-        toolbar[_name].enableItem("import_address");
+        toolbar[_name].enableItem("import_relation");
       }else{
         dhtmlxAjax.post(self.Data.end_point.spouse_contact_id,"data=" +JSON.stringify(data), function(loader) {
           var json = JSON.parse(loader.xmlDoc.responseText);
           if (json.spouse_contact_id) {
             spouse_contact_id = json.spouse_contact_id;
-            self.Data._spouse_address_data_store(spouse_contact_id);
-            toolbar[_name].enableItem("import_address");
+            self.Data._spouse_relation_data_store(spouse_contact_id);
+            toolbar[_name].enableItem("import_relation");
           }
         });
       }
@@ -303,15 +299,15 @@ var Relation = (function() {
       data = {};
 
       toolbar[_name].attachEvent("onClick", function(id) {
-        if (id == "save_address") {
+        if (id == "save_relation") {
           data = {
             contact_id: config.contact_id,
-            address_type_id: form[_name].getCombo("address_type").getSelectedValue(),
-            type: form[_name].getCombo("address_type").getSelectedText(),
-            is_mailing: form[_name].getCombo("is_mailing_address").getSelectedValue(),
-            is_mailing_text: form[_name].getCombo("is_mailing_address").getSelectedText(),
-            address_1: form[_name].getItemValue("address_1"),
-            address_2: form[_name].getItemValue("address_2"),
+            relation_type_id: form[_name].getCombo("relation_type").getSelectedValue(),
+            type: form[_name].getCombo("relation_type").getSelectedText(),
+            is_mailing: form[_name].getCombo("is_mailing_relation").getSelectedValue(),
+            is_mailing_text: form[_name].getCombo("is_mailing_relation").getSelectedText(),
+            relation_1: form[_name].getItemValue("relation_1"),
+            relation_2: form[_name].getItemValue("relation_2"),
             city: form[_name].getItemValue("city"),
             zip: form[_name].getItemValue("zip"),
             country_id: form[_name].getCombo("county_text").getSelectedValue(),
@@ -325,18 +321,18 @@ var Relation = (function() {
             start_date: form[_name].getCalendar("start_date").getDate(),
             leave_date: form[_name].getCalendar("leave_date").getDate()
           };
-          is_edit_mode ? data.address_id = form[_name].getItemValue("address_id") : "";
+          is_edit_mode ? data.relation_id = form[_name].getItemValue("relation_id") : "";
 
-          var address_get_ds = self.Data.store("address_get");
+          var relation_get_ds = self.Data.store("relation_get");
           if (self._form_add_edit_validate(_name, data)) {
             layout[_name].progressOn();
-            dhtmlxAjax.post(self.Data.end_point.address_save, "data=" + JSON.stringify(data), function() {
+            dhtmlxAjax.post(self.Data.end_point.relation_save, "data=" + JSON.stringify(data), function() {
               layout[_name].progressOff();
-              address_get_ds.loadNext();
+              relation_get_ds.loadNext();
               if(is_edit_mode){
                 var 
-                  data_1=dhtmlx.extend(address_get_ds.data.item(data.address_id),data);
-                  address_get_ds.update(data_1.id,data_1);
+                  data_1=dhtmlx.extend(relation_get_ds.data.item(data.relation_id),data);
+                  relation_get_ds.update(data_1.id,data_1);
               }
                dhtmlx.alert({
                   //type:"alert",
@@ -350,7 +346,7 @@ var Relation = (function() {
 
           }
         }
-        if (id == "import_address") {
+        if (id == "import_relation") {
           win["Add_Edit"].close();
           self.build_window("Import", self.Model.import_window);
           self._toolbar_import("Import");
@@ -382,37 +378,37 @@ var Relation = (function() {
         data,
         row_ids,
         count=0,
-        spouse_address_ds=self.Data.store('spouse_contacts'),
-        address_get_ds = self.Data.store("address_get");
+        spouse_relation_ds=self.Data.store('spouse_contacts'),
+        relation_get_ds = self.Data.store("relation_get");
 
 
       toolbar[_name].attachEvent('onClick',function(id){
-        if(id =="import_address"){
+        if(id =="import_relation"){
           row_ids=grid[_name].getCheckedRows(0);
           row_ids=row_ids.split(',');
           count=row_ids.length;
           if(count < 2){
             dhtmlx.message({ 
                 type:"alert-error", 
-                text:"Please select atleast one address?"
+                text:"Please select atleast one relation?"
             });
             return;
           }
           layout[_name].progressOn();
           //loop through all row ids
           row_ids.forEach(function(id){
-            data=spouse_address_ds.data.item(id);
+            data=spouse_relation_ds.data.item(id);
             data.contact_id=config.contact_id;
             data.is_mailing=data.MailingRelation;
-            delete data.address_id;
+            delete data.relation_id;
           
            
-            dhtmlxAjax.post(self.Data.end_point.address_save, "data=" + JSON.stringify(data), function() {
+            dhtmlxAjax.post(self.Data.end_point.relation_save, "data=" + JSON.stringify(data), function() {
               count--;
               if(!count){
                   layout[_name].progressOff();
                  //migration with dhx3.6 ds.ob only in dhx 3.6 ds.loadNext new in dhx 4.0
-                  address_get_ds.loadNext();
+                  relation_get_ds.loadNext();
                   dhtmlx.alert({
                     text:"Imported Successfully!",
                     callback:function(){
@@ -436,13 +432,13 @@ var Relation = (function() {
       _name = _name || com_name;
 
       self.build_grid(_name, self.Model.import_grid);
-      var spouse_address_ds=self.Data.store('spouse_contacts'); 
-      grid[_name].sync(spouse_address_ds);
-      if(spouse_address_ds.data.dataCount() == 0 || spouse_address_ds.isVisible() ){
+      var spouse_relation_ds=self.Data.store('spouse_contacts'); 
+      grid[_name].sync(spouse_relation_ds);
+      if(spouse_relation_ds.data.dataCount() == 0 || spouse_relation_ds.isVisible() ){
          layout[_name].progressOff();
          self.set_status(_name, "Ready to use");
       }else{
-         spouse_address_ds.attachEvent("onXLE", function() {
+         spouse_relation_ds.attachEvent("onXLE", function() {
           layout[_name].progressOff();
           self.set_status(_name, "Ready to use");
         });
@@ -461,13 +457,13 @@ var Relation = (function() {
         self = this,
         zip_filter = /^\d{5}(?:-\d{4})?$/,
         zipcodeVal = zip_filter.test(data.zip);
-      if (data.address_type_id === '' || data.address_type_id === null || data.address_type_id === '0') {
+      if (data.relation_type_id === '' || data.relation_type_id === null || data.relation_type_id === '0') {
         dhtmlx.alert({
           title: "Alert",
           type: "alert-error",
           text: "Relation type is mandatory",
           callback: function() {
-            form[_name].setItemFocus('address_type');
+            form[_name].setItemFocus('relation_type');
           }
         });
         self.set_status(_name, " Fields required");
@@ -480,8 +476,8 @@ var Relation = (function() {
             type: "alert-error",
             text: ' End date should be greater or equal to Start date',
             callback: function() {
-              form[_name].setItemValue('address_leave', '');
-              form[_name].setItemFocus('address_leave');
+              form[_name].setItemValue('relation_leave', '');
+              form[_name].setItemFocus('relation_leave');
             }
           });
           self.set_status(_name, "End date should be greater or equal to Start date");
@@ -524,36 +520,36 @@ var Relation = (function() {
 
       // self._form_data_storage_fill(_name);
       var
-        address_type = form[_name].getCombo("address_type"),
-        address_province = form[_name].getCombo("province_text"),
-        address_country = form[_name].getCombo("country_text"),
-        address_county = form[_name].getCombo("county_text"),
-        address_state = form[_name].getCombo("state_text"),
-        is_mailing_address = form[_name].getCombo("is_mailing_address"), 
-        address_start_date = form[_name].getCalendar("start_date"),
-        address_leave_date = form[_name].getCalendar("leave_date");
+        relation_type = form[_name].getCombo("relation_type"),
+        relation_province = form[_name].getCombo("province_text"),
+        relation_country = form[_name].getCombo("country_text"),
+        relation_county = form[_name].getCombo("county_text"),
+        relation_state = form[_name].getCombo("state_text"),
+        is_mailing_relation = form[_name].getCombo("is_mailing_relation"), 
+        relation_start_date = form[_name].getCalendar("start_date"),
+        relation_leave_date = form[_name].getCalendar("leave_date");
 
       var
-        address_type_ds = self.Data.store('address_type'),
-        address_province_ds = self.Data.store('address_province'),
-        address_state_ds = self.Data.store('address_state'),
-        address_country_ds = self.Data.store('address_country'),
-        address_county_ds = self.Data.store('address_county');
+        relation_type_ds = self.Data.store('relation_type'),
+        relation_province_ds = self.Data.store('relation_province'),
+        relation_state_ds = self.Data.store('relation_state'),
+        relation_country_ds = self.Data.store('relation_country'),
+        relation_county_ds = self.Data.store('relation_county');
 
       //data stoe to dhtmlx objects
-      address_type.sync(address_type_ds);
-      address_country.sync(address_country_ds);
-      address_province.sync(address_province_ds);
-      address_state.sync(address_state_ds);
-      address_county.sync(address_county_ds);
+      relation_type.sync(relation_type_ds);
+      relation_country.sync(relation_country_ds);
+      relation_province.sync(relation_province_ds);
+      relation_state.sync(relation_state_ds);
+      relation_county.sync(relation_county_ds);
 
        //Check if all datastorage lkp tables loaded or not
       var lkp_ds=[
-        address_type_ds,
-        address_province_ds,
-        address_state_ds,
-        address_country_ds,
-        address_county_ds
+        relation_type_ds,
+        relation_province_ds,
+        relation_state_ds,
+        relation_country_ds,
+        relation_county_ds
       ];
       var check_lkp_ds=setInterval(function(){
         if(lkp_ds.length > 0){
@@ -574,14 +570,14 @@ var Relation = (function() {
       
         //initial county should be USA
         var
-        usa_opt = address_country.getOptionByLabel("USA");
-        address_country.setComboText(usa_opt.text);
-        address_country.setComboValue(usa_opt.value);
+        usa_opt = relation_country.getOptionByLabel("USA");
+        relation_country.setComboText(usa_opt.text);
+        relation_country.setComboValue(usa_opt.value);
 
         //set default states to USA states
         var
-        country_id = address_country.getSelectedValue();
-        address_state_ds.data.filter("CountryID", country_id);
+        country_id = relation_country.getSelectedValue();
+        relation_state_ds.data.filter("CountryID", country_id);
        
         is_edited=false;
       };
@@ -589,81 +585,81 @@ var Relation = (function() {
       // When Editing mode on
       if (isEdit) {
         is_edit_mode = true;
-        var address_get_ds = self.Data.store('address_get');
-        address_get_ds.setCursor(grid_id);
-        form[_name].bind(address_get_ds);
+        var relation_get_ds = self.Data.store('relation_get');
+        relation_get_ds.setCursor(grid_id);
+        form[_name].bind(relation_get_ds);
         //edit
         var
           grid_id = grid[com_name].getSelectedRowId(),
-          data = address_get_ds.item(grid_id);
+          data = relation_get_ds.item(grid_id);
        
 
-        address_type.setComboValue(data.address_type_id);
-        address_province.setComboValue(data.province_id);
-        address_country.setComboValue(data.country_id);
-        address_county.setComboValue(data.county_id);
-        address_state.setComboValue(data.state_id);
+        relation_type.setComboValue(data.relation_type_id);
+        relation_province.setComboValue(data.province_id);
+        relation_country.setComboValue(data.country_id);
+        relation_county.setComboValue(data.county_id);
+        relation_state.setComboValue(data.state_id);
         console.log(data);
-        address_start_date.setDate(data.start_date?data.start_date:new Date());
-        address_leave_date.setDate(data.leave_date?data.leave_date:new Date());  
-        (data.province_text == "") ? address_province.setComboText("Pick Province") : form[_name].enableItem("province_text");
-        (data.country_text == "") ? address_country.setComboText("Pick Country") : "";
-        (data.county_text == "") ? address_county.setComboText("Pick County") : form[_name].enableItem("county_text");
-        (data.country_state == "") ? address_state.setComboText("Pick State") : form[_name].enableItem("country_text");
+        relation_start_date.setDate(data.start_date?data.start_date:new Date());
+        relation_leave_date.setDate(data.leave_date?data.leave_date:new Date());  
+        (data.province_text == "") ? relation_province.setComboText("Pick Province") : form[_name].enableItem("province_text");
+        (data.country_text == "") ? relation_country.setComboText("Pick Country") : "";
+        (data.county_text == "") ? relation_county.setComboText("Pick County") : form[_name].enableItem("county_text");
+        (data.country_state == "") ? relation_state.setComboText("Pick State") : form[_name].enableItem("country_text");
       } else {
         is_edit_mode = false;
       }
 
-      is_mailing_address.attachEvent("onChange", function(){
+      is_mailing_relation.attachEvent("onChange", function(){
          is_edited=true;
       });
-      address_type.attachEvent("onChange",function(){
+      relation_type.attachEvent("onChange",function(){
         is_edited=true;
       });
       // --- On country change
-      address_country.attachEvent("onChange", function() {
+      relation_country.attachEvent("onChange", function() {
         is_edited=true;
           //current selected Country Id
-          var country_id = address_country.getSelectedValue();
-          address_province_ds.data.filter("CountryID", country_id);
-          if (address_province_ds.data.dataCount() < 1) {
-              address_province.addOption([
+          var country_id = relation_country.getSelectedValue();
+          relation_province_ds.data.filter("CountryID", country_id);
+          if (relation_province_ds.data.dataCount() < 1) {
+              relation_province.addOption([
                   ["0", "Pick a Province"]
               ]);
               form[_name].disableItem("province_text");
           } else {
               form[_name].enableItem("province_text");
-              address_province.addOption([
+              relation_province.addOption([
                   ["0", "Pick a Province"]
               ]);
           }
 
-          address_state_ds.data.filter("CountryID", country_id);
-          if (address_state_ds.data.dataCount() < 1) {
-              address_state.addOption([
+          relation_state_ds.data.filter("CountryID", country_id);
+          if (relation_state_ds.data.dataCount() < 1) {
+              relation_state.addOption([
                   ["0", "Pick a State"]
               ]);
                form[_name].disableItem("state_text");
           } else {
               form[_name].enableItem("state_text");
-              address_state.addOption([
+              relation_state.addOption([
                   ["0", "Pick a State"]
               ]);
           }
       });
 
-      address_state.attachEvent("onChange", function() {
+      relation_state.attachEvent("onChange", function() {
          is_edited=true;
-          var stateid = address_state.getSelectedValue();
-          address_county_ds.data.filter("StateId", stateid);
-          if (address_county_ds.data.dataCount() < 1) {
-              address_county.addOption([
+          var stateid = relation_state.getSelectedValue();
+          relation_county_ds.data.filter("StateId", stateid);
+          if (relation_county_ds.data.dataCount() < 1) {
+              relation_county.addOption([
                   ["0", "Select State"]
               ]);
                form[_name].disableItem("county_text");
           } else {
               form[_name].enableItem("county_text");
-              address_county.addOption([
+              relation_county.addOption([
                   ["0", "Select State"]
               ]);
           }
@@ -696,7 +692,7 @@ var Relation = (function() {
                   }
                 });
               } else {
-                dhtmlxAjax.get(self.Data.end_point.address_by_zip+"&zip=" + zipcode, function(loader) {
+                dhtmlxAjax.get(self.Data.end_point.relation_by_zip+"&zip=" + zipcode, function(loader) {
                   json = JSON.parse(loader.xmlDoc.responseText);
                   if (json.length > 0) {
                     json = json[0];
@@ -767,7 +763,7 @@ var Relation = (function() {
           self._layout();
         }
          self._toolbar();
-        // self._grid_main();
+         self._grid_main();
       });
     },
     /**

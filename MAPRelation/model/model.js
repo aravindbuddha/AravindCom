@@ -61,73 +61,48 @@ Relation.Model = Relation.Model || (function() {
       "title": "Import Relation"
     },
     "conf_grid": {
-      "headers": "relation_id,RelationTypeID,Type,Relation1,Relation2,City,StateId,Sate,zip,CountyId,County,CountryId,Country,RelationProvinceID,Provence,MailingRelation,Start Date,End Date",
-      "ids": "relation_id,address_type_id,address_type,address_1,address_2,city,state_id,sate_text,zip,county_id,county_text,country_id,country_text,province_id,provence_text,is_mailing_address,start_date,leave_date",
-      "widths": "0,0,195,290,0,140,0,80,78,0,90,60,0,0,70,90,60,60",
-      "colaligns": "left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,center,left,left",
-      "coltypes": "ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro",
-      "colsorting": "str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,date,date",
-      'visibility': 'true,true,false,false,true,false,true,false,false,true,false,true,false,true,true,false,true,true'
-    },
-
-     "import_grid": {
-      "headers": "#master_checkbox,address_id,RelationTypeID,Type,Relation1,Relation2,City,StateId,Sate,zip,CountyId,County,CountryId,Country,RelationProvinceID,Provence,MailingRelation,Start Date,End Date",
-      "ids": "select,address_id,address_type_id,address_type,address_1,address_2,city,state_id,sate_text,zip,county_id,county_text,country_id,country_text,province_id,provence_text,is_mailing_address,start_date,leave_date",
-      "widths": "43,0,0,70,188,150,80,0,80,70,0,90,60,0,0,70,90,60,60",
-      "colaligns": "center,left,left,left,left,left,left,left,left,left,center,left,left",
-      "coltypes": "ch,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed,ed",
-      "colsorting": "str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str,date,date",
-      "bind_library_field": "false,false,false,false,false,false,false,false,false,false,false,false",
-      'visibility': 'false,true,true,false,false,true,false,true,false,false,true,false,true,false,true,true,false,true,true'
+      "headers": "relation_id,Contact,Primary Relationship,Relationship,Contact,Links",
+      "ids": "relation_id,Contact,Primary Relationship,Relationship,Contact,links",
+      "widths": "0,200,200,200,200,200,*",
+      "colaligns": "left,left,left,left,left,left,left",
+      "coltypes": "ro,ro,ro,ro,ro,ro,ro",
+      "colsorting": "str,str,str,str,str,str,str",
+      'visibility': 'true,false,false,false,false,false,false'
     },
     "conf_toolbar": {
       "icon_path": _icon_path,
       "items": [{
-          "type": "button",
-          "id": "add_address",
-          "text": "Add Relation",
-          "img": "address-book-add.png",
-          "img_disabled": "address-book-add.png"
-        }, {
-          "type": "button",
-          "id": "edit_address",
-          "text": "Edit Relation",
-          "img": "edit.png",
-          "img_disabled": "edit.png"
-        }, {
-          "type": "button",
-          "id": "delete_address",
-          "text": "Delete Relation",
-          "img": "recycle_full-16.png",
-          "img_disabled": "recycle_full-16.png"
-        }
-        // , {
-        //   "type": "button",
-        //   "id": "help_address",
-        //   "text": "Help",
-        //   "img": "Help.png",
-        //   "img_disabled": "Help.png"
-        // }, {
-        //   "type": "button",
-        //   "id": "close_address",
-        //   "text": "Close",
-        //   "img": "cancel.png",
-        //   "img_disabled": "cancel.png"
-        // }
-      ]
+        "type": "button",
+        "id": "add_relation",
+        "text": "Add Relation",
+        "img": "relation-book-add.png",
+        "img_disabled": "relation-book-add.png"
+      }, {
+        "type": "button",
+        "id": "edit_relation",
+        "text": "Edit Relation",
+        "img": "edit.png",
+        "img_disabled": "edit.png"
+      }, {
+        "type": "button",
+        "id": "delete_relation",
+        "text": "Delete Relation",
+        "img": "recycle_full-16.png",
+        "img_disabled": "recycle_full-16.png"
+      }]
     },
     "edit_toolbar": {
-      "icon_path": "",
+      "icon_path": _icon_path,
       "items": [{
           "type": "button",
-          "id": "save_address",
+          "id": "save_relation",
           "text": "Save",
           "img": "save.gif",
           "img_disabled": "save.gif"
         }, {
           "type": "button",
-          "id": "import_address",
-          "text": "Import address",
+          "id": "import_relation",
+          "text": "Import relation",
           "img": "import-icon.png",
           "img_disabled": "import-icon.png"
         }
@@ -135,13 +110,13 @@ Relation.Model = Relation.Model || (function() {
         // 
         // {
         //   "type": "button",
-        //   "id": "help_address",
+        //   "id": "help_relation",
         //   "text": "Help",
         //   "img": "Help.png",
         //   "img_disabled": "Help.png"
         // }, {
         //   "type": "button",
-        //   "id": "close_editaddress",
+        //   "id": "close_editrelation",
         //   "text": "Close",
         //   "img": "cancel.png",
         //   "img_disabled": "cancel.png"
@@ -153,15 +128,15 @@ Relation.Model = Relation.Model || (function() {
       "icon_path": "",
       "items": [{
           "type": "button",
-          "id": "import_address",
+          "id": "import_relation",
           "text": "Import",
           "img": "save.gif",
           "img_disabled": "save.gif"
         }
         // , {
         //   "type": "button",
-        //   "id": "import_address",
-        //   "text": "Import address",
+        //   "id": "import_relation",
+        //   "text": "Import relation",
         //   "img": "import-icon.png",
         //   "img_disabled": "import-icon.png"
         // }
@@ -169,13 +144,13 @@ Relation.Model = Relation.Model || (function() {
         // 
         // {
         //   "type": "button",
-        //   "id": "help_address",
+        //   "id": "help_relation",
         //   "text": "Help",
         //   "img": "Help.png",
         //   "img_disabled": "Help.png"
         // }, {
         //   "type": "button",
-        //   "id": "close_editaddress",
+        //   "id": "close_editrelation",
         //   "text": "Close",
         //   "img": "cancel.png",
         //   "img_disabled": "cancel.png"
@@ -187,7 +162,7 @@ Relation.Model = Relation.Model || (function() {
       "pattern": "1C"
     },
     "calendarImage": {
-      "url": "url(../modules/MAPaddresscomponent/icons/calendar.gif)",
+      "url": "url(../modules/MAPrelationcomponent/icons/calendar.gif)",
       "position": "center right",
       "repeat": "no-repeat"
     },
@@ -199,262 +174,150 @@ Relation.Model = Relation.Model || (function() {
         inputWidth: "auto",
         tab_width: "100px",
         //id: "tab_family_detail",
-        label: "Phone detail",
+        label: "Family detail",
         list: [{
-          type: "hidden",
-          name: "address_type_id",
-          value: 0
-
+          type: "settings",
+          position: "absolute"
         }, {
-          type: "hidden",
-          name: "contact_id",
-          value: ""
-
-        }, {
-          type: "hidden",
-          name: "address_id",
-          value: ""
-
-        }, {
-          type: "combo",
-          name: "address_type",
-          label: "Type",
+          type: "input",
+          name: "contact_name",
           required: true,
-          validate: "NotEmpty",
-          width: 210,
-          labelWidth: "80",
-          labelHeight: "21",
-          inputWidth: "95",
-          inputHeight: "21",
-          labelLeft: "15",
-          labelTop: "15",
-          inputLeft: "95",
-          inputTop: "15",
-          readonly: true,
+          label: "Contact",
           position: "absolute",
-          options: [{
-              text: "Pick Relation Type",
-              value: ""
-            }
-
-
-          ]
+          inputWidth: "200",
+          labelLeft: "0",
+          labelTop: "10",
+          inputLeft: "140",
+          inputTop: "11"
+        }, {
+          type: "label",
+          name: "processingWheel1",
+          label: '<img alt="Processing wheel" id="processingWheel1"  src="../../images/bigrotation.gif" width="20px"; height="20px" />',
+          labelWidth: "16",
+          labelHeight: "16",
+          labelLeft: "315",
+          labelTop: "6",
+          position: "absolute",
+          hidden: false
+        }, {
+          type: "label",
+          name: "p1plusicon",
+          label: '<img alt="Add Contact" id="plusicon" src="../../auxiliary/dhtmlxfull3.5/icons/add.png" onclick="MAPRelationshipComponent.opencontact();  "/>',
+          labelWidth: "20",
+          labelHeight: "20",
+          labelLeft: "344",
+          labelTop: "8",
+          position: "absolute",
+          hidden: false
         }, {
           type: "combo",
-          name: "is_mailing_address",
-          label: "Mailing Relation",
-          width: 210,
-          labelWidth: "150",
-          labelHeight: "21",
-          inputWidth: "95",
+          name: "primaryRelationship",
+          required: true,
+          label: "Primary&nbsp;Relationship",
+          inputWidth: "200",
+          labelLeft: "0",
+          labelTop: "54",
+          inputLeft: "140",
+          inputTop: "51",
+          position: "absolute"
+        }, {
+          type: "combo",
+          name: "relationTypeId1",
+          required: true,
+          label: "Relation&nbsp;Type",
+          labelWidth: "200",
+          inputWidth: "200",
+          labelLeft: "0",
+          labelTop: "104",
+          inputLeft: "140",
+          inputTop: "101",
+          position: "absolute"
+        }, {
+          type: "combo",
+          name: "defaultrelation",
+          label: "Default Relationship",
+          labelWidth: "125",
+          labelHeight: "25",
+          inputWidth: "100",
+          height: 75,
           inputHeight: "21",
-          labelLeft: "335",
-          labelTop: "15",
-          inputLeft: "440",
-          inputTop: "15",
-          readonly: true,
+          labelLeft: "360",
+          labelTop: "53",
+          inputLeft: "480",
+          inputTop: "51",
           position: "absolute",
           options: [{
-            text: "Yes",
-            value: 1
+            value: "1",
+            text: "Yes"
           }, {
-            text: "No",
-            value: 0
-
-          }],
-          validate: "NotEmpty"
-        }, {
-          type: "input",
-          name: "address_1",
-          label: "Relation 1",
-          value: "",
-          width: 555,
-          labelWidth: "80",
-          labelHeight: "21",
-          inputWidth: "95",
-          inputHeight: "21",
-          labelLeft: "15",
-          labelTop: "45",
-          inputLeft: "95",
-          inputTop: "45",
-          position: "absolute"
-        }, {
-          type: "input",
-          name: "address_2",
-          label: "Relation 2",
-          value: "",
-          width: 555,
-          labelWidth: "80",
-          labelHeight: "21",
-          inputWidth: "95",
-          inputHeight: "21",
-          labelLeft: "15",
-          labelTop: "75",
-          inputLeft: "95",
-          inputTop: "75",
-          position: "absolute"
-        }, {
-          type: "input",
-          name: "city",
-          label: "City",
-          value: "",
-          width: 210,
-          labelWidth: "80",
-          labelHeight: "21",
-          inputWidth: "95",
-          inputHeight: "21",
-          labelLeft: "15",
-          labelTop: "105",
-          inputLeft: "95",
-          inputTop: "105",
-          position: "absolute"
-        }, {
-          type: "combo",
-          name: "state_text",
-          label: "State/Zip",
-          //    required: true,
-          validate: "NotEmpty",
-          className: "myTest",
-          width: 150,
-          labelWidth: "80",
-          labelHeight: "21",
-          inputWidth: "20",
-          inputHeight: "21",
-          labelLeft: "15",
-          labelTop: "135",
-          inputLeft: "95",
-          inputTop: "135",
-          readonly: true,
-          position: "absolute",
-          options: [{
-            text: "Pick a State",
-            value: ""
-          }]
-        }, {
-          type: "input",
-          name: "zip",
-          value: "",
-          validate: "ValidInteger",
-          width: 50,
-          labelWidth: "80",
-          labelHeight: "21",
-          inputWidth: "-30",
-          inputHeight: "21",
-          labelLeft: "185",
-          labelTop: "135",
-          inputLeft: "255",
-          inputTop: "135",
-          position: "absolute"
-        }, {
-          type: "combo",
-          name: "county_text",
-          label: "County",
-          width: 210,
-          labelWidth: "80",
-          labelHeight: "21",
-          inputWidth: "95",
-          inputHeight: "21",
-          labelLeft: "15",
-          labelTop: "165",
-          inputLeft: "95",
-          inputTop: "165",
-          readonly: true,
-          disabled:true,
-          position: "absolute",
-          options: [{
-            text: "Pick a County",
-            value: ""
-          }]
-        }, {
-          type: "combo",
-          name: "country_text",
-          label: "Country",
-          width: 210,
-          labelWidth: "80",
-          labelHeight: "21",
-          inputWidth: "95",
-          inputHeight: "21",
-          labelLeft: "335",
-          labelTop: "105",
-          inputLeft: "440",
-          inputTop: "105",
-          position: "absolute",
-          readonly: true,
-          options: [{
-            text: "Pick a Country",
-            value: ""
-          }]
-        }, {
-          type: "combo",
-          name: "province_text",
-          label: "Province",
-          width: 210,
-          labelWidth: "80",
-          labelHeight: "21",
-          inputWidth: "95",
-          inputHeight: "21",
-          labelLeft: "335",
-          labelTop: "135",
-          inputLeft: "440",
-          inputTop: "135",
-           disabled:true,
-          position: "absolute",
-          readonly: true,
-          options: [{
-            text: "Pick Province",
-            value: ""
+            value: "0",
+            text: "No"
           }]
         }, {
           type: "calendar",
-          name: "start_date",
-          label: "Start Date",
+          name: "startdate_1",
+          label: "Start&nbsp;Date&nbsp;(mm-dd-yyyy)",
+          labelWidth: "200",
           dateFormat: "%m-%d-%Y",
           enableTime: false,
-          //readonly: true,
           value: "",
-          width: 210,
-          labelWidth: "80",
-          labelHeight: "21",
-          inputWidth: "177",
-          inputHeight: "21",
-          labelLeft: "15",
-          labelTop: "195",
-          inputLeft: "95",
-          inputTop: "195",
-          position: "absolute"
+          options: {},
+          labelLeft: "0",
+          labelTop: "140",
+          inputLeft: "0",
+          inputTop: "161",
+          position: "absolute",
+          inputWidth: "150",
+          readonly: 1
         }, {
           type: "calendar",
-          name: "leave_date",
-          label: "End Date",
+          name: "enddate_1",
+          label: "End&nbsp;Date&nbsp;(mm-dd-yyyy)",
+          labelWidth: "200",
           dateFormat: "%m-%d-%Y",
-          enableTime: false,
-          //readonly: true,
-          value: "",
-          width: 210,
-          labelWidth: "80",
-          labelHeight: "21",
-          inputWidth: "177",
-          inputHeight: "21",
-          labelLeft: "335",
-          labelTop: "195",
-          inputLeft: "440",
-          inputTop: "195",
-          position: "absolute"
+          options: {},
+          labelLeft: "200",
+          labelTop: "140",
+          inputLeft: "200",
+          inputTop: "161",
+          position: "absolute",
+          inputWidth: "150",
+          readonly: 1
         }, {
-          type: "hidden",
-          name: "address_start1",
+          type: "input",
+          hidden: true,
+          name: "connectionId",
           value: ""
-
         }, {
-          type: "hidden",
-          name: "address_leave1",
+          type: "input",
+          hidden: true,
+          name: "relConnId",
           value: ""
-
         }, {
-          type: "hidden",
-          name: "mailing1",
+          type: "input",
+          hidden: true,
+          name: "relAction",
+          value: 'inserted'
+        }, {
+          type: "input",
+          hidden: true,
+          name: "relConnectionId1",
           value: ""
-
+        }, {
+          type: "input",
+          hidden: true,
+          name: "hRelationTypeId1",
+          value: ''
+        }, {
+          type: "input",
+          hidden: true,
+          name: "contacttype",
+          value: '1'
+        }, {
+          type: "input",
+          hidden: true,
+          name: "combo1value",
+          value: ''
         }]
       }]
     }
