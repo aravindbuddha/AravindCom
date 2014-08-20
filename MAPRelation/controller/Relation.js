@@ -15,8 +15,8 @@ var Relation = (function() {
   var
     is_add_edit_form_edited = false,
     is_edit_mode = false,
-    is_edited=false,
-    spouse_contact_id=null; 
+    is_edited = false,
+    spouse_contact_id = null;
 
   // Public functions
   return {
@@ -49,7 +49,7 @@ var Relation = (function() {
       }
 
       window_manager.setImagePath(self.Model.conf_window.image_path);
-      
+
       if (window_manager.isWindow(_name)) {
         win[_name].show();
         win[_name].bringToTop();
@@ -93,7 +93,7 @@ var Relation = (function() {
       grid[_name].enableAutoWidth(true);
       grid[_name].enableMultiselect(true);
       grid[_name].enableMultiline(true);
-      grid[_name].enableAlterCss("even","uneven");
+      grid[_name].enableAlterCss("even", "uneven");
       grid[_name].setDateFormat("%m-%d-%Y");
       grid[_name].setColumnsVisibility(opt.visibility);
       grid[_name].init();
@@ -130,7 +130,7 @@ var Relation = (function() {
      */
     _toolbar_events: function(_name) {
       var self = this,
-     relation_get_ds = self.Data.store("relation_get");
+        relation_get_ds = self.Data.store("relation_get");
       _name = _name || com_name;
       toolbar[_name].attachEvent("onClick", function(id) {
         if (id == "add_relation") {
@@ -141,13 +141,13 @@ var Relation = (function() {
         }
         if (id == "edit_relation") {
           var
-          grid_id = grid[com_name].getSelectedRowId();
-          grid_id=grid_id.split(',');
-          if(grid_id.length > 1){
-           dhtmlx.alert({
-             text:"Please select one row only"
-           });
-           return ;
+            grid_id = grid[com_name].getSelectedRowId();
+          grid_id = grid_id.split(',');
+          if (grid_id.length > 1) {
+            dhtmlx.alert({
+              text: "Please select one row only"
+            });
+            return;
           }
           self.build_window("Add_Edit", self.Model.edit_window);
           self._window_add_edit_extend("Add_Edit");
@@ -155,12 +155,12 @@ var Relation = (function() {
           self._form_add_edit("Add_Edit", true);
         }
         if (id == "delete_relation") {
-          var 
-          count=0,
-          selected_row_ids = grid[_name].getSelectedRowId();
-          selected_row_ids=selected_row_ids.split(',');
-          count=selected_row_ids.length;
-          selected_row_ids.forEach(function(row_id){
+          var
+            count = 0,
+            selected_row_ids = grid[_name].getSelectedRowId();
+          selected_row_ids = selected_row_ids.split(',');
+          count = selected_row_ids.length;
+          selected_row_ids.forEach(function(row_id) {
             var data = {
               contact_id: config.contact_id,
               relation_id: row_id
@@ -169,7 +169,7 @@ var Relation = (function() {
             win[com_name].progressOn();
             dhtmlxAjax.post(self.Data.end_point.relation_del, "data=" + JSON.stringify(data), function() {
               count--;
-              if(!count){
+              if (!count) {
                 win[com_name].progressOff();
               }
             });
@@ -177,42 +177,42 @@ var Relation = (function() {
         }
       });
     },
-    _window_add_edit_extend:function(_name){
+    _window_add_edit_extend: function(_name) {
 
       win[_name].button("close").attachEvent("onClick", function(win) {
 
-        if(is_edited == true){
-           dhtmlx.confirm({
-              //title: "Alert",
-              type: "confirm",
-              text: "Are you sure? you have unsaved changes",
-              ok:"Yes",
-              cancel:"No",
-              callback: function(val) {
-                if(val){
-                  win.close();
-                  return true;
-                }
-                 return false;          
-               }
-            });
-        }else{
-           win.close();
+        if (is_edited == true) {
+          dhtmlx.confirm({
+            //title: "Alert",
+            type: "confirm",
+            text: "Are you sure? you have unsaved changes",
+            ok: "Yes",
+            cancel: "No",
+            callback: function(val) {
+              if (val) {
+                win.close();
+                return true;
+              }
+              return false;
+            }
+          });
+        } else {
+          win.close();
         }
-       
+
       });
     },
     /**
-     * [_grid_main ]
+     * [_grid ]
      * @param  {[type]} _name [description]
      * @return {[type]}       [description]
      */
-    _grid_main: function(_name) {
+    _grid: function(_name) {
       var self = this;
       _name = _name || com_name;
       self.build_grid(_name, self.Model.conf_grid);
       var grid_relation_ds = self.Data.store("relation_get");
-  
+
       grid[_name].sync(grid_relation_ds, {
         select: true
       });
@@ -227,14 +227,14 @@ var Relation = (function() {
         self.set_status(_name, "Ready to use");
 
       }
-      self._grid_main_events(_name);
+      self._grid_events(_name);
     },
     /**
-     * [_grid_main_events description]
+     * [_grid_events description]
      * @param  {[type]} _name [description]
      * @return {[type]}       [description]
      */
-    _grid_main_events: function(_name) {
+    _grid_events: function(_name) {
       var self = this;
       grid[_name].attachEvent("onRowDblClicked", function(rowId, cellInd) {
         self.build_window("Add_Edit", self.Model.edit_window);
@@ -261,7 +261,7 @@ var Relation = (function() {
       _name = _name || com_name;
       toolbar[_name] = layout[_name].cells("a").attachToolbar(self.Model.edit_toolbar);
       toolbar[_name].setSkin(self.Model.globalSkin);
-       toolbar[_name].disableItem("import_relation");
+      //toolbar[_name].disableItem("import_relation");
       self._toolbar_add_edit_couple_check(_name);
       this._toolbar_add_edit_events(_name);
     },
@@ -275,10 +275,10 @@ var Relation = (function() {
       var data = {
         contact_id: config.contact_id
       };
-      if(spouse_contact_id != null){
+      if (spouse_contact_id != null) {
         toolbar[_name].enableItem("import_relation");
-      }else{
-        dhtmlxAjax.post(self.Data.end_point.spouse_contact_id,"data=" +JSON.stringify(data), function(loader) {
+      } else {
+        dhtmlxAjax.post(self.Data.end_point.spouse_contact_id, "data=" + JSON.stringify(data), function(loader) {
           var json = JSON.parse(loader.xmlDoc.responseText);
           if (json.spouse_contact_id) {
             spouse_contact_id = json.spouse_contact_id;
@@ -294,9 +294,9 @@ var Relation = (function() {
      * @return {[type]}       [description]
      */
     _toolbar_add_edit_events: function(_name) {
-      var 
-      self = this,
-      data = {};
+      var
+        self = this,
+        data = {};
 
       toolbar[_name].attachEvent("onClick", function(id) {
         if (id == "save_relation") {
@@ -329,19 +329,19 @@ var Relation = (function() {
             dhtmlxAjax.post(self.Data.end_point.relation_save, "data=" + JSON.stringify(data), function() {
               layout[_name].progressOff();
               relation_get_ds.loadNext();
-              if(is_edit_mode){
-                var 
-                  data_1=dhtmlx.extend(relation_get_ds.data.item(data.relation_id),data);
-                  relation_get_ds.update(data_1.id,data_1);
+              if (is_edit_mode) {
+                var
+                  data_1 = dhtmlx.extend(relation_get_ds.data.item(data.relation_id), data);
+                relation_get_ds.update(data_1.id, data_1);
               }
-               dhtmlx.alert({
-                  //type:"alert",
-                  text:"Saved Successfully!",
-                  //ok:"Yes",
-                  callback:function(){
-                    win[_name].close();
-                  }
-                });
+              dhtmlx.alert({
+                //type:"alert",
+                text: "Saved Successfully!",
+                //ok:"Yes",
+                callback: function() {
+                  win[_name].close();
+                }
+              });
             });
 
           }
@@ -372,53 +372,53 @@ var Relation = (function() {
      * @param  {[type]} _name [description]
      * @return {[type]}       [description]
      */
-    _toolbar_import_events:function(_name){
-      var 
-        self=this,
+    _toolbar_import_events: function(_name) {
+      var
+        self = this,
         data,
         row_ids,
-        count=0,
-        spouse_relation_ds=self.Data.store('spouse_contacts'),
+        count = 0,
+        spouse_relation_ds = self.Data.store('spouse_contacts'),
         relation_get_ds = self.Data.store("relation_get");
 
 
-      toolbar[_name].attachEvent('onClick',function(id){
-        if(id =="import_relation"){
-          row_ids=grid[_name].getCheckedRows(0);
-          row_ids=row_ids.split(',');
-          count=row_ids.length;
-          if(count < 2){
-            dhtmlx.message({ 
-                type:"alert-error", 
-                text:"Please select atleast one relation?"
+      toolbar[_name].attachEvent('onClick', function(id) {
+        if (id == "import_relation") {
+          row_ids = grid[_name].getCheckedRows(0);
+          row_ids = row_ids.split(',');
+          count = row_ids.length;
+          if (count < 2) {
+            dhtmlx.message({
+              type: "alert-error",
+              text: "Please select atleast one relation?"
             });
             return;
           }
           layout[_name].progressOn();
           //loop through all row ids
-          row_ids.forEach(function(id){
-            data=spouse_relation_ds.data.item(id);
-            data.contact_id=config.contact_id;
-            data.is_mailing=data.MailingRelation;
+          row_ids.forEach(function(id) {
+            data = spouse_relation_ds.data.item(id);
+            data.contact_id = config.contact_id;
+            data.is_mailing = data.MailingRelation;
             delete data.relation_id;
-          
-           
+
+
             dhtmlxAjax.post(self.Data.end_point.relation_save, "data=" + JSON.stringify(data), function() {
               count--;
-              if(!count){
-                  layout[_name].progressOff();
-                 //migration with dhx3.6 ds.ob only in dhx 3.6 ds.loadNext new in dhx 4.0
-                  relation_get_ds.loadNext();
-                  dhtmlx.alert({
-                    text:"Imported Successfully!",
-                    callback:function(){
-                      win[_name].close();
-                    }
-                  });
+              if (!count) {
+                layout[_name].progressOff();
+                //migration with dhx3.6 ds.ob only in dhx 3.6 ds.loadNext new in dhx 4.0
+                relation_get_ds.loadNext();
+                dhtmlx.alert({
+                  text: "Imported Successfully!",
+                  callback: function() {
+                    win[_name].close();
+                  }
+                });
               }
             });
 
-         });
+          });
         }
       });
     },
@@ -432,18 +432,18 @@ var Relation = (function() {
       _name = _name || com_name;
 
       self.build_grid(_name, self.Model.import_grid);
-      var spouse_relation_ds=self.Data.store('spouse_contacts'); 
+      var spouse_relation_ds = self.Data.store('spouse_contacts');
       grid[_name].sync(spouse_relation_ds);
-      if(spouse_relation_ds.data.dataCount() == 0 || spouse_relation_ds.isVisible() ){
-         layout[_name].progressOff();
-         self.set_status(_name, "Ready to use");
-      }else{
-         spouse_relation_ds.attachEvent("onXLE", function() {
+      if (spouse_relation_ds.data.dataCount() == 0 || spouse_relation_ds.isVisible()) {
+        layout[_name].progressOff();
+        self.set_status(_name, "Ready to use");
+      } else {
+        spouse_relation_ds.attachEvent("onXLE", function() {
           layout[_name].progressOff();
           self.set_status(_name, "Ready to use");
         });
       }
-        
+
     },
     /**
      * [_form_add_edit_validate description]
@@ -468,9 +468,8 @@ var Relation = (function() {
         });
         self.set_status(_name, " Fields required");
         return false;
-      }
-      else if (data.leave_date !=null && data.start_date !=null) {
-        if(data.leave_date < data.start_date){
+      } else if (data.leave_date != null && data.start_date != null) {
+        if (data.leave_date < data.start_date) {
           dhtmlx.alert({
             title: "Alert",
             type: "alert-error",
@@ -481,8 +480,8 @@ var Relation = (function() {
             }
           });
           self.set_status(_name, "End date should be greater or equal to Start date");
-           return false;
-        }     
+          return false;
+        }
       } else if (data.zip !== '' && data.zip !== null) {
         if (zipcodeVal !== true) {
           dhtmlx.alert({
@@ -511,160 +510,160 @@ var Relation = (function() {
       var self = this;
       _name = _name || com_name;
 
-     
+
 
 
       form[_name] = layout[_name].cells("a").attachForm(self.Model.conf_form.template);
-      layout[_name].progressOn();
+      layout[_name].progressOff();
       self.set_status(_name, "Loading....");
 
-      // self._form_data_storage_fill(_name);
-      var
-        relation_type = form[_name].getCombo("relation_type"),
-        relation_province = form[_name].getCombo("province_text"),
-        relation_country = form[_name].getCombo("country_text"),
-        relation_county = form[_name].getCombo("county_text"),
-        relation_state = form[_name].getCombo("state_text"),
-        is_mailing_relation = form[_name].getCombo("is_mailing_relation"), 
-        relation_start_date = form[_name].getCalendar("start_date"),
-        relation_leave_date = form[_name].getCalendar("leave_date");
+      // // self._form_data_storage_fill(_name);
+      // var
+      //   relation_type = form[_name].getCombo("relation_type"),
+      //   relation_province = form[_name].getCombo("province_text"),
+      //   relation_country = form[_name].getCombo("country_text"),
+      //   relation_county = form[_name].getCombo("county_text"),
+      //   relation_state = form[_name].getCombo("state_text"),
+      //   is_mailing_relation = form[_name].getCombo("is_mailing_relation"),
+      //   relation_start_date = form[_name].getCalendar("start_date"),
+      //   relation_leave_date = form[_name].getCalendar("leave_date");
 
-      var
-        relation_type_ds = self.Data.store('relation_type'),
-        relation_province_ds = self.Data.store('relation_province'),
-        relation_state_ds = self.Data.store('relation_state'),
-        relation_country_ds = self.Data.store('relation_country'),
-        relation_county_ds = self.Data.store('relation_county');
+      // var
+      //   relation_type_ds = self.Data.store('relation_type'),
+      //   relation_province_ds = self.Data.store('relation_province'),
+      //   relation_state_ds = self.Data.store('relation_state'),
+      //   relation_country_ds = self.Data.store('relation_country'),
+      //   relation_county_ds = self.Data.store('relation_county');
 
-      //data stoe to dhtmlx objects
-      relation_type.sync(relation_type_ds);
-      relation_country.sync(relation_country_ds);
-      relation_province.sync(relation_province_ds);
-      relation_state.sync(relation_state_ds);
-      relation_county.sync(relation_county_ds);
+      // //data stoe to dhtmlx objects
+      // relation_type.sync(relation_type_ds);
+      // relation_country.sync(relation_country_ds);
+      // relation_province.sync(relation_province_ds);
+      // relation_state.sync(relation_state_ds);
+      // relation_county.sync(relation_county_ds);
 
-       //Check if all datastorage lkp tables loaded or not
-      var lkp_ds=[
-        relation_type_ds,
-        relation_province_ds,
-        relation_state_ds,
-        relation_country_ds,
-        relation_county_ds
-      ];
-      var check_lkp_ds=setInterval(function(){
-        if(lkp_ds.length > 0){
-          var _ds=lkp_ds.shift();        
-          if(!_ds.isVisible()){
-            lkp_ds.push(_ds);
-          }
-        }else{
-          clearInterval(check_lkp_ds);
-          layout[_name].progressOff();
-          on_lkp_load();
-        }
-      }, 100);
+      // //Check if all datastorage lkp tables loaded or not
+      // var lkp_ds = [
+      //   relation_type_ds,
+      //   relation_province_ds,
+      //   relation_state_ds,
+      //   relation_country_ds,
+      //   relation_county_ds
+      // ];
+      // var check_lkp_ds = setInterval(function() {
+      //   if (lkp_ds.length > 0) {
+      //     var _ds = lkp_ds.shift();
+      //     if (!_ds.isVisible()) {
+      //       lkp_ds.push(_ds);
+      //     }
+      //   } else {
+      //     clearInterval(check_lkp_ds);
+      //     layout[_name].progressOff();
+      //     on_lkp_load();
+      //   }
+      // }, 100);
 
-      // Execute this code when storage data load is done
-      var on_lkp_load=function(){
-        self.set_status(_name, "Ready to use");
-      
-        //initial county should be USA
-        var
-        usa_opt = relation_country.getOptionByLabel("USA");
-        relation_country.setComboText(usa_opt.text);
-        relation_country.setComboValue(usa_opt.value);
+      // // Execute this code when storage data load is done
+      // var on_lkp_load = function() {
+      //   self.set_status(_name, "Ready to use");
 
-        //set default states to USA states
-        var
-        country_id = relation_country.getSelectedValue();
-        relation_state_ds.data.filter("CountryID", country_id);
-       
-        is_edited=false;
-      };
+      //   //initial county should be USA
+      //   var
+      //     usa_opt = relation_country.getOptionByLabel("USA");
+      //   relation_country.setComboText(usa_opt.text);
+      //   relation_country.setComboValue(usa_opt.value);
 
-      // When Editing mode on
-      if (isEdit) {
-        is_edit_mode = true;
-        var relation_get_ds = self.Data.store('relation_get');
-        relation_get_ds.setCursor(grid_id);
-        form[_name].bind(relation_get_ds);
-        //edit
-        var
-          grid_id = grid[com_name].getSelectedRowId(),
-          data = relation_get_ds.item(grid_id);
-       
+      //   //set default states to USA states
+      //   var
+      //     country_id = relation_country.getSelectedValue();
+      //   relation_state_ds.data.filter("CountryID", country_id);
 
-        relation_type.setComboValue(data.relation_type_id);
-        relation_province.setComboValue(data.province_id);
-        relation_country.setComboValue(data.country_id);
-        relation_county.setComboValue(data.county_id);
-        relation_state.setComboValue(data.state_id);
-        console.log(data);
-        relation_start_date.setDate(data.start_date?data.start_date:new Date());
-        relation_leave_date.setDate(data.leave_date?data.leave_date:new Date());  
-        (data.province_text == "") ? relation_province.setComboText("Pick Province") : form[_name].enableItem("province_text");
-        (data.country_text == "") ? relation_country.setComboText("Pick Country") : "";
-        (data.county_text == "") ? relation_county.setComboText("Pick County") : form[_name].enableItem("county_text");
-        (data.country_state == "") ? relation_state.setComboText("Pick State") : form[_name].enableItem("country_text");
-      } else {
-        is_edit_mode = false;
-      }
+      //   is_edited = false;
+      // };
 
-      is_mailing_relation.attachEvent("onChange", function(){
-         is_edited=true;
-      });
-      relation_type.attachEvent("onChange",function(){
-        is_edited=true;
-      });
-      // --- On country change
-      relation_country.attachEvent("onChange", function() {
-        is_edited=true;
-          //current selected Country Id
-          var country_id = relation_country.getSelectedValue();
-          relation_province_ds.data.filter("CountryID", country_id);
-          if (relation_province_ds.data.dataCount() < 1) {
-              relation_province.addOption([
-                  ["0", "Pick a Province"]
-              ]);
-              form[_name].disableItem("province_text");
-          } else {
-              form[_name].enableItem("province_text");
-              relation_province.addOption([
-                  ["0", "Pick a Province"]
-              ]);
-          }
+      // // When Editing mode on
+      // if (isEdit) {
+      //   is_edit_mode = true;
+      //   var relation_get_ds = self.Data.store('relation_get');
+      //   relation_get_ds.setCursor(grid_id);
+      //   form[_name].bind(relation_get_ds);
+      //   //edit
+      //   var
+      //     grid_id = grid[com_name].getSelectedRowId(),
+      //     data = relation_get_ds.item(grid_id);
 
-          relation_state_ds.data.filter("CountryID", country_id);
-          if (relation_state_ds.data.dataCount() < 1) {
-              relation_state.addOption([
-                  ["0", "Pick a State"]
-              ]);
-               form[_name].disableItem("state_text");
-          } else {
-              form[_name].enableItem("state_text");
-              relation_state.addOption([
-                  ["0", "Pick a State"]
-              ]);
-          }
-      });
 
-      relation_state.attachEvent("onChange", function() {
-         is_edited=true;
-          var stateid = relation_state.getSelectedValue();
-          relation_county_ds.data.filter("StateId", stateid);
-          if (relation_county_ds.data.dataCount() < 1) {
-              relation_county.addOption([
-                  ["0", "Select State"]
-              ]);
-               form[_name].disableItem("county_text");
-          } else {
-              form[_name].enableItem("county_text");
-              relation_county.addOption([
-                  ["0", "Select State"]
-              ]);
-          }
-          self._form_add_edit_events(_name);
-      });
+      //   relation_type.setComboValue(data.relation_type_id);
+      //   relation_province.setComboValue(data.province_id);
+      //   relation_country.setComboValue(data.country_id);
+      //   relation_county.setComboValue(data.county_id);
+      //   relation_state.setComboValue(data.state_id);
+      //   console.log(data);
+      //   relation_start_date.setDate(data.start_date ? data.start_date : new Date());
+      //   relation_leave_date.setDate(data.leave_date ? data.leave_date : new Date());
+      //   (data.province_text == "") ? relation_province.setComboText("Pick Province") : form[_name].enableItem("province_text");
+      //   (data.country_text == "") ? relation_country.setComboText("Pick Country") : "";
+      //   (data.county_text == "") ? relation_county.setComboText("Pick County") : form[_name].enableItem("county_text");
+      //   (data.country_state == "") ? relation_state.setComboText("Pick State") : form[_name].enableItem("country_text");
+      // } else {
+      //   is_edit_mode = false;
+      // }
+
+      // is_mailing_relation.attachEvent("onChange", function() {
+      //   is_edited = true;
+      // });
+      // relation_type.attachEvent("onChange", function() {
+      //   is_edited = true;
+      // });
+      // // --- On country change
+      // relation_country.attachEvent("onChange", function() {
+      //   is_edited = true;
+      //   //current selected Country Id
+      //   var country_id = relation_country.getSelectedValue();
+      //   relation_province_ds.data.filter("CountryID", country_id);
+      //   if (relation_province_ds.data.dataCount() < 1) {
+      //     relation_province.addOption([
+      //       ["0", "Pick a Province"]
+      //     ]);
+      //     form[_name].disableItem("province_text");
+      //   } else {
+      //     form[_name].enableItem("province_text");
+      //     relation_province.addOption([
+      //       ["0", "Pick a Province"]
+      //     ]);
+      //   }
+
+      //   relation_state_ds.data.filter("CountryID", country_id);
+      //   if (relation_state_ds.data.dataCount() < 1) {
+      //     relation_state.addOption([
+      //       ["0", "Pick a State"]
+      //     ]);
+      //     form[_name].disableItem("state_text");
+      //   } else {
+      //     form[_name].enableItem("state_text");
+      //     relation_state.addOption([
+      //       ["0", "Pick a State"]
+      //     ]);
+      //   }
+      // });
+
+      // relation_state.attachEvent("onChange", function() {
+      //   is_edited = true;
+      //   var stateid = relation_state.getSelectedValue();
+      //   relation_county_ds.data.filter("StateId", stateid);
+      //   if (relation_county_ds.data.dataCount() < 1) {
+      //     relation_county.addOption([
+      //       ["0", "Select State"]
+      //     ]);
+      //     form[_name].disableItem("county_text");
+      //   } else {
+      //     form[_name].enableItem("county_text");
+      //     relation_county.addOption([
+      //       ["0", "Select State"]
+      //     ]);
+      //   }
+      //   self._form_add_edit_events(_name);
+      // });
     },
     /**
      * [_form_add_edit_events description]
@@ -673,7 +672,7 @@ var Relation = (function() {
      */
     _form_add_edit_events: function(_name) { // Events for inputs
       form[_name].attachEvent("onInputChange", function(name) {
-         is_edited=true;
+        is_edited = true;
         var len = form[_name].getItemValue('zip').length;
         if (name === 'zip') {
           if (len === 5) {
@@ -692,7 +691,7 @@ var Relation = (function() {
                   }
                 });
               } else {
-                dhtmlxAjax.get(self.Data.end_point.relation_by_zip+"&zip=" + zipcode, function(loader) {
+                dhtmlxAjax.get(self.Data.end_point.relation_by_zip + "&zip=" + zipcode, function(loader) {
                   json = JSON.parse(loader.xmlDoc.responseText);
                   if (json.length > 0) {
                     json = json[0];
@@ -733,7 +732,7 @@ var Relation = (function() {
       config = _conf;
       self.application_path = config.application_path;
       dhx_globalImgPath = config.dhtmlx_codebase_path + "imgs/";
-    
+
       config["icons_path"] = "asserts/icons/";
       config["img_path"] = "asserts/imgs/"
 
@@ -743,13 +742,13 @@ var Relation = (function() {
         config.dhtmlx_codebase_path + "dhtmlx.css",
         config.dhtmlx_codebase_path + "dhtmlx.js",
         config.application_path + "js/json2.js",
-         // config.dhtmlx_codebase_path + "dhtmlx_deprecated.js",
+        // config.dhtmlx_codebase_path + "dhtmlx_deprecated.js",
         self.application_path + "model/model.js",
         self.application_path + "controller/classes/data.js"
       ];
 
-      if(com_dhx_version === "4.0"){
-        internal_dependencies.push( config.dhtmlx_codebase_path + "dhtmlx_deprecated.js");
+      if (com_dhx_version === "4.0") {
+        internal_dependencies.push(config.dhtmlx_codebase_path + "dhtmlx_deprecated.js");
       }
       CAIRS.onDemand.load(internal_dependencies, function() {
         self.Model.init(config.application_path + config.img_path, config.application_path + config.icons_path);
@@ -762,8 +761,8 @@ var Relation = (function() {
         } else {
           self._layout();
         }
-         self._toolbar();
-         self._grid_main();
+        self._toolbar();
+        self._grid();
       });
     },
     /**
@@ -772,13 +771,13 @@ var Relation = (function() {
      * @param {[type]} msg   [description]
      * @param {[enum]} type  [should be any of {info,err,success}]
      */
-    set_status: function(_name, _msg,_type) { 
+    set_status: function(_name, _msg, _type) {
       //alert(_name);
-      var color="#000000";
-      color = (_type == "info")?"#000000":color;
-      color = (_type == "err")?"#FF000A0":color;
-      color = (_type == "success")?"#03B202":color;
-      status_bar[_name].setText('<span style="color:'+color+';"><strong>* ' + _msg + '</strong></span>');
+      var color = "#000000";
+      color = (_type == "info") ? "#000000" : color;
+      color = (_type == "err") ? "#FF000A0" : color;
+      color = (_type == "success") ? "#03B202" : color;
+      status_bar[_name].setText('<span style="color:' + color + ';"><strong>* ' + _msg + '</strong></span>');
     },
     /**
      * [Validate values when call the component]
@@ -814,7 +813,7 @@ var Relation = (function() {
         });
         return;
       }
-       if ((typeof config.conn_id === 'undefined') || (config.conn_id.length === 0)) {
+      if ((typeof config.conn_id === 'undefined') || (config.conn_id.length === 0)) {
         dhtmlx.message({
           type: "error",
           text: "Conn Id is missing"
@@ -824,5 +823,3 @@ var Relation = (function() {
     }
   }
 }());
-
-

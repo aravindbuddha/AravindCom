@@ -46,17 +46,17 @@ Relation.Model = Relation.Model || (function() {
       "icon_dis": "family.png",
     },
     "new_window": {
-      "width": 730,
+      "width": 800,
       "height": 340,
       "title": "New Relation"
     },
     "edit_window": {
-      "width": 730,
+      "width": 800,
       "height": 340,
       "title": "Edit Relation"
     },
     "import_window": {
-      "width": 730,
+      "width": 700,
       "height": 340,
       "title": "Import Relation"
     },
@@ -99,13 +99,14 @@ Relation.Model = Relation.Model || (function() {
           "text": "Save",
           "img": "save.gif",
           "img_disabled": "save.gif"
-        }, {
-          "type": "button",
-          "id": "import_relation",
-          "text": "Import relation",
-          "img": "import-icon.png",
-          "img_disabled": "import-icon.png"
         }
+        // , {
+        //   "type": "button",
+        //   "id": "import_relation",
+        //   "text": "Import relation",
+        //   "img": "import-icon.png",
+        //   "img_disabled": "import-icon.png"
+        // }
         // , 
         // 
         // {
@@ -169,120 +170,114 @@ Relation.Model = Relation.Model || (function() {
     "conf_form": {
       "template": [{
         type: "block",
-        width: 640,
-        offsetLeft: 0,
+        width: 765,
+        offsetLeft: 15,
+        offsetTop: 15,
         inputWidth: "auto",
         tab_width: "100px",
-        //id: "tab_family_detail",
         label: "Family detail",
         list: [{
           type: "settings",
-          position: "absolute"
+          position: "label-top",
+
         }, {
-          type: "input",
+          type: "combo",
           name: "contact_name",
           required: true,
           label: "Contact",
-          position: "absolute",
           inputWidth: "200",
-          labelLeft: "0",
-          labelTop: "10",
-          inputLeft: "140",
-          inputTop: "11"
         }, {
-          type: "label",
-          name: "processingWheel1",
-          label: '<img alt="Processing wheel" id="processingWheel1"  src="../../images/bigrotation.gif" width="20px"; height="20px" />',
-          labelWidth: "16",
-          labelHeight: "16",
-          labelLeft: "315",
-          labelTop: "6",
-          position: "absolute",
-          hidden: false
+          type: "newcolumn"
         }, {
-          type: "label",
-          name: "p1plusicon",
-          label: '<img alt="Add Contact" id="plusicon" src="../../auxiliary/dhtmlxfull3.5/icons/add.png" onclick="MAPRelationshipComponent.opencontact();  "/>',
-          labelWidth: "20",
-          labelHeight: "20",
-          labelLeft: "344",
-          labelTop: "8",
-          position: "absolute",
-          hidden: false
+          type: "button",
+          name: "add_btn",
+          value: 'Add',
+          offsetTop: 15,
+          offsetLeft: 20,
+
+        }, {
+          type: "newcolumn"
         }, {
           type: "combo",
-          name: "primaryRelationship",
+          name: "primary_relation",
           required: true,
-          label: "Primary&nbsp;Relationship",
-          inputWidth: "200",
-          labelLeft: "0",
-          labelTop: "54",
-          inputLeft: "140",
-          inputTop: "51",
-          position: "absolute"
+          label: "Primary Relationship",
+          offsetLeft: 190,
+          inputWidth: 200
         }, {
-          type: "combo",
-          name: "relationTypeId1",
+          type: "newcolumn"
+        }, {
+          type: "select",
+          name: "relation_1",
           required: true,
-          label: "Relation&nbsp;Type",
-          labelWidth: "200",
-          inputWidth: "200",
-          labelLeft: "0",
-          labelTop: "104",
-          inputLeft: "140",
-          inputTop: "101",
-          position: "absolute"
+          inputWidth: 150,
+          offsetTop: 50
+
+        }, {
+          type: "newcolumn"
         }, {
           type: "combo",
-          name: "defaultrelation",
-          label: "Default Relationship",
-          labelWidth: "125",
-          labelHeight: "25",
-          inputWidth: "100",
-          height: 75,
-          inputHeight: "21",
-          labelLeft: "360",
-          labelTop: "53",
-          inputLeft: "480",
-          inputTop: "51",
-          position: "absolute",
-          options: [{
-            value: "1",
-            text: "Yes"
-          }, {
-            value: "0",
-            text: "No"
-          }]
+          name: "relation",
+          label: "Relationship",
+          inputWidth: 150,
+          offsetTop: 32,
+          offsetLeft: 30
+          // labelWidth: "125",
+          // labelHeight: "25",
+          // inputWidth: "100",
+          // height: 75,
+          // inputHeight: "21",
+          // labelLeft: "360",
+          // labelTop: "53",
+          // inputLeft: "480",
+          // inputTop: "51",
+
+          // options: [{
+          //   value: "1",
+          //   text: "Yes"
+          // }, {
+          //   value: "0",
+          //   text: "No"
+          // }]
+        }, {
+          type: "newcolumn"
         }, {
           type: "calendar",
           name: "startdate_1",
-          label: "Start&nbsp;Date&nbsp;(mm-dd-yyyy)",
+          label: "Start Date(mm-dd-yyyy)",
           labelWidth: "200",
           dateFormat: "%m-%d-%Y",
-          enableTime: false,
-          value: "",
-          options: {},
-          labelLeft: "0",
-          labelTop: "140",
-          inputLeft: "0",
-          inputTop: "161",
-          position: "absolute",
-          inputWidth: "150",
-          readonly: 1
+          inputWidth: 150,
+          offsetTop: 32,
+          offsetLeft: 30
+          // enableTime: false,
+          // value: "",
+          // options: {},
+          // labelLeft: "0",
+          // labelTop: "140",
+          // inputLeft: "0",
+          // inputTop: "161",
+
+          // inputWidth: "150",
+          // readonly: 1
+        }, {
+          type: "newcolumn"
         }, {
           type: "calendar",
-          name: "enddate_1",
-          label: "End&nbsp;Date&nbsp;(mm-dd-yyyy)",
+          name: "end_date",
+          label: "End Date(mm-dd-yyyy)",
           labelWidth: "200",
           dateFormat: "%m-%d-%Y",
-          options: {},
-          labelLeft: "200",
-          labelTop: "140",
-          inputLeft: "200",
-          inputTop: "161",
-          position: "absolute",
-          inputWidth: "150",
-          readonly: 1
+          inputWidth: 150,
+          offsetTop: 32,
+          offsetLeft: 0
+          // options: {},
+          // labelLeft: "200",
+          // labelTop: "140",
+          // inputLeft: "200",
+          // inputTop: "161",
+          // inputWidth: "150",
+          // readonly: 1
         }, {
           type: "input",
           hidden: true,

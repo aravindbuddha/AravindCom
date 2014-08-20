@@ -10,7 +10,14 @@ include "connection.php";
 
 $data_base=$_REQUEST['data_base'];
 mssql_select_db($data_base);
-
+if($_REQUEST['get']=="relation_name"){
+	$conn_id = $_REQUEST['conn_id'];
+	$res = $json->sql->query("select  udf_CoupleName($conn_id,1,1,'UnKnown',0,0) as relation_name");
+  $result =  $json->sql->get_next($res);
+  echo json_encode(array(
+  	"relation_name" => $result['relation_name']
+  	));
+}
 
 if ($_REQUEST['get']=="address_type") {
 	$json->sort("RelationType", "ASC");

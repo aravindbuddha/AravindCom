@@ -234,12 +234,9 @@ Address.Model = Address.Model || (function() {
           readonly: true,
           position: "absolute",
           options: [{
-              text: "Pick Address Type",
-              value: ""
-            }
-
-
-          ]
+            text: "Pick Address Type",
+            value: ""
+          }]
         }, {
           type: "combo",
           name: "is_mailing_address",
