@@ -9,7 +9,7 @@ function get_c_acc_key($agencyID){
     $c_account_keyDrop   = $c_acc_key['c_account_key'];
     return $c_account_keyDrop;
 }
-$agencyid       =   $_POST['agencyid'];
+$agencyid       =   $_POST['agency_id'];
     
 
 /* if(!isset($_SESSION['agencyId']))
@@ -17,7 +17,7 @@ $agencyid       =   $_POST['agencyid'];
 else
     $agencyid       =   $_SESSION['agencyId'];*/
 $c_account_key = get_c_acc_key($agencyid);
-$contactID     = $_POST['contactID'];
+$contactID     = $_POST['contact_id'];
 
 
 $sp_airsEmail = "EXEC SP_AddEditEMailInfo @CAccountKey = '$c_account_key', @Contactid = '$contactID', @CAFunction = 'Get'";

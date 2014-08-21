@@ -1,726 +1,762 @@
-var emailcomponent = {
-    uid: null,
-    window_manager: null,
-    window: [],
-    layout: [],
-    toolbar: [],
-    grid: [],
-    form: [],
-    status_bar: [],
-    configuration: [],
-    editstatus_bar: [],
-    editwindows: [],
-    edittoolbar: [],
-    editlayout: [],
-    window_help: [],
-    data_store: [],
-    formedited : null,
+var emailcomponent = (function() {
+  var
+    uid = "",
+    com_name = "Email",
+    config = {},
+    window_manager = null,
+    //dhtmlx widgets
+    win = {},
+    status_bar = {},
+    layout = {},
+    grid = {},
+    form = {},
+    toolbar = {};
+  //internal usage
+  var
+    is_edit_mode = false,
+    is_edited = null;
 
-    // Window Manager
-    _window_manager: function () {
+  // Public functions
+  return {
+    /**
+     * [build a dhtmlx window along with a 1C layout and a status bar]
+     * @param  {string} _name  [Name fo the window,layout,statusbar ]
+     * @param  {json} opt   [pass window model]
+     */
+    build_window: function(_name, opt) {
+      var self = this;
+      _name = _name || com_name;
+      //set default values form model if not opt exists
+      var opt = opt || {};
+      opt.left = opt.left || self.Model.defaults.window.left;
+      opt.top = opt.top || self.Model.defaults.window.top;
+      opt.width = opt.width || self.Model.defaults.window.width;
+      opt.height = opt.height || self.Model.defaults.window.height;
+      opt.title = opt.title || self.Model.defaults.window.title;
+      opt.pattern = opt.pattern || self.Model.defaults.window.layout_pattern;
+      opt.icon = opt.icon || self.Model.defaults.window.icon;
+      opt.icon_dis = opt.icon_dis || self.Model.defaults.window.icon_dis;
 
-        var self = this;
-        self.window_manager = new dhtmlXWindows();
-        self.window_manager.setImagePath(self.model.conf_window.image_path);
+      //check if the window manager object on config
+      if (config.window_manager_obj) {
+        window_manager = config.window_manager_obj;
+      } else {
+        if (window_manager === null) {
+          window_manager = new dhtmlXWindows();
+        }
+      }
 
+      window_manager.setImagePath(self.Model.conf_window.image_path);
+
+      if (window_manager.isWindow(_name)) {
+        win[_name].show();
+        win[_name].bringToTop();
+        win[_name].center();
+        return;
+      }
+      win[_name] = window_manager.createWindow(_name, opt.left + 10, opt.top + 10, opt.width, opt.height);
+      win[_name].setText(opt.title);
+      win[_name].setIcon(opt.icon, opt.icon_dis);
+      win[_name].center();
+      win[_name].denyPark();
+      win[_name].denyResize();
+
+      win[_name].button('park').hide();
+      win[_name].button('minmax1').hide();
+      status_bar[_name] = win[_name].attachStatusBar();
+      layout[_name] = win[_name].attachLayout(opt.pattern);
+      layout[_name].cells("a").hideHeader();
+      layout[_name].progressOn();
     },
+    /**
+     * [Build dhtmlx grid]
+     * @param  {string} _name [name of the gird]
+     * @param  {[type]} opt   [grid json]
+     */
+    build_grid: function(_name, opt) {
+      var self = this;
+      _name = _name || com_name;
+      grid[_name] = layout[_name].cells("a").attachGrid(opt);
+      grid[_name].setHeader(opt.headers);
+      grid[_name].setColumnIds(opt.ids);
+      grid[_name].setInitWidths(opt.widths);
+      grid[_name].setColAlign(opt.colaligns);
+      grid[_name].setColTypes(opt.coltypes);
+      grid[_name].setColSorting(opt.colsorting);
+      grid[_name].selMultiRows = false;
+      grid[_name].enableAutoWidth(true);
+      grid[_name].enableMultiselect(true);
+      grid[_name].enableMultiline(true);
+      grid[_name].setDateFormat("%m-%d-%Y");
+      grid[_name].init();
+      self._datastor(_name);
+      self.set_status(_name, "Ready to use");
+    },
+    /**
+     * [Load data in dhtmlx grid]
+     * @param  {string} _name [name of the gird]
+     */
+    _datastor: function(_name) {
+      var self = this,
+        grid_state;
+      var postStr = "contact_id=" + config.contact_id + "&agency_id=" + config.agency_id;
+      dhtmlxAjax.post(config.application_path + "processors/get_data.php", postStr, function(loader) {
+        try {
+          var json = JSON.parse(loader.xmlDoc.responseText);
 
-    // Window
-    _window: function (uid) {
-        var self = this;
-        
-        if(self.configuration[uid].window_managerObj === null) {
-            if (self.window_manager === null)
-                self._window_manager();
+          if (json.status == "success") {
+            grid[_name].parse(json.email, "json");
+            if (config.useWindow === true) {
+              self.set_status(_name, "Ready to use");
+            }
+            layout[_name].progressOff();
+          } else
+          if (json.status == "norecords") {
+            layout[_name].progressOff();
+            grid_state = grid[_name].getStateOfView();
+            if (grid_state[2] == 0) {
+              grid[_name].addRow(-1, ["<div style='margin: 0 auto; color: #00A9E1; width:550px; font-size : 20px; text-align: center;'>No records found.Please click the 'Add Email' option in the toolbar to add an email</div>"]);
+              grid[_name].setRowTextStyle(-1, "height:120px;");
+              grid[_name].enableColSpan(true);
+              grid[_name].setColspan(-1, 0, 3);
+            }
+          } else {
+            dhtmlx.message({
+              type: "error",
+              text: json.response
+            });
+          }
+        } catch (e) {
+          dhtmlx.message({
+            type: "error",
+            text: "Fatal error on server side: " + loader.xmlDoc.responseText
+          });
         }
-        else {
-            self.window_manager = self.configuration[uid].window_managerObj;
-//            alert(self.window_manager);
+      });
+    },
+    /**
+     * [_layout]
+     * @param  {[string]} _name [name of the layout]
+     */
+    _layout: function(_name) {
+      var self = this;
+      _name = _name || com_name;
+      layout[_name] = new dhtmlXLayoutObject(config.parent_div_id, opt.pattern);
+      layout[_name].cells("a").hideHeader();
+      layout[_name].progressOn();
+    },
+    /**
+     * [build main toolbar]
+     * @param  {[type]} _name [name of the toolbar]
+     * @return {[type]}       [description]
+     */
+    _toolbar: function(_name) {
+      var self = this;
+      _name = _name || com_name;
+      toolbar[_name] = layout[_name].cells("a").attachToolbar(self.Model.conf_toolbar);
+      toolbar[_name].setSkin(self.Model.globalSkin);
+      if (config.use_window !== true) {
+        toolbar[_name].removeItem("help_email");
+        toolbar[_name].removeItem("close_email");
+      }
+      toolbar[_name].disableItem("delete_email");
+      toolbar[_name].disableItem("edit_email");
+      this._toolbar_events();
+    },
+    /**
+     * [Events on main toolbar]
+     * @param  {[string]} _name [description]
+     * @return {[type]}       [description]
+     */
+    _toolbar_events: function(_name) {
+      var self = this,
+        _name = _name || com_name;
+      toolbar[_name].attachEvent("onClick", function(id) {
+        if (id == "add_email") {
+          self.build_window("Add_Edit", self.Model.new_window);
+          self._window_add_edit_extend("Add_Edit");
+          self._toolbar_add_edit("Add_Edit");
+          self._form_add_edit("Add_Edit", false);
         }
-
-        if (self.window_manager.isWindow("Background_" + uid)) {
-            self.window[uid].show();
-            self.window[uid].bringToTop();
-            self.window[uid].center();
+        if (id == "edit_email") {
+          var
+            grid_id = grid[com_name].getSelectedRowId();
+          grid_id = grid_id.split(',');
+          if (grid_id.length > 1) {
+            dhtmlx.alert({
+              text: "Please select one row only"
+            });
             return;
+          }
+          self.build_window("Add_Edit", self.Model.edit_window);
+          self._window_add_edit_extend("Add_Edit");
+          is_edited = false;
+          self._toolbar_add_edit("Add_Edit");
+          self._form_add_edit("Add_Edit", true);
         }
-        self.window[uid] = self.window_manager.createWindow("Email_" + uid, 0, 0, self.model.conf_window.width, self.model.conf_window.height);
-        self.window[uid].setText(self.model.text_labels.main_window_title);
-        self.window[uid].setIcon(self.model.conf_window.icon, self.model.conf_window.icon_dis);
-        self.window[uid].center();
-        self.window[uid].denyPark();
-        self.dhtmlxWidowCustomPostion(self.window[uid],self.model.conf_window.top);
-        self.window[uid].attachEvent("onClose", function (win) {
-
-//            win.hide();
-            return true;
-        });
-
-        self.status_bar[uid] = self.window[uid].attachStatusBar();
-        self.status_bar[uid].setText("Loading");
-    },
-
-    //Layout
-    _layout: function (uid) {
-        var self = this;
-        if (self.configuration[uid].useWindow === true) {
-            self.layout[uid] = self.window[uid].attachLayout(self.model.conf_layout.pattern);
-        } else {
-            self.layout[uid] = new dhtmlXLayoutObject(self.configuration[uid].parentDIVId, self.model.conf_layout.pattern);
-        }
-        self.layout[uid].cells("a").hideHeader();
-
-    },
-
-    //toolbar
-    _toolbar: function (uid) {
-        var self = this;
-        self.toolbar[uid] = self.layout[uid].cells("a").attachToolbar(self.model.conf_toolbar);
-        self.toolbar[uid].setSkin(self.model.globalSkin);
-		self.toolbar[uid].setIconsPath(self.model.conf_window.image_path);
-        if (self.configuration[uid].useWindow !== true) {
-            self.toolbar[uid].removeItem("help_email");
-            self.toolbar[uid].removeItem("close_email");
-        }
-/*        if (self.configuration[uid].contactid === 0) {
-            self.toolbar[uid].disableItem("add_email");
-        }*/
-        self.toolbar[uid].attachEvent("onClick", function (id) {
-         if(MAPPermissions.checkAccessPermission(id)!=1) {  
-		 if( id == "edit_email"){
-			 self._editwindow(uid, 'Edit');
-            self._editlayout(uid);
-            self._edittoolbar(uid, 'Edit');
-            self.formedited = 0;
-            self._form(uid, 'Edit');
-		 }
-             if (id == "add_email") {
-                if(self.configuration[uid].window_managerObj != null){
-					
-                    if(self.configuration[uid].contactcomponent_obj.configuration[uid].contactid == 0){									
-                        if (self.configuration[uid].contactcomponent_obj.validation(uid) === true) {
-                            self.configuration[uid].contactcomponent_obj.savecontact(uid, 'temp');				
-                            self._editwindow(uid, 'New');
-                            self._editlayout(uid);
-                            self._edittoolbar(uid, 'New');				
-                            setTimeout(function(){
-                                self._form(uid, 'New')
-                            },4000);
-              
-                        }
-                    }else{
-                        self._editwindow(uid, 'New');
-                        self._editlayout(uid);
-                        self._edittoolbar(uid, 'New');
-                        self._form(uid, 'New');
-                    }
-                }else{
-                    self._editwindow(uid, 'New');
-                    self._editlayout(uid);
-                    self._edittoolbar(uid, 'New');
-                    self._form(uid, 'New');
-                }
-            }
-            if (id == "delete_email") {
-                var selectedRowsId = self.grid[uid].getSelectedRowId();
-                self.progressOn(uid);
-                if (self.grid[uid].cells(selectedRowsId, 1).getValue('add_primarytext') == 'Yes') {
-                    self.progressOff(uid);
-                    dhtmlx.message({
-                        type: "error",
-                        text: "Primary email-id cannot be deleted..."
-                    });
-                    return true;
-                }
-                if (selectedRowsId !== null) {
-                    self.deleteRow(uid, selectedRowsId);
-                }
-            }
-            if (id == "help_email") {
-                self._showHelp(uid);
-            }
-            if (id == "close_email") {
-                self.window[uid].close();
-            }
-         }
-        });
-    },
-	
-    _editwindow: function (uid, task) {
-        var self = this;
-        if(self.configuration[uid].window_managerObj === null) {
-            if (self.window_manager === null)
-                self._window_manager();
-        }
-        else {
-            self.window_manager = self.configuration[uid].window_managerObj;
-//            alert(self.window_manager);
-        }
-        self.editwindows[uid] = self.window_manager.createWindow('window_email_edit_' + uid, 0, 0, self.model.conf_window.model_edit_winHeight, self.model.conf_window.model_edit_winWidth);
-        if (task == 'New')
-            self.editwindows[uid].setText('Add Email');
-        else
-            self.editwindows[uid].setText('Edit Email');
-        self.dhtmlxWidowCustomPostion(self.editwindows[uid],self.model.conf_window.top);
-        self.editwindows[uid].setModal(true);
-        self.editwindows[uid].button('park').hide();
-		self.editwindows[uid].button('minmax1').hide();
-        self.editwindows[uid].setIcon(self.model.conf_window.icon, self.model.conf_window.icon);
-        self.editstatus_bar[uid] = self.editwindows[uid].attachStatusBar();
-        self.editstatus_bar[uid].setText("Loading...");
-        self.configuration[uid].closewindow = self.editwindows[uid].attachEvent('onclose', function () {
-            if (self.formedited == 1) {
-            dhtmlx.confirm({
-                type: "confirm",
-                text: "Are you sure you want to close this window without saving the changes ?",
-                callback: function (OK) {
-                    //alert(OK);
-                    if (OK) {
-                        self.editwindows[uid].detachEvent(self.configuration[uid].closewindow);
-                        self.editwindows[uid].close();
-                        self.formedited = null;
-                    } else {
-                        return false;
-                    }
-                }
-            });
-            }
-            else{
-                self.editwindows[uid].detachEvent(self.configuration[uid].closewindow);
-            self.edittoolbar = [];
-            self.editlayout = [];
-            self.form = [];
-            self.formedited = null;
-            return true;
-            }
-        });
-    },
-    _editlayout: function (uid) {
-        var self = this;
-        self.editlayout[uid] = self.editwindows[uid].attachLayout(self.model.conf_layout.pattern);
-        self.editlayout[uid].cells("a").hideHeader();
-    },
-    _edittoolbar: function (uid, task) {
-        var self = this;
-        self.edittoolbar[uid] = self.editlayout[uid].cells("a").attachToolbar(self.model.edit_toolbar);
-        self.edittoolbar[uid].setSkin(self.model.globalSkin);
-		self.toolbar[uid].setIconsPath(self.model.conf_window.image_path);
-        self.edittoolbar[uid].attachEvent("onClick", function (id) {
-            if (id == "save_phone") {
-                if (self.formedited == 0) {
-                    dhtmlx.alert({
-                        type: alert,
-                        text: "No updates found!",
-                        callback: function (result) {}
-                    });
-                } else {
-                    self.addRow(uid, task);
-                }
-            }
-            if (id == "close_editphone") {
-                self.editwindows[uid].close();
-            }
-        });
-    },
-	
-    addRow: function (uid, task) {
-        var self = this;
-        var add_primarytext;
-        if (self.validate(uid, task) === true) {
-            self.editlayout[uid].progressOn();
-			self.editstatus_bar[uid].setText("Saving Record...");
-			
-            var MAPemail_params = "contact_ID_email=" + self.form[uid].getItemValue("contact_ID_email") + "&Emailmailing=" + self.form[uid].getItemValue("primaryEmail") + "&contactEmailStr=" + self.form[uid].getItemValue("email") + "&emailTypeStr=" + self.form[uid].getItemValue("emailType1") + "&email_ID_hidden=" + self.form[uid].getItemValue("email_ID") + "&agencyid=" + self.configuration[uid].agencyid;
-            dhtmlxAjax.post(self.configuration[uid].application_path + "processors/savetoairs.php", MAPemail_params, function (loader) {
-                var json = JSON.parse(loader.xmlDoc.responseText);
-                if (json.status == "success") {
-                    dhtmlx.message({
-                        text: "Record saved"
-                    });
-                    self.editlayout[uid].progressOff();
-                    if (self.form[uid].getItemValue("primaryEmail") == 0)
-                        add_primarytext = 'No';
-                    else
-                        add_primarytext = 'Yes';
-						
-		if(self.grid[uid].getRowsNum() > 0 && self.form[uid].getItemValue("primaryEmail") == 1){
-						self.grid[uid].forEachRow(function (id) {
-						self.grid[uid].cells(id, 1).setValue('No');
-						});
-						}
-                    if (self.form[uid].getItemValue("email_ID") == 0) {
-                        self.grid[uid].deleteRow(-1);
-                        self.grid[uid].addRow(json.addid, [self.form[uid].getItemValue("email"), add_primarytext, self.form[uid].getCombo("emailType1").getSelectedText()], '');
-                    } else {
-                        self.grid[uid].cells(json.addid, 2).setValue(self.form[uid].getCombo("emailType1").getSelectedText());
-                        self.grid[uid].cells(json.addid, 0).setValue(self.form[uid].getItemValue("email"));
-                        self.grid[uid].cells(json.addid, 1).setValue(add_primarytext);
-                    }
-                    self.editwindows[uid].detachEvent(self.configuration[uid].closewindow);
-                    self.editwindows[uid].close();
-                    self.formedited = null;
-                } else {
-                    self.editlayout[uid].progressOff();
-                    dhtmlx.message({
-                        type: "error",
-                        text: json.response
-                    });
-                }
-            });
-        }
-    },
-    validate: function (uid, task) {
-        var self = this;
-        var contactid = self.form[uid].getItemValue("contact_ID_email");
-        var emailtype = self.form[uid].getCombo("emailType1").getSelectedValue();
-        var email = self.form[uid].getItemValue("email");
-        self.form[uid].detachEvent(self.configuration[uid].echange);
-        var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-        var emailVal = filter.test(email);
-        if (task == 'New') {
-            if (contactid === '' || contactid === null) {
-                dhtmlx.alert({
-                    title: "Alert",
-                    type: "alert-error",
-                    text: "ContactId Is Missing"
-                });
-                return false;
-            } else if (emailtype === '' || emailtype === null || emailtype === '0') {
-                dhtmlx.alert({
-                    title: "Alert",
-                    type: "alert-error",
-                    text: "Email Type is mandatory",
-                    callback:function(res){
-                        self.configuration[uid].echange = self.form[uid].attachEvent("onBlur", function (name,value) {
-                    
-                        if(name == "email"){
-                            var email = self.form[uid].getItemValue("email");
-                            var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-                            var emailVal = filter.test(email);
-                            if(emailVal != true){
-                                dhtmlx.alert({
-                                    type : "alert-error",
-                                    title : "Alert",
-                                    text: "Please enter a valid Email",
-                                    callback : function(){
-                                        self.form[uid].setItemValue('email', '');
-                                        self.form[uid].setItemFocus('email');
-                                    }
-                                });
-                            }
-                        }      
-                        });
-                    }
-                });
-				self.editstatus_bar[uid].setText("<span style=\"color:#FF0000;\"><strong>* Fields are mandatory</strong></span>");
-                return false;
-            } else if (email === '' || email === null) {
-                dhtmlx.alert({
-                    title: "Alert",
-                    type: "alert-error",
-                    text: "Email is mandatory"
-                });
-				self.editstatus_bar[uid].setText("<span style=\"color:#FF0000;\"><strong>* Fields are mandatory</strong></span>");
-                return false;
-            } else if (emailVal !== true) {
-                dhtmlx.alert({
-                    title: "Alert",
-                    type: "alert-error",
-                    text: "Please enter a valid email",
-                    callback : function(){
-                        self.form[uid].setItemValue('email', '');
-                        self.form[uid].setItemFocus('email');
-                    }
-                });
-				self.editstatus_bar[uid].setText("<span style=\"color:#FF0000;\"><strong>* Fields are mandatory</strong></span>");
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            if (contactid === '' || contactid === null) {
-                dhtmlx.alert({
-                    title: "Alert",
-                    type: "alert-error",
-                    text: "ContactId Is Missing"
-                });
-                return false;
-            } else if (emailtype === '' || emailtype === null || emailtype === '0') {
-                dhtmlx.alert({
-                    title: "Alert",
-                    type: "alert-error",
-                    text: "Email Type is mandatory"
-                });
-				self.editstatus_bar[uid].setText("<span style=\"color:#FF0000;\"><strong>* Fields are mandatory</strong></span>");
-                return false;
-            } else if (email === '' || email === null) {
-                dhtmlx.alert({
-                    title: "Alert",
-                    type: "alert-error",
-                    text: "Email is mandatory",
-                    callback:function(res){
-                        self.configuration[uid].echange = self.form[uid].attachEvent("onBlur", function (name,value) {
-                    
-                        if(name == "email"){
-                            var email = self.form[uid].getItemValue("email");
-                            var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-                            var emailVal = filter.test(email);
-                            if(emailVal != true){
-                                dhtmlx.alert({
-                                    id : "emailval",
-                                    type : "alert-error",
-                                    title : "Alert",
-                                    text: "Please enter a valid Email",
-                                    callback : function(){
-                                        self.form[uid].setItemValue('email', '');
-                                        self.form[uid].setItemFocus('email');
-                                    }
-                                });
-                            }
-                        }      
-                        });
-                    }
-                });
-				self.editstatus_bar[uid].setText("<span style=\"color:#FF0000;\"><strong>* Fields are mandatory</strong></span>");
-                return false;
-            } else if (emailVal !== true) {
-                dhtmlx.alert({
-                    title: "Alert",
-                    type: "alert-error",
-                    text: "Please enter a valid Email",
-                    callback : function(){
-                        self.form[uid].setItemValue('email', '');
-                        self.form[uid].setItemFocus('email');
-                    }
-                });
-				self.editstatus_bar[uid].setText("<span style=\"color:#FF0000;\"><strong>* Fields are mandatory</strong></span>");
-                return false;
-            } else {
-                return true;
-            }
-        }
-    },
-    deleteRow: function (uid, selectedRowsId) {
-        var self = this;
-        self.progressOn(uid);
-
-        dhtmlx.confirm({
+        if (id == "delete_email") {
+          var
+            count = 0,
+            is_primary = false,
+            selected_row_ids = grid[_name].getSelectedRowId();
+          selected_row_ids = selected_row_ids.split(',');
+          count = selected_row_ids.length;
+          dhtmlx.confirm({
             title: "Delete Email",
             type: "confirm-warning",
-            text: "Are you sure you want to delete this Email ?",
-            callback: function (result) {
-                if (result === true) {
-                    var MAPemail_delet_params = "contactId=" + self.configuration[uid].contactid + "&contactemailId=" + selectedRowsId + "&agencyid=" + self.configuration[uid].agencyid;
-                    dhtmlxAjax.post(self.configuration[uid].application_path + "processors/deleteemailInfo.php", MAPemail_delet_params, function (loader) {
-                        try {
-                            var json = JSON.parse(loader.xmlDoc.responseText);
-                            if (json.status == "success") {
-                                dhtmlx.message({
-                                    text: "record was deleted"
-                                });
-                                self.grid[uid].deleteRow(self.grid[uid].getSelectedRowId());
-                                self.toolbar[uid].disableItem("delete_email");
-								self.toolbar[uid].disableItem("edit_email");
-                                self.progressOff(uid);
-                            } else {
-                                dhtmlx.message({
-                                    type: "error",
-                                    text: json.response
-                                });
-                                self.progressOff(uid);
-                            }
-                        } catch (e) {
-                            dhtmlx.message({
-                                type: "error",
-                                text: "Fatal error on server side: " + loader.xmlDoc.responseText
-                            });
-                            self.progressOff(uid);
-                        }
+            text: "Are you sure you want to delete the Email(s) ?",
+            callback: function(result) {
+              if (result === true) {
+                layout[_name].progressOn();
+                self.set_status(_name, "Deleting Records..");
+                selected_row_ids.forEach(function(row_id) {
+                  if (grid[com_name].cells(row_id, 1).getValue('add_primarytext') == 'Yes') {
+                    count--;
+                    dhtmlx.alert({
+                      type: "alert-error",
+                      text: "Primary email-id cannot be deleted!"
                     });
-                } else {
-                    self.progressOff(uid);
-                }
-            }
-        });
-
-
-
-    },
-    _form: function (uid, task) {
-        var self = this;
-        var primary_email;
-		self.editlayout[uid].progressOn();
-        self.progressOn(uid);
-        self.form[uid] = self.editlayout[uid].cells("a").attachForm(self.model.conf_form.template);
-		// self.form[uid].setItemValue("primaryEmail", '0');
-		if(self.configuration[uid].window_managerObj !== null){
-		if(self.configuration[uid].contactcomponent_obj.configuration[uid].contactid != 0 && self.configuration[uid].contactcomponent_obj.configuration[uid].contactid != 'undefined'){
-			self.configuration[uid].contactid =self.configuration[uid].contactcomponent_obj.configuration[uid].contactid;
-		}
-		}
-        self.form[uid].getCombo("emailType1").enableOptionAutoHeight(1);
-        self.form[uid].getCombo("emailType1").readonly(true);
-        self.form[uid].enableLiveValidation(true);
-        self.form[uid].setItemValue("contact_ID_email", self.configuration[uid].contactid);
-        if (task == 'Edit') {
-            if (self.grid[uid].cells(self.grid[uid].getSelectedRowId(), 1).getValue() == 'Yes') 
-                primary_email = 1;
-            else
-                primary_email = 0;
-            self.form[uid].setItemValue("email_ID", self.grid[uid].getSelectedRowId());
-            self.form[uid].setItemValue("email", self.grid[uid].cells(self.grid[uid].getSelectedRowId(), 0).getValue());
-            self.form[uid].setItemValue("emailType1", self.grid[uid].cells(self.grid[uid].getSelectedRowId(), 2).getValue());
-			self.form[uid].setItemValue("primaryEmail",primary_email);
-            self.form[uid].getCombo("emailType1").loadXML(self.configuration[uid].application_path + "processors/emailtypelist.php?agencyid=" + self.configuration[uid].agencyid+"&id="+self.grid[uid].cells(self.grid[uid].getSelectedRowId(), 2).getValue(), self.progressOff(uid));
-            
-        }else{
-                //self.form[uid].getCombo("emailType1").setComboText("-- Select Email Type --");
-		        self.form[uid].getCombo("emailType1").loadXML(self.configuration[uid].application_path + "processors/emailtypelist.php?agencyid=" + self.configuration[uid].agencyid+"&id=0", self.progressOff(uid));
-		}     
-		//self.form[uid].getCombo("primaryEmail").enableOptionAutoHeight(1);
-                self.form[uid].getCombo("emailType1").attachEvent("onXLE",function(){
-                    self.editlayout[uid].progressOff();
-                    self.editstatus_bar[uid].setText("Ready to use.");
-                    self.form[uid].getCombo("emailType1").attachEvent("onChange",function(){
-                        self.formedited = 1;
-                    });    
-                });
-                self.form[uid].attachEvent("onInputChange",function(){
-                    self.formedited = 1;
-                });
-                self.form[uid].attachEvent("onChange",function(name,value){
-                    if(name == "primaryEmail")
-                        self.formedited = 1;
-                });
-                 self.configuration[uid].echange = self.form[uid].attachEvent("onBlur", function (name,value) {
-                    if(name == "email"){
-                        var email = self.form[uid].getItemValue("email");
-                        var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-                        var emailVal = filter.test(email);
-                        if(emailVal != true){
-                            dhtmlx.alert({
-                                type : "alert-error",
-                                title : "Alert",
-                                text: "Please enter a valid Email",
-                                callback : function(){
-                                    self.form[uid].setItemValue('email', '');
-                                    self.form[uid].setItemFocus('email');
-                                }
-                            });
-                        }
-                    }      
-                });
-    },
-    _grid: function (uid) {
-        var self = this;
-        self.grid[uid] = self.layout[uid].cells("a").attachGrid(self.model.conf_grid);
-        self.grid[uid].setHeader(self.model.conf_grid.headers);
-        if (self.configuration[uid].useWindow === true) {
-            self.grid[uid].setInitWidths(self.model.conf_grid.widths);
-        } else {
-            self.grid[uid].setInitWidths(self.model.conf_grid.widths_layout);
-        }
-        self.grid[uid].setColAlign(self.model.conf_grid.colaligns);
-        self.grid[uid].setColTypes(self.model.conf_grid.coltypes);
-        self.grid[uid].setColSorting(self.model.conf_grid.colsorting);
-        self.grid[uid].selMultiRows = false;
-        self.grid[uid].enableAutoWidth(true);
-        self.grid[uid].enableMultiline(true);
-        self.grid[uid].setDateFormat("%m-%d-%Y");
-        self.grid[uid].init();
-        self._datastor(uid);
-        
-        self.toolbar[uid].disableItem("delete_email");
-		self.toolbar[uid].disableItem("edit_email")
-        self.grid[uid].attachEvent("onRowDblClicked", function (rowId, cellInd) {
-//            if (self.window_manager === null)
-//                self._window_manager();
-            self._editwindow(uid, 'Edit');
-            self._editlayout(uid);
-            self._edittoolbar(uid, 'Edit');
-            self.formedited = 0;
-            self._form(uid, 'Edit');
-        });
-        self.grid[uid].attachEvent("onEnter", function (rowId, cellInd) {
-//            if (self.window_manager === null)
-//                self._window_manager();
-            self._editwindow(uid, 'Edit');
-            self._editlayout(uid);
-            self._edittoolbar(uid, 'Edit');
-            self.formedited = 0;
-            self._form(uid, 'Edit');
-        });
-        self.grid[uid].attachEvent("onRowSelect", function (rowId, cellInd) {
-            self.toolbar[uid].enableItem("delete_email");
-			self.toolbar[uid].enableItem("edit_email")
-        });
-    //}
-    },
-    // Show Help Window
-    _showHelp: function (uid) {
-
-        var self = this;
-        if (self.window_manager.isWindow("help_email_window_" + uid)) {
-
-            self.window_help[uid].show();
-            self.window_help[uid].bringToTop();
-            return;
-
-        }
-
-        self.window_help[uid] = self.window_manager.createWindow("help_email_window_" + uid, self.model.conf_window.left + 10, self.model.conf_window.top + 10, 700, 400);
-        self.window_help[uid].setText("End user manual");
-        self.window_help[uid].setIcon("help.png", "help.png");
-        self.window_help[uid].attachURL(self.configuration[uid].application_path + "docs/end_user_manual");
-
-    },
-
-    //Progress On
-    progressOn: function (uid) {
-
-        var self = this;
-        self.layout[uid].progressOn();
-        if (self.configuration[uid].useWindow === true) {
-            self.window[uid].progressOn();
-        }
-    },
-
-    // Progress Off
-    progressOff: function (uid) {
-
-        var self = this;
-        self.layout[uid].progressOff();
-        if (self.configuration[uid].useWindow === true) {
-            self.window[uid].progressOff();
-        }
-    },
-
-    // Data Store
-    _datastor: function (uid) {
-
-        var self = this;
-        self.progressOn(uid);
-        var postStr = "contactID=" + self.configuration[uid].contactid + "&agencyid=" + self.configuration[uid].agencyid;
-        dhtmlxAjax.post(self.configuration[uid].application_path + "processors/get_data.php", postStr, function (loader) {
-            try {
-                var json = JSON.parse(loader.xmlDoc.responseText);
-
-                if (json.status == "success") {
-                    //self.data_store[uid] = json;
-                    self.grid[uid].parse(json.email, "json");
-                   /* dhtmlx.message({
-                        text: "Data store 100% loaded"
-                    });*/
-                    //self._grid(uid);
-                    if (self.configuration[uid].useWindow === true) {
-                        self.status_bar[uid].setText("Loaded");
+                    is_primary = true;
+                    if (!count) {
+                      layout[_name].progressOff();
+                      self.set_status(_name, "Ready to use.");
                     }
-                    self.progressOff(uid);
-                }else 
-                if(json.status == "norecords"){
-                    self.progressOff(uid);
-                        var z=self.grid[uid].getStateOfView();
-                    if(z[2] == 0){
-                        self.grid[uid].addRow(-1, ["<div style='margin: 0 auto; color: #00A9E1; width:550px; font-size : 20px; text-align: center;'>No records found.Please click the 'Add Email' option in the toolbar to add an email</div>"]);
-                        self.grid[uid].setRowTextStyle(-1, "height:120px;");
-                        self.grid[uid].enableColSpan(true);
-                        self.grid[uid].setColspan(-1, 0, 3);
-                    }        
-                } 
-                else {
-                    dhtmlx.message({
+                    return true;
+                  }
+
+                  var data = {
+                    contact_id: config.contact_id,
+                    contact_email_id: row_id,
+                    agency_id: config.agency_id
+                  };
+
+                  //var MAPemail_delet_params = "contactId=" + self.configuration[uid].contactid + "&contactemailId=" + selectedRowsId + "&agencyid=" + self.configuration[uid].agencyid;
+                  dhtmlxAjax.post(config.application_path + "processors/deleteemailInfo.php", "data=" + JSON.stringify(data), function(loader) {
+                    try {
+                      var json = JSON.parse(loader.xmlDoc.responseText);
+                      if (json.status == "success") {
+                        grid[com_name].deleteRow(row_id);
+                        count--;
+                        if (!count) {
+                          if (!is_primary)
+                            dhtmlx.alert({
+                              text: "Successfully deleted."
+                            });
+
+                          layout[_name].progressOff();
+                          self.set_status(_name, "Ready to use.");
+                        }
+                        toolbar[_name].disableItem("delete_email");
+                        toolbar[_name].disableItem("edit_email");
+
+                      } else {
+                        dhtmlx.message({
+                          type: "error",
+                          text: json.response
+                        });
+                        win[com_name].progressOff();
+                      }
+                    } catch (e) {
+                      dhtmlx.message({
                         type: "error",
-                        text: json.response
-                    });
-                }
-            } catch (e) {
-                dhtmlx.message({
-                    type: "error",
-                    text: "Fatal error on server side: " + loader.xmlDoc.responseText
+                        text: "Fatal error on server side: " + loader.xmlDoc.responseText
+                      });
+                      win[com_name].progressOff();
+                    }
+
+                  });
                 });
+              } else {
+                win[com_name].progressOff();
+              }
             }
+
+          });
+        }
+      });
+    },
+    _window_add_edit_extend: function(_name) {
+      win[_name].setModal(true);
+      config.close_event = win[_name].attachEvent("onClose", function(win) {
+        form[_name].detachEvent(config.email_change);
+        if (is_edited == true) {
+          dhtmlx.confirm({
+            //title: "Alert",
+            type: "confirm",
+            text: "Are you sure you want to close this window without saving the changes ?",
+            ok: "Yes",
+            cancel: "No",
+            callback: function(val) {
+              if (val) {
+                win.detachEvent(config.close_event);
+
+                win.close();
+                is_edited = null;
+                return true;
+              }
+              config.email_change = form[_name].attachEvent("onBlur", function(name, value) {
+
+                if (name == "email") {
+                  var email = form[_name].getItemValue("email");
+                  var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+                  var emailVal = filter.test(email);
+                  if (emailVal != true) {
+                    dhtmlx.alert({
+                      type: "alert-error",
+                      title: "Alert",
+                      text: "Please enter a valid Email",
+                      callback: function() {
+                        form[_name].setItemValue('email', '');
+                        form[_name].setItemFocus('email');
+                      }
+                    });
+                  }
+                }
+              });
+              return false;
+            }
+          });
+        } else {
+          win.detachEvent(config.close_event);
+          win.close();
+          is_edited = null;
+        }
+
+      });
+    },
+    /**
+     * [_grid_main ]
+     * @param  {[type]} _name [description]
+     * @return {[type]}       [description]
+     */
+    _grid_main: function(_name) {
+      var self = this;
+      _name = _name || com_name;
+      self.build_grid(_name, self.Model.conf_grid);
+      self._grid_main_events(_name);
+    },
+    /**
+     * [_grid_main_events description]
+     * @param  {[type]} _name [description]
+     * @return {[type]}       [description]
+     */
+    _grid_main_events: function(_name) {
+      var self = this;
+      grid[_name].attachEvent("onRowDblClicked", function(rowId, cellInd) {
+        self.build_window("Add_Edit", self.Model.edit_window);
+        self._window_add_edit_extend("Add_Edit");
+        is_edited = false;
+        self._toolbar_add_edit("Add_Edit");
+        self._form_add_edit("Add_Edit", true);
+      });
+      grid[_name].attachEvent("onEnter", function(rowId, cellInd) {
+        self.build_window("Add_Edit", self.Model.edit_window);
+        self._window_add_edit_extend("Add_Edit");
+        is_edited = false;
+        self._toolbar_add_edit("Add_Edit");
+        self._form_add_edit("Add_Edit", true);
+      });
+      grid[_name].attachEvent("onRowSelect", function(rowId, cellInd) {
+        toolbar[_name].enableItem("delete_email");
+        toolbar[_name].enableItem("edit_email");
+      });
+    },
+    /**
+     * [_toolbar_add_edit description]
+     * @param  {[type]} _name [description]
+     * @return {[type]}       [description]
+     */
+    _toolbar_add_edit: function(_name) {
+      var self = this;
+      _name = _name || com_name;
+      toolbar[_name] = layout[_name].cells("a").attachToolbar(self.Model.edit_toolbar);
+      toolbar[_name].setSkin(self.Model.globalSkin);
+      this._toolbar_add_edit_events(_name);
+    },
+    /**
+     * [_toolbar_add_edit_events description]
+     * @param  {[type]} _name [description]
+     * @return {[type]}       [description]
+     */
+    _toolbar_add_edit_events: function(_name) {
+      var
+        self = this,
+        add_primarytext,
+        data = {};
+
+      toolbar[_name].attachEvent("onClick", function(id) {
+        if (id == "save_email") {
+          if (is_edited == false) {
+            dhtmlx.alert({
+              type: alert,
+              text: "No updates found!",
+              callback: function(result) {}
+            });
+          } else {
+
+            data = {
+              contact_id: config.contact_id,
+              contact_id_email: form[_name].getItemValue("contact_id_email"),
+              email_type: form[_name].getCombo("email_type").getSelectedValue(),
+              type: form[_name].getCombo("email_type").getSelectedText(),
+              contact_email: form[_name].getItemValue("email"),
+              email_mailing: form[_name].getItemValue("primary_email"),
+              agency_id: config.agency_id,
+              email_id_hidden: form[_name].getItemValue("email_id")
+            };
+
+
+
+            if (self._form_add_edit_validate(_name, data)) {
+              layout[_name].progressOn();
+              self.set_status(_name, "Saving Record...");
+
+              //var MAPemail_params = "contact_ID_email=" + self.form[uid].getItemValue("contact_ID_email") + "&Emailmailing=" + self.form[uid].getItemValue("primaryEmail") + "&contactEmailStr=" + self.form[uid].getItemValue("email") + "&emailTypeStr=" + self.form[uid].getItemValue("emailType1") + "&email_ID_hidden=" + self.form[uid].getItemValue("email_ID") + "&agencyid=" + self.configuration[uid].agencyid;
+              dhtmlxAjax.post(config.application_path + "processors/savetoairs.php", "data=" + JSON.stringify(data), function(loader) {
+                var json = JSON.parse(loader.xmlDoc.responseText);
+                if (json.status == "success") {
+                  dhtmlx.message({
+                    text: "Record saved"
+                  });
+                  layout[_name].progressOff();
+                  if (form[_name].getItemValue("primary_email") == 0)
+                    add_primarytext = 'No';
+                  else
+                    add_primarytext = 'Yes';
+
+                  if (grid[com_name].getRowsNum() > 0 && form[_name].getItemValue("primary_email") == 1) {
+                    grid[com_name].forEachRow(function(id) {
+                      grid[com_name].cells(id, 1).setValue('No');
+                    });
+                  }
+                  if (form[_name].getItemValue("email_id") == 0) {
+                    grid[com_name].deleteRow(-1);
+                    grid[com_name].addRow(json.addid, [form[_name].getItemValue("email"), add_primarytext, form[_name].getCombo("email_type").getSelectedText()], '');
+                  } else {
+                    grid[com_name].cells(json.addid, 2).setValue(form[_name].getCombo("email_type").getSelectedText());
+                    grid[com_name].cells(json.addid, 0).setValue(form[_name].getItemValue("email"));
+                    grid[com_name].cells(json.addid, 1).setValue(add_primarytext);
+                  }
+                  win[_name].detachEvent(config.close_event);
+                  win[_name].close();
+                  is_edited = null;
+                } else {
+                  layout[_name].progressOff();
+                  dhtmlx.message({
+                    type: "error",
+                    text: json.response
+                  });
+                }
+              });
+            }
+          }
+        }
+        if (id == 'close_add_edit_email') {
+          win[_name].close();
+        }
+      });
+    },
+
+    /**
+     * [_form_add_edit_validate description]
+     * @param  {[type]} _name [description]
+     * @param  {[type]} data  [description]
+     * @return {[type]}       [description]
+     */
+    _form_add_edit_validate: function(_name, data) {
+
+      var
+        self = this,
+        filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
+        emailVal = filter.test(data.contact_email);
+      form[_name].detachEvent(config.email_change);
+      //if (!is_edit_mode) {
+      if (data.contact_id === '' || data.contact_id === null) {
+        dhtmlx.alert({
+          title: "Alert",
+          type: "alert-error",
+          text: "ContactId Is Missing"
         });
+        return false;
+      } else if (data.email_type === '' || data.email_type === null || data.email_type === '0') {
+        dhtmlx.alert({
+          title: "Alert",
+          type: "alert-error",
+          text: "Email Type is mandatory",
+          callback: function(res) {
+            config.email_change = form[_name].attachEvent("onBlur", function(name, value) {
+
+              if (name == "email") {
+                var email = form[_name].getItemValue("email");
+                var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+                var emailVal = filter.test(email);
+                if (emailVal != true) {
+                  dhtmlx.alert({
+                    type: "alert-error",
+                    title: "Alert",
+                    text: "Please enter a valid Email",
+                    callback: function() {
+                      form[_name].setItemValue('email', '');
+                      form[_name].setItemFocus('email');
+                    }
+                  });
+                }
+              }
+            });
+          }
+        });
+        self.set_status(_name, "* Fields are mandatory", "err");
+        return false;
+      } else if (data.contact_email === '' || data.contact_email === null) {
+        dhtmlx.alert({
+          title: "Alert",
+          type: "alert-error",
+          text: "Email is mandatory",
+          callback: function(res) {
+            config.email_change = form[_name].attachEvent("onBlur", function(name, value) {
+
+              if (name == "email") {
+                var email = form[_name].getItemValue("email");
+                var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+                var emailVal = filter.test(email);
+                if (emailVal != true) {
+                  dhtmlx.alert({
+                    type: "alert-error",
+                    title: "Alert",
+                    text: "Please enter a valid Email",
+                    callback: function() {
+                      form[_name].setItemValue('email', '');
+                      form[_name].setItemFocus('email');
+                    }
+                  });
+                }
+              }
+            });
+          }
+        });
+        self.set_status(_name, "* Fields are mandatory", "err");
+        return false;
+      } else if (emailVal !== true) {
+        dhtmlx.alert({
+          title: "Alert",
+          type: "alert-error",
+          text: "Please enter a valid email",
+          callback: function() {
+            form[_name].setItemValue('email', '');
+            form[_name].setItemFocus('email');
+            config.email_change = form[_name].attachEvent("onBlur", function(name, value) {
+
+              if (name == "email") {
+                var email = form[_name].getItemValue("email");
+                var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+                var emailVal = filter.test(email);
+                if (emailVal != true) {
+                  dhtmlx.alert({
+                    type: "alert-error",
+                    title: "Alert",
+                    text: "Please enter a valid Email",
+                    callback: function() {
+                      form[_name].setItemValue('email', '');
+                      form[_name].setItemFocus('email');
+                    }
+                  });
+                }
+              }
+            });
+          }
+
+        });
+        self.set_status(_name, "* Fields are mandatory", "err");
+        return false;
+      } else {
+        return true;
+      }
+
     },
-    
-    dhtmlxWidowCustomPostion : function (widowObj,yPosition) {
-        
-        var position,splitPosition,xPosition;
-        
-        widowObj.center();
-        position            =   widowObj.getPosition();
-        splitPosition       =   String(position).split(",");
-        xPosition           =   splitPosition[0];
-        
-        if(xPosition < 0)
-            xPosition=50;
-        widowObj.setPosition(xPosition,yPosition);
-        window.scrollTo(xPosition,0);
+    /**
+     * [_form_add_edit description]
+     * @param  {[type]}  _name  [description]
+     * @param  {Boolean} isEdit [description]
+     * @return {[type]}         [description]
+     */
+    _form_add_edit: function(_name, isEdit) {
+      var self = this,
+        primary_email;
+      _name = _name || com_name;
+
+
+
+      form[_name] = layout[_name].cells("a").attachForm(self.Model.conf_form.template);
+      layout[_name].progressOn();
+      self.set_status(_name, "Loading....");
+
+      form[_name].getCombo("email_type").enableOptionAutoHeight(1);
+      form[_name].getCombo("email_type").readonly(true);
+      // self._form_data_storage_fill(_name);
+      form[_name].enableLiveValidation(true);
+      form[_name].setItemValue("contact_id_email", config.contact_id);
+      if (isEdit) {
+        if (grid[com_name].cells(grid[com_name].getSelectedRowId(), 1).getValue() == 'Yes')
+          primary_email = 1;
+        else
+          primary_email = 0;
+        form[_name].setItemValue("email_id", grid[com_name].getSelectedRowId());
+        form[_name].setItemValue("email", grid[com_name].cells(grid[com_name].getSelectedRowId(), 0).getValue());
+        form[_name].setItemValue("email_type", grid[com_name].cells(grid[com_name].getSelectedRowId(), 2).getValue());
+        form[_name].setItemValue("primary_email", primary_email);
+        form[_name].getCombo("email_type").loadXML(config.application_path + "processors/emailtypelist.php?agencyid=" + config.agency_id + "&id=" + grid[com_name].cells(grid[com_name].getSelectedRowId(), 2).getValue());
+
+      } else {
+        //self.form[uid].getCombo("emailType1").setComboText("-- Select Email Type --");
+        form[_name].getCombo("email_type").loadXML(config.application_path + "processors/emailtypelist.php?agencyid=" + config.agency_id + "&id=0");
+      }
+      //self.form[uid].getCombo("primaryEmail").enableOptionAutoHeight(1);
+
+
+
+
+      self._form_add_edit_events(_name);
     },
+    /**
+     * [_form_add_edit_events description]
+     * @param  {[type]} _name [description]
+     * @return {[type]}       [description]
+     */
+    _form_add_edit_events: function(_name) { // Events for inputs
+      var self = this;
+      form[_name].getCombo("email_type").attachEvent("onXLE", function() {
+        layout[_name].progressOff();
+        self.set_status(_name, "Ready to use.");
+        form[_name].getCombo("email_type").attachEvent("onChange", function() {
+          is_edited = true;
+        });
+      });
 
-    // Initiating the Model
-    init: function (model) {
-
-        var self = this;
-        self.model = model;
-
+      form[_name].attachEvent("onInputChange", function() {
+        is_edited = true;
+      });
+      form[_name].attachEvent("onChange", function(name, value) {
+        if (name == "primary_email")
+          is_edited = true;
+      });
+      config.email_change = form[_name].attachEvent("onBlur", function(name, value) {
+        if (name == "email") {
+          var email = form[_name].getItemValue("email");
+          var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+          var emailVal = filter.test(email);
+          if (emailVal != true) {
+            dhtmlx.alert({
+              type: "alert-error",
+              title: "Alert",
+              text: "Please enter a valid Email",
+              callback: function() {
+                form[_name].setItemValue('email', '');
+                form[_name].setItemFocus('email');
+              }
+            });
+          }
+        }
+      });
     },
+    /**
+     * [start description]
+     * @param  {[type]} _conf [description]
+     * @return {[type]}       [description]
+     */
+    start: function(_conf) {
+      var self = this;
+      self.validate_start(_conf);
 
-    // Starting the Component
-    start: function (configuration) {
-        var self = this;
-        self.uid = configuration.uid;
-        if ((typeof configuration.uid === 'undefined') || (configuration.uid.length === 0)) {
-            dhtmlx.message({
-                type: "error",
-                text: "uid is missing"
-            });
-            return;
-        }
-        if ((typeof configuration.application_path === 'undefined') || (configuration.application_path.length === 0)) {
-            dhtmlx.message({
-                type: "error",
-                text: "application_path is missing"
-            });
-            return;
-        }
-        if ((typeof configuration.dhtmlx_codebase_path === 'undefined') || (configuration.dhtmlx_codebase_path.length === 0)) {
-            dhtmlx.message({
-                type: "error",
-                text: "dhtmlx_codebase_path is missing"
-            });
-            return;
-        }
-        if ((typeof configuration.contactid === 'undefined') || (configuration.contactid.length === 0)) {
-            dhtmlx.message({
-                type: "error",
-                text: "Contact Id is missing"
-            });
-            return;
-        }
-        if ((typeof configuration.agencyid === 'undefined') || (configuration.agencyid.length === 0)) {
-            dhtmlx.message({
-                type: "error",
-                text: "Agency Id is missing"
-            });
-            return;
-        }
-        window.dhx_globalImgPath = configuration.dhtmlx_codebase_path + "imgs/";
-        dhtmlx.skin = self.model.globalSkin || "dhx_skyblue";
-        configuration["icons_path"] = "icons/";
-        self.configuration[self.uid] = configuration;
-        self.model.conf_window.image_path = configuration.application_path + configuration.icons_path;
-        self.model.conf_toolbar.icon_path = configuration.application_path + configuration.icons_path;
-        self.model.edit_toolbar.icon_path = configuration.application_path + configuration.icons_path;
-        if (configuration.useWindow === true) {
-            self._window(self.uid);
-        }
-        self._layout(self.uid);
-        self._toolbar(self.uid);
-        //self._datastor(self.uid);
-        self._grid(self.uid);
+      uid = _conf.uid;
+      config = _conf;
+      self.application_path = config.application_path;
+      dhx_globalImgPath = config.dhtmlx_codebase_path + "imgs/";
+
+      config["icons_path"] = "asserts/icons/";
+      config["img_path"] = "asserts/imgs/"
 
 
+      var internal_dependencies = [
+        config.dhtmlx_codebase_path + "dhtmlx.css",
+        config.dhtmlx_codebase_path + "dhtmlx.js",
+        config.application_path + "js/json2.js",
+        self.application_path + "model/emailcomponent_Model.js",
+        //self.application_path + "controller/classes/data.js"
+      ];
 
+      if (com_dhx_version === "4.0") {
+        internal_dependencies.push(config.dhtmlx_codebase_path + "dhtmlx_deprecated.js");
+      }
+      CAIRS.onDemand.load(internal_dependencies, function() {
+        self.Model.init(config.application_path + config.img_path, config.application_path + config.icons_path);
+        //self.Data.init(config);
+
+        dhtmlx.skin = self.Model.globalSkin || "dhx_skyblue";
+        if (config.use_window === true) {
+          self.build_window();
+          self.set_status(com_name, "Loading.....");
+        } else {
+          self._layout();
+        }
+        self._toolbar();
+        self._grid_main();
+      });
+    },
+    /**
+     * [set_status description]
+     * @param {[type]} _name [description]
+     * @param {[type]} msg   [description]
+     * @param {[enum]} type  [should be any of {info,err,success}]
+     */
+    set_status: function(_name, _msg, _type) {
+      //alert(_name);
+      var color = "#000000";
+      color = (_type == "info") ? "#000000" : color;
+      color = (_type == "err") ? "#FF0000" : color;
+      color = (_type == "success") ? "#03B202" : color;
+      status_bar[_name].setText('<span style="color:' + color + ';"><strong>* ' + _msg + '</strong></span>');
+    },
+    /**
+     * [Validate values when call the component]
+     * @param  {[type]} config [description]
+     * @return {[type]}        [description]
+     */
+    validate_start: function(config) {
+      if ((typeof config.uid === 'undefined') || (config.uid.length === 0)) {
+        dhtmlx.message({
+          type: "error",
+          text: "uid is missing"
+        });
+        return;
+      }
+      if ((typeof config.application_path === 'undefined') || (config.application_path.length === 0)) {
+        dhtmlx.message({
+          type: "error",
+          text: "application_path is missing"
+        });
+        return;
+      }
+      if ((typeof config.dhtmlx_codebase_path === 'undefined') || (config.dhtmlx_codebase_path.length === 0)) {
+        dhtmlx.message({
+          type: "error",
+          text: "dhtmlx_codebase_path is missing"
+        });
+        return;
+      }
+      if ((typeof config.contact_id === 'undefined') || (config.contact_id.length === 0)) {
+        dhtmlx.message({
+          type: "error",
+          text: "Contact Id is missing"
+        });
+        return;
+      }
+      if ((typeof config.agency_id === 'undefined') || (config.agency_id.length === 0)) {
+        dhtmlx.message({
+          type: "error",
+          text: "Agency Id is missing"
+        });
+        return;
+      }
     }
-};
-emailcomponent.init(emailcomponent_Model);
+  }
+}());

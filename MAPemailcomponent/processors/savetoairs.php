@@ -14,16 +14,16 @@ else
     $c_account_keyDrop   = $c_acc_key['c_account_key'];
     return $c_account_keyDrop;
 }
-
-    $agencyid       =   $_POST['agencyid'];    
+$data=json_decode($_REQUEST['data'],true);
+    $agencyid       =   $data['agency_id'];    
 
 $c_account_key   = get_c_acc_key($agencyid);
 
-$contactID       = intval($_POST['contact_ID_email']);
-$emailID         = intval($_POST['email_ID_hidden']);
-$emailTypeStr    = intval($_POST['emailTypeStr']);
-$contactEmailStr = $_POST['contactEmailStr'];
-$Emailmailing    = intval($_POST['Emailmailing']);
+$contactID       = intval($data['contact_id_email']);
+$emailID         = intval($data['email_id_hidden']);
+$emailTypeStr    = intval($data['email_type']);
+$contactEmailStr = $data['contact_email'];
+$Emailmailing    = intval($data['email_mailing']);
 $sp_Email        = "EXEC SP_AddEditEMailInfo '$c_account_key', $contactID, '$emailID','Save',$emailTypeStr, '$contactEmailStr',  '$Emailmailing'";
 if ($contactID != '' && $c_account_key != '') {
     

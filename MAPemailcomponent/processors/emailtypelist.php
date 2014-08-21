@@ -26,7 +26,7 @@ $i                   = 0;
 $id= $_REQUEST['id'];
 if($id === '0'){
 ?>
-<option value="0" selected="">-- Select Email Type --</option> 
+<option value="0" selected="selected">-- Select Email Type --</option> 
 <?php }
 while ($rowPhone = mssql_fetch_array($reslkpemailType)) {
 if($id == $rowPhone['EmailType']){

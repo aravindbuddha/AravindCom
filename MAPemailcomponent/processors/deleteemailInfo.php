@@ -13,10 +13,10 @@ function get_c_acc_key($agencyID){
     $c_account_keyDrop   = $c_acc_key['c_account_key'];
     return $c_account_keyDrop;
 }
-
-$agencyid       =   $_POST['agencyid'];    
-$contactemailId = $_POST['contactemailId'];
-$contactID      = $_POST['contactId'];
+$data = json_decode($_REQUEST['data'],true);
+$agencyid       =   $data['agency_id'];    
+$contactemailId = $data['contact_email_id'];
+$contactID      = $data['contact_id'];
 $c_account_key  = get_c_acc_key($agencyid);
 
 $sp_airsEmaildelete = "EXEC SP_AddEditEMailInfo '$c_account_key', $contactID, '$contactemailId','Delete'";

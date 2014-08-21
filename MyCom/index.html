@@ -3,33 +3,29 @@
 <head>
 	<meta charset="UTF-8">
 	<title>MyCom</title>
-	   <!-- DHTMLX Framework -->
-      <script type="text/javascript" src="../../../../modules/CAIRS_Framework/CAIRS_fw.js"></script>
-        <script type="text/javascript" src="controller/MyCom.js"></script>
-        <script type="text/javascript" >
-            window.onload = function(){
-                 var WWWUrlPath = window.location.protocol + '//' + window.location.host+'/';
-                 var cdn_application_path = WWWUrlPath +'modules/AravindCom/MyCom/';
-                 var dhx_codebase_path = WWWUrlPath + 'modules/codebase4.0/';
-                   //MAPPermissions.loadSettings(WWWUrlPath);                    
-                   MyCom.start({ 
-                        uid : (new Date).getTime(),
-                        application_path :cdn_application_path,
-                        dhtmlx_codebase_path : dhx_codebase_path,
-                        useWindow : true,
-                        parentDIVId : 'mydiv',
-                        window_managerObj:null,
-                        // Extra Params
-                        // contactid : "86081",
-                         agencyid: 65,
-                    });
-
-
-             }
-         </script>
-
+	   <!-- CAIRS Framework -->
+    <script type="text/javascript" src="../../../../modules/CAIRS_Framework/CAIRS_fw.js"></script>
+    <script type="text/javascript" src="controller/mycom.js"></script>
+    <script type="text/javascript" >
+        window.onload = function(){
+            var WWWUrlPath = window.location.protocol + '//' + window.location.host+'/';
+            var cdn_application_path = WWWUrlPath +'modules/MyCom/';
+            var dhx_codebase_path = WWWUrlPath + 'modules/codebase3.6/';
+            // calling component
+            MyCom.start({ 
+                uid : (new Date).getTime(),
+                ,application_path :cdn_application_path
+                ,dhtmlx_codebase_path : dhx_codebase_path
+                ,use_window : true
+                ,parent_div_id : 'mydiv'
+                ,window_manager_obj:null
+                ,agencyid: 65,
+                // extra Params
+                contact_id : "86081",
+            });
+         }
+    </script>
 </head>
 <body>
-	
 </body>
 </html>

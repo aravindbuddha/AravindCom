@@ -2,6 +2,7 @@
 <head>
 <title>Email Component</title>
 <!-- DHTMLX Framework -->
+<!--
 <link rel="stylesheet" type="text/css" href="../codebase3.6/dhtmlx.css" />
 <link rel="stylesheet" type="text/css" href="../codebase3.6/dhtmlxForm/codebase/skins/dhtmlxform_dhx_skyblue.css">
 <script type="text/javascript" src="../codebase3.6/dhtmlx.js"></script>
@@ -9,23 +10,35 @@
 <script type="text/javascript" src="model/emailcomponent_Model.js"></script>
 <script type="text/javascript" src="controller/emailcomponent.js"></script>
 <script type="text/javascript" src="../MAPPermissions/js/controller.js"></script>
+ -->
+ <script type="text/javascript" src="../../CAIRS_Framework/CAIRS_fw.js"></script>
+ <script type="text/javascript" src="controller/emailcomponent.js"></script>
 <script type="text/javascript" >
             window.onload = function()
-            { var WWWUrlPath = window.location.protocol + '//' + window.location.host+'/';
-                 var cdn_application_path = WWWUrlPath +'modules/nivyaCom/MAPemailcomponent/';
-                 var dhx_codebase_path = WWWUrlPath + 'modules/nivyaCom/codebase3.6/';
+            { 
+                window.com_dhx_version="3.6";
+                console.log(location.search);
+                if(location.search == "?v=4.0"){
+                    com_dhx_version="4.0"
+                }   
 
+                CAIRS.environment = 'dev';
 
-                   MAPPermissions.loadSettings(WWWUrlPath);
+                var WWWUrlPath = window.location.protocol + '//' + window.location.host+'/';
+                 var cdn_application_path = WWWUrlPath +'modules/AravindCom/MAPemailcomponent/';
+                 var dhx_codebase_path = WWWUrlPath + 'modules/codebase'+com_dhx_version+'/';
+
+                   //MAPPermissions.loadSettings(WWWUrlPath);
                     emailcomponent.start( { 
                         uid : "21873" 
                         ,application_path : cdn_application_path  
                         ,dhtmlx_codebase_path : dhx_codebase_path 
-						,contactid : "21873"
-						,agencyid: 25
-						,useWindow : true
-     					,parentDIVId : ''
-                        ,window_managerObj :null
+						,contact_id : "21873"
+						,use_window : true
+     					,parent_div_id : ''
+                        ,window_manager_obj :null
+                        ,data_base : "MAPTEST"
+                        ,agency_id: 25
                                         
                     } );
              }
