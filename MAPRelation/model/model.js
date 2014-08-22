@@ -61,13 +61,13 @@ Relation.Model = Relation.Model || (function() {
       "title": "Import Relation"
     },
     "conf_grid": {
-      "headers": "relation_id,Contact,Primary Relationship,Relationship,Contact,Links",
-      "ids": "relation_id,Contact,Primary Relationship,Relationship,Contact,links",
-      "widths": "0,200,200,200,200,200,*",
-      "colaligns": "left,left,left,left,left,left,left",
-      "coltypes": "ro,ro,ro,ro,ro,ro,ro",
-      "colsorting": "str,str,str,str,str,str,str",
-      'visibility': 'true,false,false,false,false,false,false'
+      "headers": "relation_id,primary_relationship_id,relationship_id,Contact,Primary Relationship,Relationship,Contact,Links",
+      "ids": "relation_id,primary_relationship_id,relationship_id,rel_contact,primary_relationship,relationship,contact,links",
+      "widths": "0,0,0,200,200,200,200,200,200",
+      "colaligns": "left,left,left,left,left,left,left,left,left",
+      "coltypes": "ro,ro,ro,ro,ro,ro,ro,ro,ro",
+      "colsorting": "str,str,str,str,str,str,str,str,str",
+      'visibility': 'true,true,true,false,false,false,false,false,false'
     },
     "conf_toolbar": {
       "icon_path": _icon_path,
@@ -199,7 +199,7 @@ Relation.Model = Relation.Model || (function() {
           type: "newcolumn"
         }, {
           type: "combo",
-          name: "primary_relation",
+          name: "relation_primary",
           required: true,
           label: "Primary Relationship",
           offsetLeft: 190,
@@ -207,8 +207,8 @@ Relation.Model = Relation.Model || (function() {
         }, {
           type: "newcolumn"
         }, {
-          type: "select",
-          name: "relation_1",
+          type: "combo",
+          name: "relation_people",
           required: true,
           inputWidth: 150,
           offsetTop: 50
@@ -217,7 +217,7 @@ Relation.Model = Relation.Model || (function() {
           type: "newcolumn"
         }, {
           type: "combo",
-          name: "relation",
+          name: "relation_sub",
           label: "Relationship",
           inputWidth: 150,
           offsetTop: 32,

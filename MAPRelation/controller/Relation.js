@@ -13,6 +13,7 @@ var Relation = (function() {
     toolbar = {};
   //internal usage
   var
+    coup_names = "",
     is_add_edit_form_edited = false,
     is_edit_mode = false,
     is_edited = false,
@@ -109,6 +110,9 @@ var Relation = (function() {
       layout[_name].cells("a").hideHeader();
       layout[_name].progressOn();
     },
+    _window_extend: function(_name) {
+      win[_name].setText("Relationship for " + coup_names);
+    },
     /**
      * [build main toolbar]
      * @param  {[type]} _name [name of the toolbar]
@@ -178,7 +182,7 @@ var Relation = (function() {
       });
     },
     _window_add_edit_extend: function(_name) {
-
+      win[_name].setText(coup_names + " new Relationship")
       win[_name].button("close").attachEvent("onClick", function(win) {
 
         if (is_edited == true) {
@@ -509,15 +513,21 @@ var Relation = (function() {
     _form_add_edit: function(_name, isEdit) {
       var self = this;
       _name = _name || com_name;
-
-
-
-
       form[_name] = layout[_name].cells("a").attachForm(self.Model.conf_form.template);
       layout[_name].progressOff();
       self.set_status(_name, "Loading....");
 
-      // // self._form_data_storage_fill(_name);
+      var
+        relation_contact = form[_name].getCombo('contact_name'),
+        relation_primary = form[_name].getCombo('relation_primary'),
+        relation_sub = form[_name].getCombo('relation_sub'),
+        relation_people = form[_name].getCombo('relation_people');
+
+      var
+        relation_contact_ds = self.Data.store('relation_contact'),
+        relation_primary_ds = self.Data.store('relation_primary'),
+        relation_sub_ds = self.Data.store('relation_sub'),
+        relation_people_ds = self.Data.store('relation_people');
       // var
       //   relation_type = form[_name].getCombo("relation_type"),
       //   relation_province = form[_name].getCombo("province_text"),
@@ -753,17 +763,25 @@ var Relation = (function() {
       CAIRS.onDemand.load(internal_dependencies, function() {
         self.Model.init(config.application_path + config.img_path, config.application_path + config.icons_path);
         self.Data.init(config);
-
+        console.log(self.Data);
         dhtmlx.skin = self.Model.globalSkin || "dhx_skyblue";
-        if (config.use_window === true) {
-          self.build_window();
-          self.set_status(com_name, "Loading.....");
-        } else {
-          self._layout();
-        }
-        self._toolbar();
-        self._grid();
+        // getting couple names
+        dhtmlxAjax.get(self.Data.end_point.get_coup_name + "&conn_id=" + config.conn_id, function(loader) {
+          var json = JSON.parse(loader.xmlDoc.responseText);
+          coup_names = json.coup_names.split(',').join(' & ');
+          if (config.use_window === true) {
+            self.build_window();
+            self._window_extend(com_name);
+            self.set_status(com_name, "Loading.....");
+          } else {
+            self._layout();
+          }
+          self._toolbar();
+          self._grid();
+        });
       });
+
+
     },
     /**
      * [set_status description]

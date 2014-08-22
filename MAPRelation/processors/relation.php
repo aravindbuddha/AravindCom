@@ -8,13 +8,13 @@ mssql_select_db($data_base);
 
 
 //print_r($_REQUEST);
-if($_GET['act']=="get"){
-	$contactID=$_GET['contact_id'];
-	$sp_airsRelation = "EXEC USP_AddEditRelationInfo $contactID";
-  	$json->render_complex_sql($sp_airsRelation,"RelationID","RelationTypeID,RelationType,Relation1,Relation2,city,stateId,StateName,zip,countyId,countyText,countryId,CountryText,RelationProvinceID,RelationProvenceText,MailingRelation,addstartdate,addleavedate");
-	
-
+if($_REQUEST['act']=="get"){
+	$conn_id=$_REQUEST['conn_id'];
+	$rel_comp_id=$_REQUEST['rel_comp_id'];
+	$sp_airsRelation = "EXEC usp_Rel_CompList $rel_comp_id,$conn_id";
+  $json->render_complex_sql($sp_airsRelation,"PrimaryConnId","RelName,RelNameRelationshipSubTypeId,RelationshipSubTypeText,RelTypeid1,RelTypeText1,PrimaryName");
 }
+
 
 if($_REQUEST['act']=="save"){
  $data=json_decode($_REQUEST['data'],true);
