@@ -1,0 +1,651 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>MAP API End Points</title>
+<style>
+ div{ position:relative;}
+ pre{
+	 background:#FFF;
+	 -moz-appearance: textfield-multiline;
+    -webkit-appearance: textarea;
+    border: 1px solid gray;
+    font: medium -moz-fixed;
+    font: -webkit-small-control;
+    overflow: auto;
+    padding: 2px;
+    resize: both;
+}
+.execute{
+	position:absolute;
+	top:0px;
+	right:0px;
+	cursor:pointer;
+}
+.restore{
+	position:absolute;
+	top:0px;
+	right:32px;
+	cursor:pointer;
+}
+</style>
+<script type="text/javascript" src="http://cdmap01.myadoptionportal.com/modules/CAIRS_Framework/CAIRS_fw.js"></script>
+<script type="text/javascript" src="javascripts/json2.js"></script>
+<script>
+	window.onload = function(){
+		
+		CAIRS.MAP.API.authorize(
+		{
+			username : 'restoremleahy@adoptionassociates.net',
+			onSuccess: function(request)
+			{
+				//alert( "Logged as " + CAIRS.MAP.API.user );
+				document.getElementById("table-doc").style.display = "block";
+
+				
+				for( var x = 0; x < document.getElementsByTagName("pre").length; x++)
+				{
+					var pre = document.getElementsByTagName("pre")[x];
+					pre.id = "code_example_" + x;
+					pre.setAttribute("contenteditable", true);
+					
+					pre.parentNode.id = "container_code_example_" + x;
+					
+					var buttonExecute = document.createElement("img");
+					buttonExecute.src = "images/execute.png";
+					buttonExecute.className = "execute";
+					buttonExecute.title = "click here to execute the code";
+					buttonExecute.setAttribute("run_code_id", "code_example_" + x);
+					buttonExecute.onclick = function()
+					{
+						try
+						{
+							eval( document.getElementById(this.getAttribute("run_code_id")).innerHTML );
+						}
+						catch(e)
+						{
+							console.log( e.stack );
+						}
+					}
+					pre.parentNode.appendChild(buttonExecute);
+					
+					var buttonRestore = document.createElement("img");
+					buttonRestore.src = "images/restore.png";
+					buttonRestore.className = "restore";
+					buttonRestore.title = "click here to restore the code example";
+					buttonRestore.setAttribute("code_restore", document.getElementById( "code_example_" + x ).innerHTML );
+					buttonRestore.setAttribute("code_restore_id", "code_example_" + x );
+					buttonRestore.onclick = function()
+					{
+						try
+						{
+							document.getElementById( this.getAttribute("code_restore_id") ).innerHTML = this.getAttribute("code_restore");
+						}
+						catch(e)
+						{
+							console.log( e.stack );
+						}
+					}
+					pre.parentNode.appendChild(buttonRestore);
+				}
+			},
+			onFail: function(request){
+				alert("The user was not authorized to use MAP API.")
+			}
+		});
+	}
+</script>
+</head>
+
+<body>
+<table width="100%" id="table-doc" border="1" style="font-family:arial; font-size:12px; vertical-align:top; display:none;" bgcolor="#E8E8E8">
+  
+  <tr>
+      <td colspan="3"><ul>
+        <li> Each collection represents a DB resource. <br />
+        For example, the /forms collection represents the 'formmaker_properties' table.<br />
+        <br />
+        </li>
+        <li>CAIRS framework provides an API client for supporting comunication between javascript client applications AND server side resources.<br /></li>
+        <li><h2><span style="color:#C00; font-weight:bold;">Give Double Click (2 clicks) on the code example to see it in action</span></h2></li>
+      </ul></td>
+  </tr>
+  <tr valign="top">
+    <td colspan="3" bgcolor="#cccccc"><h2>API address</h2></td>
+  </tr>
+  <tr>
+    <td><h2>Test branch</h2></td>
+    <td colspan="2"><h2>http://perltest.myadoptionportal.com/</h2></td>
+  </tr>
+  <tr>
+    <td><h2>Live branch</h2>
+    <p></p></td>
+    <td colspan="2">&nbsp;</td>
+  </tr>
+  <tr valign="top">
+    <td width="30%" bgcolor="#cccccc"><h2><strong>End Point / Collection address</strong></h2></td>
+    <td width="10%" bgcolor="#cccccc"><h2><strong>HTTP Method</strong></h2></td>
+    <td bgcolor="#cccccc"><h2><strong>END POINT SUMMARY</strong></h2></td>
+  </tr>
+    <tr valign="top">
+    <td colspan="3" bgcolor="#cccccc"><h2>Authentication</h2></td>
+  </tr>
+    
+  <tr>
+    <td><h2>/auth.json</h2></td>
+    <td><h2><strong>POST</strong></h2></td>
+    <td><p>Authenticate browser for using API.<br />
+      <br />
+      <strong>Parameters list:</strong><br />
+        <br />
+        <strong>param name: username</strong><br />
+        <strong>Param summary</strong>: 
+    agency username(e-mail) on MAP</p>
+    
+    <p><strong>Using CAIRS FW API client</strong></p>
+    <div> <pre>
+CAIRS.MAP.API.authorize(
+{
+	username : 'restoremleahy@adoptionassociates.net',
+	onSuccess: function(request)
+	{
+		request = JSON.parse( request.response );
+		alert( "Logged as " + CAIRS.MAP.API.user );
+		console.log( request );
+		alert( "authorization token: " + request.auth_data.token );
+	},
+	onFail: function(request){
+		alert("The user was not authorized to use MAP API.")
+	}
+});
+    </pre></div>
+    <p><strong>Request response: </strong>Return a JSON structure containing the auth credential</p>
+    <div><pre>
+request = {
+    "auth_data": {
+		"date_expiration": 1395432098,
+		"origin": "http://mark.web2.eti.br",
+		"auth_status": "connected",
+		"token": "8389a71d3419ea433966176c2e8ca961e83717cd16b6a4ba457deb2152948756",
+		"username": "31b9e183b505d73722411fdd33fab32a390da192691515c1d7328e5eddc76975",
+		"first_name": "Adoption"
+    },
+    "response": "authorized",
+	"status": "success",
+}
+    </pre></div>
+    <p>NOTE: The property <strong>request.auth_data.token</strong> need to be used in ALL other API end points for performing authorization.</p></td>
+  </tr>
+  <tr valign="top">
+    <td colspan="3" bgcolor="#cccccc"><h2><strong> <br />
+      /agencies COLLECTION</strong></h2></td>
+  </tr>
+  <tr>
+    <td><h2>/agencies.json</h2></td>
+    <td><h3>GET</h3></td>
+    <td><p>List all agencies in JSON format.<br />
+      <br />
+      Support filtering data and ordering columns.</p>
+      <p><strong>Parameters list:</strong></p>
+      <p><strong>param name: token</strong><br />
+        <strong>Param summary</strong>: 
+        token received when performing authentication. Mandatory.<br />
+        <br />
+        <strong>param name: columns</strong><br />
+        <strong>Param summary</strong>: 
+        list of columns that you want to display. separated by comma (no white space)<br />
+        <strong>default (when empty)</strong>: user_id, agency_name, address_line_1, address_line_2, city, state, zip, country, website, phone, fax, email_id, birth_parent_number, adoptive_parent_number, after_hours_number, type_of_business, technology, no_of_years_in_business, no_of_staff, services, states_licensed_in, countries_licensed_in, no_of_adoptions_year, email_id_for_notifications, alert_preference, phone_to_sms, mision_statement_check, mision_statement_text, values_check, values_text, background_check, background_text, logo, nature_of_adoption, religions, payment_option, perfect_adoption_portal, other_info, specialties, c_account_key, demo_video, agency_tax_id, county_id, doc_process_id, ConnId<br />
+        <br />
+        <strong>param name: order</strong><br />
+        <strong>Param summary</strong>: 
+        Order data list in accordance with column name and direction<br />
+        <strong>example:</strong> { direction 'ASC',orderby : 'agency_name'}<br />
+        <strong>default (when empty)</strong>:ORDER BY $primary_key DESC<br />
+        <br />
+        <strong>param name: filter</strong><br />
+        <strong>Param summary</strong>: 
+        List filtered data in accordance with column name and desired value<br />
+        <strong>example:</strong>{ agency_name : 'Adopti'}<br />
+      <strong>default (when empty)</strong>: no filter</p>
+      <p><strong>Using CAIRS FW API client</strong></p>
+      <div><pre>
+CAIRS.MAP.API.get({
+   resource : 	"/agencies" 
+   ,format : "json" 
+   ,payload : "columns=agency_id,agency_name&order="+JSON.stringify({direction:'ASC', orderby:'agency_name'})
+   ,onSuccess : function(request)
+   { 
+		var json = JSON.parse( request.response );
+		if( json.status == "success" )	
+		{
+			alert(json.agencies);
+			console.log(json.agencies);
+			alert(json.agencies[0].agency_name);
+		}
+   }
+   ,onFail : function(request)
+   {
+		var json = JSON.parse( request.response );
+   }
+});
+     </pre></div></td>
+  </tr>
+  <tr>
+    <td><h2>/agencies.json</h2></td>
+    <td><h3>POST</h3></td>
+    <td><p>Insert a new agency sending a simple DHTMLX form hash.</p>
+      <p>var hash = form.getFormData();</p>
+      <p><strong>Parameters list:</strong></p>
+      <p><strong>param name: token</strong><br />
+        <strong>Param summary</strong>: 
+        token received when performing authentication. Mandatory.</p>
+        </td>
+  </tr>
+  <tr>
+    <td><h2>/agencies/0000.json</h2></td>
+    <td><h3>GET</h3></td>
+    <td><p>Get agency data on database where 0000 is the form ID.<br />
+      <br />
+      The response is a valid DHTMLX form JSON structure.<br />
+      <br />
+      form.setFormData( response.hash )</p>
+      <p><strong>Parameters list:</strong></p>
+      <p><strong>param name: token</strong><br />
+        <strong>Param summary</strong>: 
+        token received when performing authentication. Mandatory.</p>
+      <p><br />
+      </p></td>
+  </tr>
+  <tr>
+    <td><h2>/agencies/0000.json</h2></td>
+    <td><h3>PUT</h3></td>
+    <td><p>Update a agency on database sending a simple DHTMLX form hash. <br />
+      <br />
+      Change 0000 to a desired form ID</p>
+      <p><strong>Parameters list:</strong></p>
+      <p><strong>param name: token</strong><br />
+        <strong>Param summary</strong>: 
+    token received when performing authentication. Mandatory.</p></td>
+  </tr>
+  <tr>
+    <td><h2>/agencies/0000.json</h2></td>
+    <td><h3>DEL</h3></td>
+    <td><p>Delete a agency. Where 0000 is the agency ID.</p>
+      <p><strong>Parameters list:</strong></p>
+      <p><strong>param name: token</strong><br />
+        <strong>Param summary</strong>: 
+    token received when performing authentication. Mandatory.</p></td>
+  </tr>
+  <tr valign="top">
+    <td colspan="3" bgcolor="#cccccc"><h2><strong>
+      <br />
+      /forms COLLECTION</strong></h2></td>
+  </tr>
+
+  <tr>
+    <td><h2>/forms.json</h2></td>
+    <td><h3>GET</h3></td>
+    <td><p>List all forms in JSON format.<br />
+      <br />
+      Support filtering data and ordering columns.</p>
+      <p><strong>Parameters list:</strong></p>
+      <p><strong>param name: token</strong><br />
+        <strong>Param summary</strong>: 
+        token received when performing authentication. Mandatory.<br />
+        <br />
+        <strong>param name: columns</strong><br />
+        <strong>Param summary</strong>: 
+        list of columns that you want to display. separated by comma (no white space)<br />
+        <strong>default (when empty)</strong>: formlabel, formname, formtext, formindex, redirecturl, adminalert, autorespond, tiplocation, display, preview, nomultiple, captcha, key_id, form_agency_id, submissionmsg, displaycolumns, numofrecords, formtype, formdisplaytype<br />
+        <br />
+        <strong>param name: order</strong><br />
+        <strong>Param summary</strong>: 
+        Order data list in accordance with column name and direction<br />
+        <strong>example:</strong> { direction 'ASC',orderby : 'formlabel'}<br />
+        <strong>default (when empty)</strong>:ORDER BY $primary_key DESC<br />
+        <br />
+        <strong>param name: filter</strong><br />
+        <strong>Param summary</strong>: 
+        List filtered data in accordance with column name and desired value<br />
+        <strong>example:</strong>{ formlabel : 'sample f'}<br />
+        <strong>default (when empty)</strong>: no filter<br />
+    </p>
+    <p><strong>Using CAIRS FW API client</strong></p>
+      <div><pre>
+CAIRS.MAP.API.get({
+   resource : 	"/forms" 
+   ,format : "json" 
+   ,payload : "columns=formlabel,formname&order="+JSON.stringify({direction:'ASC', orderby:'formname'})
+   ,onSuccess : function(request)
+   { 
+		var json = JSON.parse( request.response );
+		if( json.status == "success" )	
+		{
+			alert(json.forms);
+			console.log(json.forms);
+			alert(json.forms[0].formname);
+		}
+   }
+   ,onFail : function(request)
+   {
+		var json = JSON.parse( request.response );
+   }
+});
+     </pre></div></td>
+  </tr>
+  <tr>
+    <td><h2>/forms.json</h2></td>
+    <td><h3>POST</h3></td>
+    <td><p>Insert a new form sending a simple DHTMLX form hash.</p>
+    <p>var hash = form.getFormData();</p>
+    <p><strong>Parameters list:</strong></p>
+    <p><strong>param name: token</strong><br />
+      <strong>Param summary</strong>: 
+    token received when performing authentication. Mandatory.</p>
+    
+    <p><strong>Using CAIRS FW API client</strong></p>
+      <div><pre>
+var hash = {
+	"formname" : "form_form_name",	"formlabel" : "form name", 
+	"formtext" : "text",	"captcha" : "",	"key_id" : "", 
+	"form_agency_id" : "25",	"numofrecords" : "",	"submissionmsg" : "submission message", 
+	"formtype" : "1",	"formdisplaytype" : "1",	"adminalert" : "", 
+	"autorespond" : "",	"tiplocation" : "A",	"displaycolumns" : "S", 
+    "display" : "S",	"preview" : "",	"nomultiple" : "",	"formindex" : "D",	"redirecturl" : " "
+};
+
+CAIRS.MAP.API.insert({
+	resource : 	"/forms" 
+	,format : "json"
+	,payload : "hash=" + JSON.stringify( hash )
+	,onSuccess : function( request ) 
+	{ 
+		var json = JSON.parse( request.response );
+		console.log(request);
+		alert("Id of the new form: " + json.form_id);
+	}
+	,onFail : function( request )
+	{ 
+		var json = eval('(' + request.response + ')');
+	}
+});
+     </pre></div>
+    
+    
+    
+    </td>
+  </tr>
+  <tr>
+    <td><h2>/forms/0000.json</h2></td>
+    <td><h3>GET</h3></td>
+    <td><p>Get form data on database where 0000 is the form ID.<br />
+      <br />
+      The response is a valid DHTMLX form JSON structure.<br />
+      <br />
+      form.setFormData( response.hash )</p>
+      <p><strong>Parameters list:</strong></p>
+      <p><strong>param name: token</strong><br />
+        <strong>Param summary</strong>: 
+        token received when performing authentication. Mandatory.</p>
+      <p><br />
+    </p></td>
+  </tr>
+  <tr>
+    <td><h2>/forms/0000.json</h2></td>
+    <td><h3>PUT</h3></td>
+    <td><p>Update a form on database sending a simple DHTMLX form hash. <br />
+      <br />
+    Change 0000 to a desired form ID</p>
+    <p><strong>Parameters list:</strong></p>
+    <p><strong>param name: token</strong><br />
+      <strong>Param summary</strong>: 
+    token received when performing authentication. Mandatory.</p>
+    <p><strong>Using CAIRS FW API client</strong></p>
+      <div><pre>
+// var hash = form.getFormData();
+var hash = {
+	"formname" : "form_form_name",	"formlabel" : "form name changed example", 
+	"formtext" : "text",	"captcha" : "",	"key_id" : "", 
+	"form_agency_id" : "25",	"numofrecords" : "",	"submissionmsg" : "submission message", 
+	"formtype" : "1",	"formdisplaytype" : "1",	"adminalert" : "", 
+	"autorespond" : "",	"tiplocation" : "A",	"displaycolumns" : "S", 
+    "display" : "S",	"preview" : "",	"nomultiple" : "",	"formindex" : "D",	"redirecturl" : " "
+};
+
+CAIRS.MAP.API.update({
+	resource : 	"/forms/2898" 
+	,format : "json"
+	,payload : "hash=" + JSON.stringify( hash )
+	,onSuccess : function( request ) 
+	{ 
+		var json = JSON.parse( request.response );
+		console.log(request);
+		alert("Id of the updated form: " + json.form_id);
+	}
+	,onFail : function( request )
+	{ 
+		var json = JSON.parse( request.response );
+	}
+});
+     </pre></div>
+    </td>
+  </tr>
+  <tr>
+    <td><h2>/forms/0000.json</h2></td>
+    <td><h3>DEL</h3></td>
+    <td><p>Delete a form. Where 0000 is the form ID.</p>
+    <p><strong>Parameters list:</strong></p>
+    <p><strong>param name: token</strong><br />
+      <strong>Param summary</strong>: 
+    token received when performing authentication. Mandatory.</p>
+    
+   
+    
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3" bgcolor="#cccccc"><h2><strong><br />
+      <br />
+    /forms/form_id/pages COLLECTION</strong></h2></td>
+  </tr>
+  <tr>
+    <td><h2>/forms/0000/pages.json</h2></td>
+    <td><h3>GET</h3></td>
+    <td><p>Get a list of pages of the given form ID. Where 0000 is the form ID.<br />
+      <br />
+      Support filtering data and ordering columns.<br />
+      </p>
+      <p><strong>Parameters list:</strong></p>
+      <p><strong>param name: token</strong><br />
+        <strong>Param summary</strong>: 
+        token received when performing authentication. Mandatory.<br />
+        <br />
+        <strong>param name: columns</strong><br />
+        <strong>Param summary</strong>: 
+        list of columns that you want to display. separated by comma (no white space)<br />
+        <strong>default (when empty)</strong>: form_id, pagename, grouping, key_id, page_layout, tab_width<br />
+        <br />
+        <strong>param name: order</strong><br />
+        <strong>Param summary</strong>: 
+        Order data list in accordance with column name and direction<br />
+        <strong>example:</strong> { direction 'ASC',orderby : 'pagename'}<br />
+        <strong>default (when empty)</strong>:ORDER BY $primary_key DESC<br />
+        <br />
+        <strong>param name: filter</strong><br />
+        <strong>Param summary</strong>: 
+        List filtered data in accordance with column name and desired value<br />
+        <strong>example: </strong> { pagename : 'my pag'}<br />
+    <strong>default (when empty)</strong>: no filter</p>
+    <p><strong>Using CAIRS FW API client</strong></p>
+    <div><pre>
+CAIRS.MAP.API.get({
+	resource : "/forms/2898/pages"
+	,format : "json"
+	,payload : "order=" + JSON.stringify({direction:'ASC',orderby:'grouping'})
+	,onSuccess : function( request )
+	{ 
+		var json = JSON.parse( request.response );
+		if( json.status == "success" )	
+		{
+			alert( json.pages );
+			console.log( json.pages );
+			alert( json.pages[0].pagename );
+		}
+	}
+	,onFail : function( request )
+	{ 
+		var json = JSON.parse( request.response );
+		
+	}
+});	
+    </pre></div></td>
+  </tr>
+  <tr>
+    <td><h2>/forms/0000/pages.json</h2></td>
+    <td><h3>POST</h3></td>
+    <td><p>Insert a new page on the given form sending a simple DHTMLX form hash.</p>
+    <p>var hash = form.getFormData();</p>
+    <p><strong>Parameters list:</strong></p>
+    <p><strong>param name: token</strong><br />
+      <strong>Param summary</strong>: 
+    token received when performing authentication. Mandatory.</p>
+    <p><strong>Using CAIRS FW API client</strong></p>
+      <div><pre>
+var hash = {
+	"pagename":"page name",
+    "page_layout":"D",
+    "tab_width":"200",
+    "form_id":"2898",
+    "grouping":0
+};
+
+CAIRS.MAP.API.insert({
+	resource : 	"/forms/2898/pages" 
+	,format : "json"
+	,payload : "hash=" + JSON.stringify( hash )
+	,onSuccess : function( request ) 
+	{ 
+		var json = JSON.parse( request.response );
+		console.log(request);
+		alert("Id of the new page: " + json.page_id);
+	}
+	,onFail : function( request )
+	{ 
+		var json = eval('(' + request.response + ')');
+	}
+});
+     </pre></div></td>
+  </tr>
+  <tr>
+    <td><h2>/forms/0000/pages/1111.json</h2></td>
+    <td><h3>GET</h3></td>
+    <td><p>Get page data on database where 0000 is the form ID. Where 1111 is the page ID.<br />
+      <br />
+      The response is a valid DHTMLX form JSON structure.<br />
+      <br />
+    form.setFormData( response.hash )</p>
+    <p><strong>Parameters list:</strong></p>
+    <p><strong>param name: token</strong><br />
+      <strong>Param summary</strong>: 
+    token received when performing authentication. Mandatory.</p></td>
+  </tr>
+  <tr>
+    <td><h2>/forms/0000/pages/1111.json</h2></td>
+    <td><h3>PUT</h3></td>
+    <td><p>Update a page on database sending a simple DHTMLX form hash. <br />
+  <br />
+    Change 0000 to a desired form ID.</p>
+    <p>Change 1111 to a desired page ID.</p>
+    <p><strong>Parameters list:</strong></p>
+    <p><strong>param name: token</strong><br />
+      <strong>Param summary</strong>: 
+    token received when performing authentication. Mandatory.</p></td>
+  </tr>
+  <tr>
+    <td><h2>/forms/0000/pages/1111.json</h2></td>
+    <td><h3>DEL</h3></td>
+    <td><p>Delete a page. <br />
+      <br />
+    Where 0000 is the form ID. Where 1111 is the page ID.</p>
+    <p><strong>Parameters list:</strong></p>
+    <p><strong>param name: token</strong><br />
+      <strong>Param summary</strong>: 
+    token received when performing authentication. Mandatory.</p></td>
+  </tr>
+  <tr>
+    <td><h2>/forms/0000/pages/order.json</h2></td>
+    <td><h3>POST</h3></td>
+    <td>Order pages on database sending a simple hash. <br />
+      <br />
+      Where 0000 is the form ID.<br />
+    <br />
+    <div><pre>
+hash = { ordering_column_name : &quot;grouping&quot;, data : [
+  	{item_id : 3356, index: 0}
+   ,{item_id : 3357, index: 1}
+   ,{item_id : 3359, index: 2}
+] }</pre></div>
+    <p><strong>Parameters list:</strong></p>
+    <p><strong>param name: token</strong><br />
+      <strong>Param summary</strong>: 
+    token received when performing authentication. Mandatory.</p></td>
+  </tr>
+  <tr>
+    <td colspan="3" bgcolor="#cccccc"><h2><strong><br />
+      <br />
+    /forms/form_id/pages/page_id/fields COLLECTION</strong></h2></td>
+  </tr>
+  <tr>
+    <td><h2>/forms/0000/pages/1111/fields.json</h2></td>
+    <td><h3>GET</h3></td>
+    <td>List all fields of a page in JSON format.<br />
+      <br />
+      Support filtering data and ordering columns.<br />
+      <br />
+      <p><strong>Parameters list:</strong></p>
+      <p><strong>param name: token</strong><br />
+        <strong>Param summary</strong>: 
+        token received when performing authentication. Mandatory.</p>
+      <strong>param name: columns</strong><br />
+      <strong>Param summary</strong>: 
+    list of columns that you want to display. separated by comma (no white space)<br />
+    <strong>default (when empty)</strong>: page_id, type, type_map, label, caption, name, tooltip, required, verification, size, textareacolumn, textarearow, index, text_size, value, mailsendercopy, key_id, use_library, library_field_id, library_field_name, section_id, field_group_id, field_format, use_as_label, MultiRecord, className, mask_to_use, info, note<br />
+    <br />
+    <strong>param name: order</strong><br />
+    <strong>Param summary</strong>: 
+    Order data list in accordance with column name and direction<br />
+    <strong>example:</strong> { direction 'ASC',orderby : 'name'}<br />
+    <strong>default (when empty)</strong>:ORDER BY $primary_key DESC<br />
+    <br />
+    <strong>param name: filter</strong><br />
+    <strong>Param summary</strong>: 
+    List filtered data in accordance with column name and desired value<br />
+    <strong>example:</strong>{ formlabel : 'sample f'}<br />
+    <strong>default (when empty)</strong>: no filter</td>
+  </tr>
+  <tr>
+    <td><h2>/forms/0000/pages/1111/fields.json</h2></td>
+    <td><h3>POST</h3></td>
+    <td><p>Insert a new field on the page on the given form and page, sending a simple DHTMLX form hash.<br />
+      <br />
+      Where 0000 is the form ID. Where 1111 is the page ID.    </p>
+    <p>var hash = form.getFormData();</p>
+    <p><strong>Parameters list:</strong></p>
+    <p><strong>param name: token</strong><br />
+      <strong>Param summary</strong>: 
+    token received when performing authentication. Mandatory.</p></td>
+  </tr>
+  <tr>
+    <td><h2>&nbsp;</h2></td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,133 @@
+﻿<html>
+    <head>
+		<meta http-equiv='cache-control' content='no-cache'>
+        <meta http-equiv='expires' content='0'>
+        <meta http-equiv='pragma' content='no-cache'>
+        <meta charset="UTF-8">
+        
+        <title></title>
+        <!-- xxxxxxx BEGIN - DEPENDENCIES (already on MAP - DONT COPY IT WHEN INSTALLING ON MAP) xxxxxxx -->
+        <link  rel="stylesheet" type="text/css" href="../../codebase3.6/dhtmlx.css" />
+		<link rel="stylesheet" type="text/css" href="../../codebase3.6/dhtmlxForm/codebase/skins/dhtmlxform_dhx_skyblue.css">
+        <script type="text/javascript" src="../../codebase3.6/dhtmlx.js"></script>
+        
+        <!-- CAIRS Framework -->
+		<script type="text/javascript" src="../../CAIRS_Framework/CAIRS_fw.js"></script>
+        
+        <!-- tinymce -->
+		<script type="text/javascript" src="js/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+        
+        <script type="text/javascript" >
+            window.onload = function()
+            {					
+					console.log(window.location.host);
+					
+					var cdn_application_path = window.location.protocol + '//' + window.location.host + '/modules/AravindCom/FormBuilder/';
+                    var dhx_codebase_path = window.location.protocol + '//' + window.location.host + '/modules/codebase3.6/';
+					
+					/* Dependencies array */
+					var dependenciesToLoad = [
+						/* dhx JS dependencies */
+						dhx_codebase_path + "dhtmlxForm/codebase/ext/dhtmlxform_item_btn2state.js" 
+						,dhx_codebase_path + "dhtmlxForm/codebase/ext/dhtmlxform_dyn.js" 
+						
+						,dhx_codebase_path + "dhtmlxForm/codebase/ext/dhtmlxform_item_upload.js" 
+						,dhx_codebase_path + "dhtmlxForm/codebase/ext/swfobject.js" 
+						
+						,dhx_codebase_path + "dhtmlxGrid/codebase/ext/dhtmlxgrid_export.js" 
+						,dhx_codebase_path + "dhtmlxGrid/codebase/ext/dhtmlxgrid_hmenu.js" 
+						,dhx_codebase_path + "dhtmlxTabbar/codebase/ext/dhtmlxtabbar_scroll_ext.js" 
+						,dhx_codebase_path + "dhtmlxGrid/codebase/ext/dhtmlxgrid_export.js" 
+						/* dhx CSS dependencies */
+						,dhx_codebase_path + "dhtmlxForm/codebase/skins/dhtmlxform_dhx_skyblue.css" 
+						,dhx_codebase_path + "dhtmlxForm/codebase/skins/dhtmlxform_dhx_web.css" 
+						,dhx_codebase_path + "dhtmlxForm/codebase/skins/dhtmlxform_dhx_terrace.css" 
+						,dhx_codebase_path + "dhtmlxCombo/codebase/dhtmlxcombo.css" 
+						,dhx_codebase_path + "dhtmlxCalendar/codebase/skins/dhtmlxcalendar_dhx_skyblue.css" 
+						,dhx_codebase_path + "dhtmlxCalendar/codebase/skins/dhtmlxcalendar_dhx_web.css" 
+						,dhx_codebase_path + "dhtmlxCalendar/codebase/skins/dhtmlxcalendar_dhx_terrace.css" 
+						,dhx_codebase_path + "dhtmlxTabbar/codebase/dhtmlxtabbar.css" 
+						,dhx_codebase_path + "dhtmlxToolbar/codebase/skins/dhtmlxtoolbar_dhx_blue.css" 
+						,dhx_codebase_path + "dhtmlxToolbar/codebase/skins/dhtmlxtoolbar_dhx_skyblue.css" 
+						,dhx_codebase_path + "dhtmlxToolbar/codebase/skins/dhtmlxtoolbar_dhx_terrace.css" 
+						,dhx_codebase_path + "dhtmlxToolbar/codebase/skins/dhtmlxtoolbar_dhx_web.css"
+						 /* JSON parser*/
+						,cdn_application_path + "js/json2.js"
+						 /* mask functions for dhtmlx fields */
+						,cdn_application_path + "js/masks.js"
+						/* FormBuilder Files */
+						
+						//,cdn_application_path + "controller/FormViewer.js?uistring=" + ( new Date().getTime() )
+						//,cdn_application_path + "model/FormViewer_Model.js?" + ( new Date().getTime() )
+						
+						,cdn_application_path + "css/FormBuilder.css"
+						,cdn_application_path + "controller/FormBuilder.js?uistring=" + ( new Date().getTime() )
+						,cdn_application_path + "model/FormBuilder_Model.js?uistring=" + ( new Date().getTime() )
+						
+						
+					];
+					
+					// check if parent application already has jquery, if not, lets load it
+					if( typeof jQuery === 'undefined' )
+					{
+						dependenciesToLoad.push( "//ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js" );
+					}
+					// Currency mask - shall to be loaded after JQUERY only
+					dependenciesToLoad.push( cdn_application_path + "js/jquery.price_format.1.7.min.js" );
+					
+					// add ?uistring=xxxxxxx to force to always load the file again
+					//CAIRS.environment = "dev";
+					/* load files and call FormBuilder */
+					CAIRS.onDemand.load( dependenciesToLoad, function ()
+					{
+						/* xxx BEGIN lets set some component's properties xxx */
+						/*  you dont need to set those properties. check for defaults */
+						/*
+							set FormBuilder Path
+							NOT MANDATORY, default: https://cdmap03.myadoptionportal.com/modules/FormBuilder/ 
+						*/
+						FormBuilder.application_path = cdn_application_path;
+						/*
+							set dhtmlx 3.6 codebase path
+							NOT MANDATORY, default https://cdmap03.myadoptionportal.com/modules/codebase3.6/
+						*/
+						FormBuilder.dhtmlx_codebase_path = dhx_codebase_path;
+						/*
+							set Signature Component Path
+							NOT MANDATORY, default: https://cdmap03.myadoptionportal.com/modules/FormBuilder/js/signature_component/
+						*/
+						FormBuilder.signature_application_url = cdn_application_path + "js/signature_component/";
+						/*
+							set Icons path
+							NOT MANDATORY, default: https://cdmap03.myadoptionportal.com/modules/FormBuilder/icons/
+						*/
+						FormBuilder.icons_path = cdn_application_path + "icons/";
+						/* xxx END set some component's properties xxx */
+						
+						/* xxx BEGIN Component Call xxx */
+						FormBuilder.start( {  
+							username : "restoremleahy@adoptionassociates.net" /*MANDATORY*/ /*<?php echo $_SESSION['mapusername'];?>*/
+                            ,agency_id : 25 /*MANDATORY*/ // <?php echo $_SESSION['session_current_agency_id'];?>
+                            ,ConnID : -85771 /*MANDATORY*/ // <?php echo $_SESSION['user_Connid'];?>
+                            ,ConnectionId : 275138 /*MANDATORY*/
+                            ,database : "MAPTEST" // <?php echo $_SESSION['DBName'];?> /*NOT MANDATORY*/ //  if not provided, will use default (MAPTEST)
+							,application_path : cdn_application_path
+							,container : document.body // comment for appending the component on a new DHTMLX window, or provide a DIV id or document.body
+							
+							/*SIGNATURE COMPONENT*/
+                            ,signature_file_path : window.location.protocol + '//' + window.location.host + '/modules/signatures/25/' /*MANDATORY*/
+							,signature_file_path_abs : '/var/www/html/modules/signatures/25/' /*MANDATORY*/ //<?php echo $_SESSION['session_current_agency_id'];?>
+						} );
+						/* xxx END Component Call xxx */
+					});					
+             }
+			 window.onerror = function(msg, url, line)
+			 {
+				dhtmlx.message( {type : "error", text : msg} );
+				dhtmlx.message( {type : "error", text : line} );
+			}
+         </script>
+     </head>
+    <body>
+    </body>
+</html>

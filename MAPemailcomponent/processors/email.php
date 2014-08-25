@@ -12,22 +12,19 @@ if($_REQUEST['act']=="get"){
 
 	$contactID = $_REQUEST['contact_id'];
 	echo $sp_airsEmail = "EXEC USP_AddEditEMailInfo $contactID";
-    //try{
-  	$json->render_complex_sql($sp_airsEmail,"ContactEMailID");
-    
-	
 
+  	$json->render_complex_sql($sp_airsEmail,"ContactEMailID","EMailTypeID,ContactEMail,PrimaryEMail,EMailType");
 }
 
 if($_REQUEST['act']=="save"){
  $data=json_decode($_REQUEST['data'],true);
  $contact_id  = $data['contact_id'];
- $contactID       = intval($data['contact_id_email']);
+ //$contactID       = intval($data['contact_id_email']);
  $emailID         = intval($data['email_id_hidden']);
 $emailTypeStr    = intval($data['email_type']);
 $contactEmailStr = $data['contact_email'];
 $Emailmailing    = intval($data['email_mailing']);
- $sp_Email        = "EXEC USP_AddEditEMailInfo $contactID, '$emailID','Save',$emailTypeStr, '$contactEmailStr',  '$Emailmailing'";
+ $sp_Email        = "EXEC USP_AddEditEMailInfo $contact_id, '$emailID','Save',$emailTypeStr, '$contactEmailStr',  '$Emailmailing'";
  $json->render_complex_sql($sp_Email);
 }
 

@@ -66,15 +66,14 @@ emailcomponent.Data = emailcomponent.Data || (function() {
           obj.email_type_id = obj.EMailTypeID;
           obj.email_type = obj.EMailType;
           obj.contact_email = obj.ContactEMail;
-          obj.email_type = obj.PrimaryEMail ? "Yes" : "No";   
+          obj.primary_email = obj.PrimaryEMail ? "Yes" : "No";   
           
         },
-       /* $update:function(obj){
-          obj.state_text=(obj.state_text == "Pick a State")?"":obj.state_text;
-          obj.county_text=(obj.county_text== "Pick a County")?"":obj.county_text;
-          obj.province_text=(obj.province_text == "Pick a Province")?"":obj.province_text;
-          console.log(obj);
-        }*/
+        $update:function(obj){
+
+          obj.email_mailing = "No";
+          
+        }
       });
     },
     _email_type_data_store: function(_name, _path) {

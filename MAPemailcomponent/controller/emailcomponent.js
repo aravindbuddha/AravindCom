@@ -265,16 +265,19 @@ var emailcomponent = (function() {
                         }
                         
                     });*/
-          win[com_name].progressOn();
             dhtmlxAjax.post(self.Data.end_point.email_del, "data=" + JSON.stringify(data), function() {
               count--;
               if(!count){
-                win[com_name].progressOff();
-              }
+                        if(!is_primary)
+                  dhtmlx.alert({text:"Successfully deleted."});  
+                
+                layout[_name].progressOff();
+                self.set_status(_name,"Ready to use.");
+                }
             });
                 }); 
             }else {
-                    win[com_name].progressOff();
+                    layout[_name].progressOff();
                 }
         }
                
@@ -304,7 +307,7 @@ form[_name].detachEvent(config.email_change);
                 config.email_change = form[_name].attachEvent("onBlur", function (name,value) {
                     
                         if(name == "email"){
-                            var email = form[_name].getItemValue("email");
+                            var email = form[_name].getItemValue("contact_email");
                             var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
                             var emailVal = filter.test(email);
                             if(emailVal != true){
@@ -420,16 +423,17 @@ form[_name].detachEvent(config.email_change);
             
           data = {
             contact_id: config.contact_id,
-            contact_id_email: form[_name].getItemValue("contact_id_email"),
+            //contact_id_email: form[_name].getItemValue("contact_id_email"),
             email_type: form[_name].getCombo("email_type").getSelectedValue(),
             type: form[_name].getCombo("email_type").getSelectedText(),
-            contact_email: form[_name].getItemValue("email"),
+            contact_email: form[_name].getItemValue("contact_email"),
             email_mailing: form[_name].getItemValue("primary_email"),
             agency_id: config.agency_id,
             email_id_hidden : form[_name].getItemValue("email_id")
           };
           
         var email_get_ds = self.Data.store("email_get");
+
 
           /*if (self._form_add_edit_validate(_name, data)) {
                 layout[_name].progressOn();
@@ -483,12 +487,14 @@ form[_name].detachEvent(config.email_change);
                 var 
                   data_1=dhtmlx.extend(email_get_ds.data.item(data.email_id_hidden),data);
                   email_get_ds.update(data_1.id,data_1);
+
               }
                dhtmlx.alert({
                   //type:"alert",
                   text:"Saved Successfully!",
                   //ok:"Yes",
                   callback:function(){
+                    win[_name].detachEvent(config.close_event);
                     win[_name].close();
                   }
                 });
@@ -533,7 +539,7 @@ form[_name].detachEvent(config.email_change);
                         config.email_change = form[_name].attachEvent("onBlur", function (name,value) {
                     
                         if(name == "email"){
-                            var email = form[_name].getItemValue("email");
+                            var email = form[_name].getItemValue("contact_email");
                             var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
                             var emailVal = filter.test(email);
                             if(emailVal != true){
@@ -562,7 +568,7 @@ form[_name].detachEvent(config.email_change);
                         config.email_change = form[_name].attachEvent("onBlur", function (name,value) {
                     
                         if(name == "email"){
-                            var email = form[_name].getItemValue("email");
+                            var email = form[_name].getItemValue("contact_email");
                             var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
                             var emailVal = filter.test(email);
                             if(emailVal != true){
@@ -593,7 +599,7 @@ form[_name].detachEvent(config.email_change);
                         config.email_change = form[_name].attachEvent("onBlur", function (name,value) {
                     
                         if(name == "email"){
-                            var email = form[_name].getItemValue("email");
+                            var email = form[_name].getItemValue("contact_email");
                             var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
                             var emailVal = filter.test(email);
                             if(emailVal != true){
@@ -735,7 +741,7 @@ form[_name].detachEvent(config.email_change);
                 });
                 config.email_change = form[_name].attachEvent("onBlur", function (name,value) {
                     if(name == "email"){
-                        var email = form[_name].getItemValue("email");
+                        var email = form[_name].getItemValue("contact_email");
                         var filter = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
                         var emailVal = filter.test(email);
                         if(emailVal != true){

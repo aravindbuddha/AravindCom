@@ -528,6 +528,10 @@ var Relation = (function() {
         relation_primary_ds = self.Data.store('relation_primary'),
         relation_sub_ds = self.Data.store('relation_sub'),
         relation_people_ds = self.Data.store('relation_people');
+
+      // relation_type.sync(relation_type_ds);
+      // 
+      // 
       // var
       //   relation_type = form[_name].getCombo("relation_type"),
       //   relation_province = form[_name].getCombo("province_text"),

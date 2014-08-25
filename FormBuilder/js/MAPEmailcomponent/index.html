@@ -1,0 +1,33 @@
+<html>
+<head>
+<title>Email Component</title>
+<!-- DHTMLX Framework -->
+    <script type="text/javascript" src="js/json2.js"></script>  
+    <link rel="stylesheet" type="text/css" href="http://cdmap01.myadoptionportal.com/modules/codebase3.5/dhtmlx.css" />
+    <script type="text/javascript" src="http://cdmap01.myadoptionportal.com/modules/codebase3.5/dhtmlx_min.js" charset="ISO-8859-1"></script>
+    <script type="text/javascript" src="http://cdmap01.myadoptionportal.com/modules/CAIRS_Framework/CAIRS_fw.js"></script>   
+	 <script type="text/javascript" src="../MAPPermissions/js/controller.js"></script> 
+	 
+<script type="text/javascript" src="model/emailcomponent_Model.js"></script>
+<script type="text/javascript" src="controller/emailcomponent.js"></script>
+<script type="text/javascript" >
+            window.onload = function()
+            {
+                    emailcomponent.start( { 
+                        uid : "21635" 
+                        ,application_path : "http://cdmap01.myadoptionportal.com/modules/MAPemailcomponent/" 
+                        ,dhtmlx_codebase_path : "http://cdmap01.myadoptionportal.com/modules/codebase3.5/"
+						,contactid : "21635"
+						,useWindow: true
+						,window_managerObj: null
+						,contactcomponent_obj : ''
+						,parentDIVId: ''
+			            ,agencyid: 25
+
+                    } );
+             }
+         </script>
+</head>
+<body>
+</body>
+</html>

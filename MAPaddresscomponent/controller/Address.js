@@ -104,7 +104,7 @@ var Address = (function() {
      * [_layout]
      * @param  {[string]} _name [name of the layout]
      */
-    _layout: function(_name) {
+    _layout: function(_name, opt) {
       var self = this;
       _name = _name || com_name;
       layout[_name] = new dhtmlXLayoutObject(config.parent_div_id, opt.pattern);
@@ -230,11 +230,11 @@ var Address = (function() {
       if (!grid_address_ds.isVisible()) {
         grid_address_ds.attachEvent("onXLE", function() {
           layout[_name].progressOff();
-          self.set_status(_name, "Ready to use");
+          config.use_window ? self.set_status(_name, "Ready to use") : "";
         });
       } else {
         layout[_name].progressOff();
-        self.set_status(_name, "Ready to use");
+        config.use_window ? self.set_status(_name, "Ready to use") : "";
       }
 
       self._grid_main_events(_name);
@@ -786,7 +786,7 @@ var Address = (function() {
           self.build_window();
           self.set_status(com_name, "Loading.....");
         } else {
-          self._layout();
+          self._layout(com_name, self.Model.defaults.layout);
         }
         self._toolbar();
         self._grid_main();
